@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>How It Works — PitchIntel</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#06080c;--surface:#0c1018;--card:#111827;--border:#1a2236;
+  --text:#b8c4d0;--dim:#4a5a6a;--bright:#eef2f7;
+  --blue:#00b4ff;--green:#00e88a;--red:#ff3860;--gold:#ffb800;--purple:#a855f7;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;line-height:1.8}
+::selection{background:var(--blue);color:#000}
+
+.c{max-width:740px;margin:0 auto;padding:0 24px}
+section{padding:80px 0}
+section:nth-child(even){background:var(--surface)}
+
+h1{font-size:clamp(32px,5vw,48px);font-weight:800;line-height:1.15;color:var(--bright);letter-spacing:-.02em}
+h2{font-size:clamp(24px,3.5vw,34px);font-weight:700;line-height:1.25;color:var(--bright);margin-bottom:16px}
+h3{font-size:18px;font-weight:600;color:var(--bright);margin-bottom:8px}
+p{margin-bottom:18px}
+.lead{font-size:17px;color:var(--dim);line-height:1.9}
+.label{font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--blue);margin-bottom:14px}
+strong{color:var(--bright);font-weight:600}
+em{color:var(--green);font-style:normal}
+
+/* Callout boxes */
+.callout{background:var(--card);border-left:3px solid var(--blue);border-radius:0 10px 10px 0;
+  padding:24px 28px;margin:28px 0;font-size:15px;line-height:1.8}
+.callout.green{border-color:var(--green)}
+.callout.gold{border-color:var(--gold)}
+.callout.red{border-color:var(--red)}
+.callout.purple{border-color:var(--purple)}
+.callout p:last-child{margin-bottom:0}
+.callout-title{font-weight:700;color:var(--bright);margin-bottom:6px;font-size:14px;text-transform:uppercase;letter-spacing:1px}
+
+/* Diagrams */
+.diagram{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:28px;
+  margin:32px 0;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;
+  color:var(--dim);overflow-x:auto;white-space:pre}
+.diagram .hl{color:var(--blue)}
+.diagram .g{color:var(--green)}
+.diagram .r{color:var(--red)}
+.diagram .y{color:var(--gold)}
+.diagram .p{color:var(--purple)}
+
+/* Tier comparison */
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:32px 0}
+@media(max-width:700px){.tiers{grid-template-columns:1fr}}
+.tier{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px;position:relative}
+.tier.featured{border-color:var(--blue);box-shadow:0 0 30px rgba(0,180,255,.08)}
+.tier-name{font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px}
+.tier-price{font-size:32px;font-weight:800;color:var(--bright);margin-bottom:4px}
+.tier-price span{font-size:15px;font-weight:400;color:var(--dim)}
+.tier-desc{font-size:13px;color:var(--dim);margin-bottom:16px;line-height:1.5}
+.tier-features{list-style:none;font-size:13px;line-height:2.2}
+.tier-features li::before{content:'✓ ';color:var(--green);font-weight:700}
+.tier-features li.locked::before{content:'✦ ';color:var(--gold)}
+.tier-features li.locked{color:var(--dim)}
+.tier-badge{position:absolute;top:-10px;right:16px;background:var(--blue);color:#000;
+  font-size:10px;font-weight:700;padding:3px 10px;border-radius:4px;letter-spacing:1px;text-transform:uppercase}
+
+/* Number highlights */
+.num{display:inline-block;font-size:28px;font-weight:800;margin:0 4px;vertical-align:baseline}
+.num.blue{color:var(--blue)}
+.num.green{color:var(--green)}
+.num.gold{color:var(--gold)}
+
+/* FAQ */
+.faq-item{border-bottom:1px solid var(--border);padding:18px 0}
+.faq-q{font-weight:600;color:var(--bright);cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:15px}
+.faq-q::after{content:'+';font-size:20px;color:var(--dim);transition:transform .2s}
+.faq-item.open .faq-q::after{transform:rotate(45deg)}
+.faq-a{max-height:0;overflow:hidden;transition:max-height .3s;font-size:14px;color:var(--dim);line-height:1.8}
+.faq-item.open .faq-a{max-height:600px;padding-top:10px}
+
+/* CTA */
+.cta-box{text-align:center;padding:40px 0}
+.cta-btn{display:inline-flex;align-items:center;gap:8px;background:var(--blue);color:#000;
+  padding:14px 32px;border-radius:8px;font-weight:700;font-size:15px;text-decoration:none;
+  transition:transform .2s,box-shadow .2s}
+.cta-btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,180,255,.3)}
+
+/* Scroll fade */
+.fi{opacity:0;transform:translateY(16px);transition:opacity .5s,transform .5s}.fi.v{opacity:1;transform:translateY(0)}
+
+/* Nav */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:14px 24px;
+  background:rgba(6,8,12,.85);backdrop-filter:blur(12px);border-bottom:1px solid rgba(26,34,54,.5);
+  display:flex;justify-content:space-between;align-items:center}
+nav .logo{font-weight:800;font-size:16px;color:var(--bright);letter-spacing:-.5px}
+nav .logo span{color:var(--blue)}
+nav a{color:var(--dim);font-size:13px;text-decoration:none;margin-left:20px;font-weight:500}
+nav a:hover{color:var(--bright)}
+
+footer{padding:40px 0;text-align:center;font-size:12px;color:var(--dim);border-top:1px solid var(--border)}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Pitch<span>Intel</span></div>
+  <div>
+    <a href="#how">How It Works</a>
+    <a href="#tiers">Pricing</a>
+    <a href="#faq">FAQ</a>
+    <a href="#" style="color:var(--blue)">Try Free →</a>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════ HERO -->
+<section style="padding-top:120px">
+<div class="c">
+  <div class="label fi">How PitchIntel Works</div>
+  <h1 class="fi" style="margin-bottom:20px">Ok Football Nerds,<br>Let's Talk.</h1>
+
+  <p class="lead fi">You know TransferMarkt. You know the rumor mill. You know some player is
+  "worth €45 million" because... someone said so? Because comparable players sold for that?
+  Because vibes?</p>
+
+  <p class="lead fi">Here's the thing nobody says out loud: <strong>a player isn't worth one number.</strong>
+  They're worth different numbers to different teams. A pressing monster is worth €60M to Liverpool
+  and €25M to a team that sits deep. A creative 10 is worth twice as much to a team with no playmaker
+  as it is to a team that already has three.</p>
+
+  <p class="lead fi">Everyone in football knows this intuitively. We're the first to compute it.</p>
+
+  <p class="lead fi">Here's how.</p>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════ THE VECTOR -->
+<section id="how">
+<div class="c">
+  <div class="label fi">The Core Idea</div>
+  <h2 class="fi">Every player is a point in 118-dimensional space</h2>
+
+  <p class="fi">Bear with us — this is the part that sounds complicated but is actually simple.</p>
+
+  <p class="fi">You already think of players in multiple dimensions. You might think: "he's fast,
+  good passer, doesn't press much, great in the air, injury prone." That's five dimensions.
+  You just described a point in 5D space.</p>
+
+  <p class="fi">We do the same thing, but with <strong>118 dimensions</strong>. Passing accuracy at
+  short, medium, and long range. Expected goals per shot. Pressing frequency in each third of the pitch.
+  Sprint speed, distance covered, how many teammates they connect with, how the team's defensive structure
+  changes when they're on the pitch versus off it.</p>
+
+  <p class="fi">We call this the <em>player vector</em>. It's a mathematical fingerprint of everything a
+  player does — and everything they are.</p>
+
+  <div class="callout fi">
+    <div class="callout-title">The technical term</div>
+    <p>In machine learning and data science, this is called a <strong>vector embedding</strong> — a way
+    of representing something complex (a player's total contribution to football) as a single point in a
+    high-dimensional space. Players who play similarly end up near each other in this space.
+    Players who are different end up far apart. Distance in this space has meaning.</p>
+  </div>
+
+  <p class="fi">But here's where it gets interesting. The vector isn't just about the player.
+  It's about the player <em>in context</em>.</p>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════ THE MATCH -->
+<section>
+<div class="c">
+  <div class="label fi">The Key Insight</div>
+  <h2 class="fi">Value = how well your vector fits their graph</h2>
+
+  <p class="fi">Every team is also a mathematical structure. Not just a list of players — a
+  <strong>network</strong>. Who passes to whom. Where the defensive coverage overlaps. Where the gaps are.
+  Which player everything flows through. We call this the <em>team graph</em>.</p>
+
+  <p class="fi">When you drop a player's vector into a team's graph, you can measure the fit.
+  Does their passing profile strengthen or weaken the network? Does their defensive positioning
+  fill a structural gap or duplicate existing coverage? Does their playing style create new
+  connections or leave dead zones?</p>
+
+  <p class="fi">The answer is different for every team. Mathematically, provably different.</p>
+
+  <div class="diagram fi"><span class="hl">Player:</span> Xavi Simons (CAM, 21, €80M market value)
+
+<span class="hl">→ Atletico Madrid:</span>
+  System fit:     <span class="g">+++ pressing profile matches Simeone</span>
+  Structural:     <span class="g">++ fills center-right vulnerability</span>
+  Redundancy:     <span class="g">+++ only 1 CAM in squad — critical gap</span>
+  Chemistry:      <span class="g">++ reduces hub dependency on Griezmann</span>
+  Context value:  <span class="g">€115M (1.44x market)</span>  ← <span class="y">BARGAIN</span>
+
+<span class="hl">→ Manchester City:</span>
+  System fit:     <span class="dim">~ possession profile is adequate</span>
+  Structural:     <span class="dim">~ no clear gap to fill</span>
+  Redundancy:     <span class="r">--- already have Foden, De Bruyne, Silva</span>
+  Chemistry:      <span class="r">-- increases hub dependency</span>
+  Context value:  <span class="dim">€84M (1.05x market)</span>  ← <span class="dim">FAIR</span>
+
+<span class="hl">Same player. €31M difference. Because context.</span></div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════ THE 5 FACTORS -->
+<section>
+<div class="c">
+  <div class="label fi">The Five Factors</div>
+  <h2 class="fi">What goes into a context valuation</h2>
+
+  <p class="fi">Every valuation is the sum of five structural factors. No opinions. No gut feelings.
+  Just the math of how a player's vector interacts with a team's graph.</p>
+
+  <div class="callout green fi">
+    <div class="callout-title">1. System Fit</div>
+    <p>Does the player's style match the team's system? A pressing team needs pressing players.
+    A possession team needs passers. A counter-attacking team needs pace. We match the player's
+    118-dimensional profile against the team's tactical fingerprint — formation, build-up style,
+    defensive height, pressing intensity. The more dimensions align, the higher the fit.</p>
+  </div>
+
+  <div class="callout green fi">
+    <div class="callout-title">2. Structural Impact</div>
+    <p>Does the player fix a structural weakness? Every team has a vulnerable zone — a place
+    where the defensive graph is weakest. (We compute this using something called <strong>minimum cut theory</strong>
+    — the mathematical proof of where a network can be split most easily.) If the player's
+    positional profile fills that exact gap, their value goes up. Dramatically.</p>
+  </div>
+
+  <div class="callout green fi">
+    <div class="callout-title">3. Chemistry</div>
+    <p>How does the player connect to existing teammates? Some players create new pathways through
+    the passing network. Others duplicate existing ones. Using a technique called <strong>PageRank</strong>
+    (the same math Google uses to rank web pages), we measure how central a player would be in the team's
+    network — and whether they'd reduce dangerous over-reliance on a single hub player.</p>
+  </div>
+
+  <div class="callout gold fi">
+    <div class="callout-title">4. Redundancy</div>
+    <p>This one's simple but powerful. If the team already has three centre-backs and zero left wingers,
+    a centre-back is worth less to them than the market says, and a left winger is worth more.
+    Everyone knows this intuitively — we just quantify how much.</p>
+  </div>
+
+  <div class="callout red fi">
+    <div class="callout-title">5. Risk & Upside</div>
+    <p>Age, contract length, injury history, league transition risk. A 21-year-old on a long contract
+    has built-in upside that inflates their context value. A 30-year-old with two years left has built-in
+    risk that deflates it. Cross-league moves carry friction — same-league transfers carry a rivalry premium.
+    The model accounts for all of it.</p>
+  </div>
+
+  <p class="fi">The five factor scores combine into a single <strong>multiplier</strong>.
+  Market value × multiplier = context value for that specific team.</p>
+
+  <p class="fi">A multiplier above <span class="num green">1.2x</span> means the player is worth
+  <em>more</em> to this team than the market thinks. Below <span class="num" style="color:var(--red)">0.8x</span>
+  means they'd be overpaying. It's that simple.</p>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════ THE THREE DATA TIERS -->
+<section>
+<div class="c">
+  <div class="label fi">The 118 Dimensions</div>
+  <h2 class="fi">Three tiers of data. Each one makes the valuation sharper.</h2>
+
+  <p class="fi">Not all 118 dimensions are equal. They come from different sources, at different
+  levels of availability. The more you feed the model, the more it sees.</p>
+
+  <div class="callout fi">
+    <div class="callout-title">Tier 1 — Public Data (57 dimensions)</div>
+    <p>Everything available from public football statistics: passing accuracy at three distance ranges,
+    expected goals, expected assists, progressive carries, tackles, interceptions, pressing actions per zone,
+    sprint counts, aerial duels, dribble success, and more. Available for every professional footballer.
+    Powers the <strong>free tier</strong>.</p>
+  </div>
+
+  <div class="callout purple fi">
+    <div class="callout-title">Tier 2 — Positional Intelligence (36 dimensions)</div>
+    <p>Where a player actually operates on the pitch. How much space they create with their movement.
+    Their centrality in the passing network. How the team's defensive structure changes when they play.
+    Their performance under pressure — when winning, losing, in the last 15 minutes, against top teams.
+    Requires positional tracking data. Powers the <strong>pro tier</strong>.</p>
+  </div>
+
+  <div class="callout gold fi">
+    <div class="callout-title">Tier 3 — Your Eyes (25 dimensions)</div>
+    <p>The stuff algorithms can't see on their own. Culture fit. Coachability. Dressing room effect.
+    How they handle media pressure. Whether their agent is a nightmare. Hold-up play quality for strikers.
+    Organizational voice for defenders. <strong>You add these.</strong> You've watched the player.
+    You know things the data doesn't. When you tell the model, the valuation shifts — and it shifts
+    differently for every team.</p>
+    <p>This is the tier that makes your valuations <em>yours</em>. No two users see the same numbers,
+    because no two people have the same scouting eyes.</p>
+  </div>
+
+  <div class="diagram fi"><span class="hl">Confidence scales with data:</span>
+
+  <span class="dim">Tier 1 only (free):      ████████░░░░░░░░░░░░  41%  → multiplier range 0.95x - 1.20x</span>
+  <span class="p">+ Tier 2 (pro):          █████████████░░░░░░░  64%  → multiplier range 0.65x - 1.80x</span>
+  <span class="y">+ Tier 3 (your scouting): ████████████████████ 100%  → multiplier range 0.40x - 2.50x</span>
+
+  <span class="hl">More data = wider range = more differentiated insights = more edge.</span></div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════ THE GEM SCANNER -->
+<section>
+<div class="c">
+  <div class="label fi">The Gem Scanner</div>
+  <h2 class="fi">We run every player through every team. Every week.</h2>
+
+  <p class="fi"><span class="num blue">2,400</span> valuations. <span class="num green">4</span> milliseconds.
+  Every player in the database evaluated against every club, producing a complete map of where value is
+  hiding in world football.</p>
+
+  <p class="fi">When a player's multiplier for a specific team crosses above 1.2x — that's a
+  <em>hidden gem</em>. A player the market is undervaluing relative to what they'd actually contribute
+  to that specific team's structure.</p>
+
+  <p class="fi">We found <span class="num gold">284</span> of them this week. Three of them are free.
+  The rest are yours with Pro.</p>
+
+  <div class="callout green fi">
+    <div class="callout-title">Why this is different from scouting platforms</div>
+    <p>Scouting platforms show you player stats and let you filter. "Show me all left wingers under 25
+    with more than 5 progressive carries per 90." That's a spreadsheet query.</p>
+    <p>We answer a fundamentally different question: <strong>"Which specific player would improve THIS
+    team's structural graph the most?"</strong> Two teams can run the same query and get completely
+    different answers. Because the answer depends on the team, not just the player.</p>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════ COACHES TOO -->
+<section>
+<div class="c">
+  <div class="label fi">Beyond Players</div>
+  <h2 class="fi">Coaches have vectors too</h2>
+
+  <p class="fi">The same approach works for managers. Every coach imposes a tactical fingerprint
+  on their team — a preferred possession %, pressing intensity, defensive line height, build-up speed,
+  network structure, player development rate.</p>
+
+  <p class="fi">We represent this as a <em>coach vector</em>. Then we match it against the
+  team's current graph and the squad's player profiles. The result: a fit score that predicts
+  how much friction a managerial appointment would create.</p>
+
+  <div class="diagram fi"><span class="hl">Coach Similarity (cosine distance of tactical vectors):</span>
+
+  <span class="g">Arteta  ←→ Slot:     99.3% similar</span>   (Liverpool hired Arsenal-lite)
+  <span class="g">Ancelotti ←→ Zidane: 99.1% similar</span>   (the Real Madrid DNA)
+  <span class="g">Klopp ←→ Pochettino: 98.8% similar</span>   (pressing brothers)
+
+  <span class="r">Simeone ←→ De Zerbi: 79.4% similar</span>   (opposite ends of football philosophy)
+  <span class="r">Guardiola ←→ Simeone: 82.8% similar</span>  (the eternal rivalry, quantified)</div>
+
+  <p class="fi">Fun to explore. But also genuinely useful when a club is looking for their
+  next manager and wants to know: who actually fits our squad?</p>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════ TIERS -->
+<section id="tiers">
+<div class="c">
+  <div class="label fi">Pricing</div>
+  <h2 class="fi">Three ways in</h2>
+
+  <div class="tiers fi">
+    <div class="tier">
+      <div class="tier-name" style="color:var(--dim)">Free</div>
+      <div class="tier-price">€0</div>
+      <div class="tier-desc">See the concept. Explore the data. Get hooked.</div>
+      <ul class="tier-features">
+        <li>3 hidden gems per club (top gem fully revealed)</li>
+        <li>Player lookup with top 10 club valuations</li>
+        <li>Top 3 coach fits per club</li>
+        <li>Coach similarity matrix</li>
+        <li>Share cards for social media</li>
+        <li class="locked">Full gem lists (locked)</li>
+        <li class="locked">Custom scouting dimensions (locked)</li>
+        <li class="locked">Watchlists & alerts (locked)</li>
+      </ul>
+    </div>
+
+    <div class="tier featured">
+      <div class="tier-badge">Most Popular</div>
+      <div class="tier-name" style="color:var(--blue)">Pro</div>
+      <div class="tier-price">€15<span>/month</span></div>
+      <div class="tier-desc">The football nerd's paradise. Your scouting, your vectors.</div>
+      <ul class="tier-features">
+        <li>Everything in Free</li>
+        <li>Full hidden gems list (all 1.2x+ players)</li>
+        <li>Complete valuations for all 30 clubs</li>
+        <li>Full coach matching (25 coaches × 30 clubs)</li>
+        <li><strong>Custom Tier 3 dimensions</strong> — add your own scouting assessments</li>
+        <li><strong>Live valuation sliders</strong> — watch values change in real time</li>
+        <li>Saved assessments & watchlists</li>
+        <li>Weekly email: new gems for your clubs</li>
+        <li>Player comparison mode (A vs B)</li>
+        <li>API access (100 queries/month)</li>
+      </ul>
+    </div>
+
+    <div class="tier">
+      <div class="tier-name" style="color:var(--gold)">Enterprise</div>
+      <div class="tier-price">Custom</div>
+      <div class="tier-desc">For clubs, agencies, and serious operations.</div>
+      <ul class="tier-features">
+        <li>Everything in Pro</li>
+        <li>Tier 2 tracking data integration</li>
+        <li>Full 118-dimension analysis</li>
+        <li>Private team dashboard</li>
+        <li>Bulk API access (unlimited)</li>
+        <li>Custom reports & team DNA</li>
+        <li>Real-time MinCut overlay</li>
+        <li>White-label option</li>
+        <li>Dedicated support</li>
+      </ul>
+    </div>
+  </div>
+
+  <p class="fi" style="text-align:center;color:var(--dim);font-size:13px;margin-top:8px">
+    Annual billing: €129/year for Pro (save 28%). Enterprise: <a href="#">talk to us</a>.</p>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════ THE HONEST SECTION -->
+<section>
+<div class="c">
+  <div class="label fi">The Honest Bit</div>
+  <h2 class="fi">What we can't do (yet)</h2>
+
+  <p class="fi">We believe in being straight with you. Here's what PitchIntel is and isn't.</p>
+
+  <div class="callout red fi">
+    <p><strong>We don't predict match results.</strong> Football is gloriously unpredictable. We analyze
+    structural conditions, not outcomes. We can tell you the defense has a gap on the left side.
+    We can't tell you a goal will come from it.</p>
+  </div>
+
+  <div class="callout red fi">
+    <p><strong>Our free-tier data is estimated, not measured.</strong> Tier 1 valuations are based on
+    public statistics converted into graph metrics through calibrated models. They're good — significantly
+    better than a single market number — but they're not as precise as Tier 2 (positional tracking data)
+    or Tier 3 (your scouting eyes). We tell you the confidence level on every valuation so you know
+    how much to trust it.</p>
+  </div>
+
+  <div class="callout red fi">
+    <p><strong>Football isn't just math.</strong> A player could score perfectly on every dimension
+    and still fail because of something no vector captures — a family situation, a personality clash,
+    a city they hate, a manager who doesn't believe in them. The model gives you the structural truth.
+    The human truth is still your job.</p>
+  </div>
+
+  <p class="fi">We'd rather you trust us at 80% than oversell and lose you at 100%. The model gets
+  better as we add dimensions, as you add your scouting data, and as we incorporate more data sources.
+  But the core insight — <em>context changes value</em> — is mathematically sound today.</p>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════ FAQ -->
+<section id="faq">
+<div class="c">
+  <div class="label fi">FAQ</div>
+  <h2 class="fi">Questions we get</h2>
+
+  <div class="faq-item">
+    <div class="faq-q">What's a vector embedding? Is this AI?</div>
+    <div class="faq-a">A vector embedding is a way of representing something complex as a list of numbers.
+    Think of GPS coordinates — two numbers (latitude, longitude) represent a location on Earth.
+    A player vector is 118 numbers representing a player's complete football profile. Players who play
+    similarly have similar vectors. Players who are different have different vectors.<br><br>
+    As for AI: we use mathematical graph theory, not machine learning. The algorithms have provable
+    guarantees — run them twice on the same data, get the same answer. No hallucination, no black boxes,
+    no "the model thinks." Just math.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">How is the custom scouting data used?</div>
+    <div class="faq-a">When you add Tier 3 dimensions (culture fit, coachability, etc.), those values
+    are weighted 2x more than public stats because they're more differentiating. Your assessments
+    are private — no other user sees them. They're combined with the base valuation in real time:
+    drag a slider, watch the number change. Your custom data is stored in your account and
+    applied to every valuation you compute.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">Where does the data come from?</div>
+    <div class="faq-a">Tier 1 data comes from public football statistics databases, refreshed weekly.
+    Market values come from established valuation sources. Squad depth is compiled from public
+    squad listings. Formation and tactical style data are derived from match-level statistics.
+    We don't scrape anything private — this is all publicly available information, analyzed
+    in a way nobody else does.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">Can I use this for betting?</div>
+    <div class="faq-a">PitchIntel is a structural analysis tool, not a betting product.
+    That said, understanding which teams have structural advantages is useful context for
+    anyone trying to understand football more deeply. We don't make predictions or
+    recommend bets.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">How often are valuations updated?</div>
+    <div class="faq-a">The underlying stats are refreshed weekly during the season and daily during transfer
+    windows. The gem scanner re-runs automatically with each data refresh. If a player's stats change
+    significantly (injury, form drop, new contract), their vector changes, and every valuation that
+    includes them recalculates.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">What's the minimum cut thing about?</div>
+    <div class="faq-a">A minimum cut (MinCut) is a concept from graph theory. Imagine a defensive line
+    as a chain — each link is the coverage between two adjacent defenders. The MinCut is the weakest
+    link: the place where you need to remove the least total coverage to split the chain in two.
+    In football terms, it's the corridor through the defense where an attack is most likely to succeed.
+    We compute this in real time and use it to evaluate whether a transfer target would strengthen
+    or weaken a team's defensive graph.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">Is this just for nerds? Can a regular fan use this?</div>
+    <div class="faq-a">The interface is designed so anyone can use it: pick a club, see the gems,
+    done. You never have to see a vector or understand graph theory. But if you want to go deeper —
+    if you want to understand why Xavi Simons is worth €115M to Atletico and €84M to City —
+    the factor breakdowns are right there. Go as deep as you want.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">I'm a scout / agent / club analyst. Is this for me?</div>
+    <div class="faq-a">Yes. The Pro tier gives you the full valuation engine with custom scouting input.
+    The Enterprise tier integrates with your tracking data for the full 118-dimension analysis.
+    <a href="#">Get in touch</a> and we'll set up a demo with your actual squad data.</div>
+  </div>
+</div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════════ CTA -->
+<section>
+<div class="c">
+  <div class="cta-box fi">
+    <h2 style="margin-bottom:16px">Pick your club. See the gems.</h2>
+    <p class="lead" style="margin:0 auto 28px;text-align:center;max-width:480px">
+      Three hidden gems, computed in 4 milliseconds, free forever. No signup needed.
+    </p>
+    <a href="#" class="cta-btn">Try PitchIntel Free →</a>
+    <p style="margin-top:14px;font-size:12px;color:var(--dim)">
+      Or read the <a href="#">Substack</a> for weekly transfer intelligence.
+    </p>
+  </div>
+</div>
+</section>
+
+<footer>
+  <div class="c">
+    <p>PitchIntel — Context-adjusted transfer intelligence powered by graph theory</p>
+    <p style="margin-top:6px">Built on <a href="#">RuVector</a> · Player vectors · Coach vectors · MinCut · PageRank · Spectral analysis</p>
+    <p style="margin-top:10px;font-size:11px;color:#334">© 2026 PitchIntel. Football is a network problem. We solved it.</p>
+  </div>
+</footer>
+
+<script>
+// Scroll fade
+const o=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('v')}),{threshold:.12});
+document.querySelectorAll('.fi').forEach(el=>o.observe(el));
+
+// FAQ
+document.querySelectorAll('.faq-q').forEach(q=>q.addEventListener('click',()=>q.parentElement.classList.toggle('open')));
+</script>
+</body>
+</html>

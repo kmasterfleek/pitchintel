@@ -1,0 +1,27 @@
+{
+  "name": "pitchintel",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "PitchIntel — context-adjusted football player valuation using vector embeddings + graph intelligence",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "valuation": "tsx code/transfer-intel.ts",
+    "gems": "tsx code/gem-scanner.ts",
+    "player-vector": "tsx code/player-vector.ts",
+    "coach-match": "tsx code/coach-vector.ts",
+    "team-dna": "tsx code/team-dna.ts",
+    "report": "tsx code/demo.ts",
+    "build:app": "tsx code/app.ts",
+    "build:comparison": "tsx code/comparison.ts",
+    "build:broadcast": "tsx code/broadcast.ts",
+    "build:enterprise": "tsx code/enterprise.ts",
+    "build:site": "tsx code/app.ts && tsx code/enterprise.ts && node scripts/build-site.mjs"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
+  }
+}

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PitchIntel — What's he really worth to YOUR club?</title>
+<meta name="description" content="PitchIntel values footballers by fit, not hype. The same player is worth a different amount to every club — see why, powered by graph theory and 118-dimensional player DNA.">
+<meta property="og:title" content="PitchIntel — context-adjusted transfer valuations">
+<meta property="og:description" content="The same player. A different price at every club. Find hidden gems, overpays, and perfect fits.">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#06080c;--bg2:#0d1117;--card:#111827;--card-hover:#161e2e;
+  --border:#1a2236;--border-light:#243049;
+  --text:#c8d4e0;--text-dim:#6b7d94;--text-bright:#e8eef4;
+  --accent:#00b4ff;--accent-dim:rgba(0,180,255,0.15);
+  --green:#00e88a;--green-dim:rgba(0,232,138,0.15);
+  --red:#ff3860;--red-dim:rgba(255,56,96,0.12);
+  --gold:#ffb800;--gold-dim:rgba(255,184,0,0.12);
+  --font:'Inter',system-ui,-apple-system,sans-serif;
+}
+html{font-size:15px;scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font);line-height:1.6;overflow-x:hidden}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:1080px;margin:0 auto;padding:0 1.25rem}
+
+header{position:sticky;top:0;z-index:100;background:rgba(6,8,12,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.header-inner{max-width:1080px;margin:0 auto;padding:0 1.25rem;display:flex;align-items:center;justify-content:space-between;height:60px}
+.logo{font-size:1.4rem;font-weight:800;letter-spacing:-0.5px}
+.logo .p{color:var(--text-bright)}.logo .i{color:var(--accent)}
+.beta-chip{display:inline-block;margin-left:0.5rem;padding:0.1rem 0.5rem;border-radius:999px;background:var(--gold-dim);color:var(--gold);font-size:0.65rem;font-weight:800;letter-spacing:1px;vertical-align:middle}
+nav{display:flex;gap:1.5rem;align-items:center;font-size:0.9rem;font-weight:600}
+nav a{color:var(--text-dim)}nav a:hover{color:var(--text-bright);text-decoration:none}
+.btn{display:inline-block;background:var(--accent);color:#fff !important;padding:0.6rem 1.4rem;border-radius:8px;font-weight:700;border:none;cursor:pointer;font-family:var(--font);font-size:0.95rem;transition:opacity 0.15s}
+.btn:hover{opacity:0.9;text-decoration:none !important}
+.btn.ghost{background:transparent;border:1px solid var(--border-light);color:var(--text) !important}
+.btn.ghost:hover{border-color:var(--accent);color:var(--accent) !important}
+
+.hero{padding:5.5rem 0 3.5rem;text-align:center;background:radial-gradient(ellipse 70% 50% at 50% -10%,rgba(0,180,255,0.13),transparent)}
+.hero h1{font-size:clamp(2rem,5.5vw,3.4rem);font-weight:900;letter-spacing:-1.5px;color:var(--text-bright);line-height:1.12;max-width:820px;margin:0 auto 1.25rem}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero .sub{font-size:1.12rem;color:var(--text-dim);max-width:640px;margin:0 auto 2.25rem}
+.hero .cta-row{display:flex;gap:0.9rem;justify-content:center;flex-wrap:wrap}
+
+.strip{padding:2.5rem 0}
+.val-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.6rem 1.8rem;max-width:720px;margin:0 auto;text-align:left}
+.val-card .vc-head{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:0.5rem;margin-bottom:1rem}
+.val-card .vc-head .who{font-weight:800;color:var(--text-bright);font-size:1.05rem}
+.val-card .vc-head .mkt{color:var(--text-dim);font-size:0.85rem}
+.val-row{display:flex;align-items:center;gap:0.9rem;padding:0.5rem 0;border-top:1px solid var(--border);font-size:0.92rem}
+.val-row .club{width:11.5rem;flex-shrink:0;color:var(--text)}
+.val-row .bar{flex:1;height:8px;background:var(--bg2);border-radius:4px;overflow:hidden}
+.val-row .bar i{display:block;height:100%;border-radius:4px}
+.val-row .num{width:5.5rem;text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.g{color:var(--green)}.g i{background:var(--green)}
+.n{color:var(--text-bright)}.n i{background:var(--accent)}
+.r{color:var(--red)}.r i{background:var(--red)}
+.strip .cap{text-align:center;color:var(--text-dim);font-size:0.85rem;margin-top:1rem}
+
+.section{padding:3.5rem 0}
+.section h2{font-size:1.7rem;font-weight:800;color:var(--text-bright);letter-spacing:-0.5px;text-align:center;margin-bottom:0.5rem}
+.section .lead{text-align:center;color:var(--text-dim);max-width:600px;margin:0 auto 2.5rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1rem}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.4rem;transition:border-color 0.15s,background 0.15s;display:block;color:var(--text) !important}
+.card:hover{border-color:var(--accent);background:var(--card-hover);text-decoration:none !important}
+.card .ico{font-size:1.5rem;margin-bottom:0.6rem}
+.card h3{color:var(--text-bright);font-size:1.02rem;font-weight:700;margin-bottom:0.35rem}
+.card p{font-size:0.88rem;color:var(--text-dim)}
+.card .go{display:inline-block;margin-top:0.7rem;color:var(--accent);font-size:0.85rem;font-weight:700}
+
+.factors{display:flex;flex-wrap:wrap;gap:0.6rem;justify-content:center}
+.factor{background:var(--bg2);border:1px solid var(--border);border-radius:999px;padding:0.45rem 1.1rem;font-size:0.85rem;font-weight:600;color:var(--text)}
+.factor b{color:var(--accent);font-weight:800;margin-right:0.3rem}
+.methods-link{text-align:center;margin-top:1.5rem;font-size:0.92rem}
+
+#waitlist{background:linear-gradient(180deg,transparent,rgba(0,180,255,0.06));border-top:1px solid var(--border)}
+.wl-form{display:flex;gap:0.6rem;max-width:460px;margin:0 auto;flex-wrap:wrap;justify-content:center}
+.wl-form input[type=email]{flex:1;min-width:230px;padding:0.75rem 1.1rem;background:var(--card);border:1px solid var(--border-light);border-radius:8px;color:var(--text-bright);font-family:var(--font);font-size:0.95rem;outline:none}
+.wl-form input[type=email]:focus{border-color:var(--accent)}
+.wl-success{display:none;text-align:center;color:var(--green);font-weight:700;padding:0.75rem 0}
+footer{border-top:1px solid var(--border);padding:2rem 0 3rem;color:var(--text-dim);font-size:0.78rem;line-height:1.8}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo"><span class="p">Pitch</span><span class="i">Intel</span><span class="beta-chip">BETA</span></div>
+    <nav>
+      <a href="how-it-works.html">How it works</a>
+      <a href="enterprise.html">For clubs</a>
+      <a href="#waitlist">Waitlist</a>
+      <a class="btn" href="app.html">Open the app</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <h1>The same player.<br>A <em>different price</em> at every club.</h1>
+    <p class="sub">Transfer sites give every player one number. PitchIntel values footballers the way smart clubs do — by fit. System, chemistry, formation, squad needs: 118 dimensions of player DNA scored against every club, live in your browser.</p>
+    <div class="cta-row">
+      <a class="btn" href="app.html">Try the beta — it's free</a>
+      <a class="btn ghost" href="how-it-works.html">See the math</a>
+    </div>
+  </div>
+</section>
+
+<section class="strip">
+  <div class="wrap">
+    <div class="val-card">
+      <div class="vc-head">
+        <span class="who">One €45M box-to-box midfielder</span>
+        <span class="mkt">market value: €45M everywhere. Except it isn't.</span>
+      </div>
+      <div class="val-row g"><span class="club">Perfect-fit club</span><span class="bar"><i style="width:92%"></i></span><span class="num">€58M</span></div>
+      <div class="val-row n"><span class="club">Decent-fit club</span><span class="bar"><i style="width:74%"></i></span><span class="num">€48M</span></div>
+      <div class="val-row r"><span class="club">Wrong-system club</span><span class="bar"><i style="width:46%"></i></span><span class="num">€29M</span></div>
+    </div>
+    <p class="cap">Six fit factors, one context-adjusted price — with a plain-English explanation of why.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="wrap">
+    <h2>Four ways in</h2>
+    <p class="lead">Pick your club or your player — the engine does the rest.</p>
+    <div class="cards">
+      <a class="card" href="app.html">
+        <div class="ico">&#9670;</div>
+        <h3>Hidden Gems</h3>
+        <p>Pick your club, get the bargains: players the market underprices <em>for you specifically</em>.</p>
+        <span class="go">Find your club's gems &rarr;</span>
+      </a>
+      <a class="card" href="app.html">
+        <div class="ico">&#9733;</div>
+        <h3>Player Lookup</h3>
+        <p>Saka, Haaland, Rice, Palmer — see what any of 80+ stars is really worth at 30 top clubs.</p>
+        <span class="go">Look up a player &rarr;</span>
+      </a>
+      <a class="card" href="app.html">
+        <div class="ico">&#9814;</div>
+        <h3>Coach Fit</h3>
+        <p>Would Pep's system suit your squad? Structural matching between 25 managers and 30 clubs.</p>
+        <span class="go">Match a manager &rarr;</span>
+      </a>
+      <a class="card" href="app.html">
+        <div class="ico">&#9881;</div>
+        <h3>Scout Mode</h3>
+        <p>Build the player profile you need, and see who fits it — like a director of football would.</p>
+        <span class="go">Play scout &rarr;</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:1rem">
+  <div class="wrap">
+    <h2>Six factors, not one number</h2>
+    <p class="lead">Every valuation is scored against the buying club — powered by passing-network graph theory (MinCut, PageRank, spectral analysis) under the hood.</p>
+    <div class="factors">
+      <span class="factor"><b>1</b> System fit</span>
+      <span class="factor"><b>2</b> Structural impact</span>
+      <span class="factor"><b>3</b> Chemistry</span>
+      <span class="factor"><b>4</b> Redundancy</span>
+      <span class="factor"><b>5</b> Dependency risk</span>
+      <span class="factor"><b>6</b> Formation fit</span>
+    </div>
+    <p class="methods-link"><a href="how-it-works.html">How the engine works &rarr;</a></p>
+  </div>
+</section>
+
+<section class="section" id="waitlist">
+  <div class="wrap">
+    <h2>Live data is coming</h2>
+    <p class="lead">The beta runs on a curated demo dataset. Pro brings live match data, every player, all 30 clubs unlocked. Get in line:</p>
+    <form class="wl-form" name="waitlist" method="POST" data-netlify="true" id="wl-form">
+      <input type="hidden" name="form-name" value="waitlist">
+      <input type="hidden" name="source" value="landing">
+      <input type="email" name="email" placeholder="you@club.com" required autocomplete="email">
+      <button class="btn" type="submit">Join the waitlist</button>
+    </form>
+    <div class="wl-success">You're on the list. See you at kickoff. &#9917;</div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <strong>Beta.</strong> Valuations are illustrative, computed by the PitchIntel engine on a curated demo dataset (~80 players, 30 clubs, 5 leagues). Market values are public estimates. Not affiliated with any club, league, player, or data provider. Player and manager names are used for identification only.
+    Contact: <a href="mailto:kunal@generativeducation.com">kunal@generativeducation.com</a><br>
+    Running a club, agency, or academy? Try the <a href="enterprise.html">enterprise scouting-department demo</a> — your scouts' assessments feeding the engine directly.
+  </div>
+</footer>
+
+<script>
+document.getElementById('wl-form').addEventListener('submit', function(e){
+  e.preventDefault();
+  var form = e.target;
+  var data = new URLSearchParams(new FormData(form)).toString();
+  fetch('/', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:data})
+    .catch(function(){})
+    .finally(function(){
+      form.style.display = 'none';
+      document.querySelector('.wl-success').style.display = 'block';
+    });
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,10 @@
+[build]
+  publish = "site"
+
+# No build command — site/ is pre-built. Regenerate locally with: npm run build:site
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"

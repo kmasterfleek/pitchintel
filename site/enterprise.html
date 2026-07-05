@@ -1,0 +1,1877 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PitchIntel Enterprise — Scouting Department Demo</title>
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#06080c;--bg2:#0d1117;--card:#111827;--card-hover:#161e2e;
+  --border:#1a2236;--border-light:#243049;
+  --text:#c8d4e0;--text-dim:#6b7d94;--text-bright:#e8eef4;
+  --accent:#00b4ff;--accent-dim:rgba(0,180,255,0.15);
+  --green:#00e88a;--green-dim:rgba(0,232,138,0.15);
+  --red:#ff3860;--red-dim:rgba(255,56,96,0.12);
+  --gold:#ffb800;--gold-dim:rgba(255,184,0,0.12);
+  --font:'Inter',system-ui,-apple-system,sans-serif;
+}
+html{font-size:14px}
+body{background:var(--bg);color:var(--text);font-family:var(--font);line-height:1.5;min-height:100vh}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+button{font-family:var(--font)}
+
+#demo-banner{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;padding:0.5rem 1.25rem;font-size:0.82rem;background:linear-gradient(90deg,var(--gold-dim),rgba(0,180,255,0.08));border-bottom:1px solid var(--border)}
+#demo-banner button{background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:0.82rem;text-decoration:underline}
+
+#shell{display:flex;min-height:calc(100vh - 34px)}
+#sidebar{width:230px;flex-shrink:0;background:var(--bg2);border-right:1px solid var(--border);padding:1.25rem 1rem;display:flex;flex-direction:column;gap:1.25rem}
+.logo{font-size:1.3rem;font-weight:800;letter-spacing:-0.5px}
+.logo-pitch{color:var(--text-bright)}.logo-intel{color:var(--accent)}
+.ent-chip{display:inline-block;align-self:flex-start;padding:0.15rem 0.6rem;border-radius:999px;background:var(--gold-dim);color:var(--gold);font-size:0.65rem;font-weight:800;letter-spacing:1.5px;margin-top:-0.75rem}
+#club-badge{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:0.75rem 0.9rem}
+.cb-label{font-size:0.68rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim)}
+.cb-name{font-weight:800;color:var(--text-bright);font-size:1.05rem;margin:0.15rem 0}
+.cb-budget{font-size:0.72rem;color:var(--gold);font-weight:600;margin-bottom:0.2rem}
+#switch-club{background:none;border:none;color:var(--accent);cursor:pointer;font-size:0.78rem;padding:0}
+nav{display:flex;flex-direction:column;gap:0.25rem}
+.nav-item{text-align:left;background:none;border:none;color:var(--text-dim);font-size:0.92rem;font-weight:600;padding:0.55rem 0.75rem;border-radius:8px;cursor:pointer;transition:all 0.15s}
+.nav-item:hover{color:var(--text);background:rgba(255,255,255,0.04)}
+.nav-item.active{color:var(--gold);background:var(--gold-dim)}
+#scout-roster{margin-top:auto}
+.sr-title{font-size:0.68rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);margin-bottom:0.5rem}
+.scout-row{display:flex;gap:0.6rem;align-items:center;padding:0.35rem 0;font-size:0.82rem}
+.scout-avatar{width:26px;height:26px;border-radius:50%;background:var(--accent-dim);color:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.72rem;flex-shrink:0}
+.scout-meta .s-name{color:var(--text);font-weight:600}
+.scout-meta .s-region{color:var(--text-dim);font-size:0.72rem}
+
+#main{flex:1;padding:1.75rem 2rem 4rem;max-width:1100px;min-width:0}
+.view{display:none}
+.view.active{display:block}
+.view-header{margin-bottom:1.25rem}
+.view-header h2{font-size:1.5rem;font-weight:800;color:var(--text-bright)}
+.view-header .subtitle{color:var(--text-dim);font-size:0.92rem}
+
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:0.8rem;margin-bottom:1.5rem}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:0.9rem 1rem}
+.kpi .k-label{font-size:0.7rem;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-dim)}
+.kpi .k-value{font-size:1.5rem;font-weight:800;color:var(--text-bright)}
+.kpi .k-value.gold{color:var(--gold)}
+.kpi .k-value.green{color:var(--green)}
+.kpi .k-sub{font-size:0.72rem;color:var(--text-dim)}
+
+.target-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1.1rem 1.25rem;margin-bottom:0.9rem}
+.target-card.expanded{border-color:var(--border-light)}
+.tc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;cursor:pointer}
+.tc-who .t-name{font-weight:800;color:var(--text-bright);font-size:1.05rem}
+.tc-who .t-meta{font-size:0.8rem;color:var(--text-dim)}
+.tc-nums{display:flex;gap:1.4rem;flex-wrap:wrap;align-items:center}
+.tc-num .n-label{font-size:0.66rem;text-transform:uppercase;letter-spacing:0.6px;color:var(--text-dim)}
+.tc-num .n-value{font-weight:800;font-size:1.05rem;color:var(--text-bright)}
+.tc-num .n-value.green{color:var(--green)}
+.tc-num .n-value.red{color:var(--red)}
+.tc-num .n-value.gold{color:var(--gold)}
+.tc-num .n-delta{font-size:0.7rem;font-weight:700}
+.n-delta.up{color:var(--green)}.n-delta.down{color:var(--red)}
+.verdict-chip{padding:0.2rem 0.7rem;border-radius:999px;font-size:0.72rem;font-weight:800;letter-spacing:0.5px;text-transform:uppercase}
+.verdict-chip.bargain{background:var(--green-dim);color:var(--green)}
+.verdict-chip.fair{background:var(--accent-dim);color:var(--accent)}
+.verdict-chip.overpay{background:var(--gold-dim);color:var(--gold)}
+.verdict-chip.avoid{background:var(--red-dim);color:var(--red)}
+.conf-wrap{min-width:110px}
+.conf-bar{height:6px;background:var(--bg2);border-radius:3px;overflow:hidden;margin-top:3px}
+.conf-bar i{display:block;height:100%;background:var(--accent);border-radius:3px}
+.conf-bar i.high{background:var(--green)}
+.status-chip{font-size:0.72rem;font-weight:700;padding:0.2rem 0.65rem;border-radius:999px}
+.status-chip.awaiting{background:var(--gold-dim);color:var(--gold)}
+.status-chip.reported{background:var(--green-dim);color:var(--green)}
+.tc-body{border-top:1px solid var(--border);margin-top:0.9rem;padding-top:0.9rem;display:none}
+.target-card.expanded .tc-body{display:block}
+.board-note{background:var(--bg2);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;padding:0.7rem 0.9rem;font-size:0.88rem;margin-bottom:0.9rem}
+.board-note .bn-label{font-size:0.66rem;text-transform:uppercase;letter-spacing:0.8px;color:var(--gold);font-weight:800;margin-bottom:0.2rem}
+.factor-row{display:flex;align-items:center;gap:0.7rem;padding:0.22rem 0;font-size:0.82rem}
+.factor-row .f-name{width:170px;flex-shrink:0;color:var(--text)}
+.factor-row .f-tier{width:26px;flex-shrink:0;text-align:center;font-size:0.64rem;font-weight:800;border-radius:4px;padding:0.05rem 0}
+.f-tier.t1{background:var(--accent-dim);color:var(--accent)}
+.f-tier.t2{background:rgba(160,120,255,0.15);color:#a078ff}
+.f-tier.t3{background:var(--gold-dim);color:var(--gold)}
+.factor-row .f-bar{flex:1;height:6px;background:var(--bg2);border-radius:3px;position:relative;overflow:hidden}
+.factor-row .f-bar i{position:absolute;top:0;bottom:0;border-radius:3px}
+.factor-row .f-score{width:46px;text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.f-score.pos{color:var(--green)}.f-score.neg{color:var(--red)}
+.scout-note-row{display:flex;gap:0.6rem;padding:0.5rem 0;font-size:0.85rem;border-top:1px dashed var(--border)}
+.scout-note-row .snr-body{flex:1}
+.snr-head{font-weight:700;color:var(--text);font-size:0.8rem}
+.snr-head span{color:var(--text-dim);font-weight:400}
+.snr-note{color:var(--text-dim);font-style:italic}
+.tc-actions{display:flex;gap:0.6rem;margin-top:0.9rem;flex-wrap:wrap}
+
+.btn-primary{background:var(--gold);color:#06080c;border:none;padding:0.55rem 1.3rem;border-radius:8px;font-weight:800;font-size:0.88rem;cursor:pointer}
+.btn-primary:hover{opacity:0.9}
+.btn-secondary{background:var(--card-hover);color:var(--text);border:1px solid var(--border-light);padding:0.55rem 1.3rem;border-radius:8px;font-weight:600;font-size:0.88rem;cursor:pointer}
+.btn-secondary:hover{border-color:var(--accent);color:var(--accent)}
+.btn-danger{background:none;border:none;color:var(--text-dim);font-size:0.8rem;cursor:pointer;text-decoration:underline}
+
+.filter-row{display:flex;gap:0.6rem;flex-wrap:wrap;margin-bottom:1.1rem;align-items:center}
+.filter-row select,.filter-row input{background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text-bright);font-family:var(--font);font-size:0.85rem;padding:0.45rem 0.7rem;outline:none}
+.filter-row select:focus,.filter-row input:focus{border-color:var(--accent)}
+.filter-row label{font-size:0.8rem;color:var(--text-dim)}
+.need-chip{padding:0.25rem 0.7rem;border-radius:999px;font-size:0.76rem;font-weight:700;background:var(--red-dim);color:var(--red);border:none;cursor:pointer}
+.need-chip.mild{background:var(--gold-dim);color:var(--gold)}
+
+.disc-table{width:100%;border-collapse:collapse;font-size:0.86rem}
+.disc-table th{text-align:left;font-size:0.68rem;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-dim);padding:0.5rem 0.6rem;border-bottom:1px solid var(--border)}
+.disc-table td{padding:0.55rem 0.6rem;border-bottom:1px solid var(--border);vertical-align:middle}
+.disc-table tr:hover td{background:rgba(255,255,255,0.02)}
+.disc-table .d-name{font-weight:700;color:var(--text-bright)}
+.disc-table .d-meta{font-size:0.74rem;color:var(--text-dim)}
+.mult{font-weight:800}
+.mult.g{color:var(--green)}.mult.n{color:var(--text-bright)}.mult.r{color:var(--red)}
+.add-btn{background:var(--accent-dim);color:var(--accent);border:none;border-radius:6px;padding:0.3rem 0.8rem;font-weight:700;font-size:0.78rem;cursor:pointer;white-space:nowrap}
+.add-btn:hover{background:var(--accent);color:#fff}
+.add-btn[disabled]{opacity:0.4;cursor:default}
+.add-btn[disabled]:hover{background:var(--accent-dim);color:var(--accent)}
+
+.report-grid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(280px,1fr);gap:1.25rem;align-items:start}
+@media(max-width:960px){.report-grid{grid-template-columns:1fr}}
+.slider-group{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1rem 1.2rem;margin-bottom:0.9rem}
+.slider-group h4{font-size:0.8rem;text-transform:uppercase;letter-spacing:1px;color:var(--gold);margin-bottom:0.7rem}
+.sl-row{display:grid;grid-template-columns:190px 1fr 30px;gap:0.7rem;align-items:center;padding:0.3rem 0}
+.sl-row label{font-size:0.84rem;color:var(--text)}
+.sl-row label .inv{color:var(--red);font-size:0.68rem;font-weight:700}
+.sl-row input[type=range]{width:100%;accent-color:#ffb800;cursor:pointer}
+.sl-row .sl-val{text-align:right;font-weight:800;color:var(--text-bright);font-variant-numeric:tabular-nums}
+#report-note{width:100%;background:var(--card);border:1px solid var(--border);border-radius:10px;color:var(--text-bright);font-family:var(--font);font-size:0.88rem;padding:0.7rem 0.9rem;min-height:70px;outline:none;resize:vertical}
+#report-note:focus{border-color:var(--accent)}
+.live-panel{background:var(--card);border:1px solid var(--gold);border-radius:12px;padding:1.2rem;position:sticky;top:1rem}
+.live-panel h4{font-size:0.8rem;text-transform:uppercase;letter-spacing:1px;color:var(--gold);margin-bottom:0.9rem}
+.lp-row{display:flex;justify-content:space-between;align-items:baseline;padding:0.4rem 0;border-bottom:1px dashed var(--border);font-size:0.88rem}
+.lp-row .lp-label{color:var(--text-dim)}
+.lp-row .lp-vals{font-weight:700;color:var(--text-bright)}
+.lp-vals .arrow{color:var(--text-dim);font-weight:400;padding:0 0.3rem}
+.lp-vals .after{font-size:1.05rem}
+.lp-vals .after.up{color:var(--green)}.lp-vals .after.down{color:var(--red)}
+.lp-verdicts{display:flex;align-items:center;gap:0.5rem;justify-content:flex-end}
+.report-meta-row{display:flex;gap:0.8rem;align-items:center;margin-bottom:1rem;flex-wrap:wrap}
+.report-meta-row select{background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text-bright);font-family:var(--font);font-size:0.85rem;padding:0.45rem 0.7rem}
+
+.empty-state{text-align:center;padding:3rem 1rem;color:var(--text-dim)}
+.empty-state .es-icon{font-size:2rem;margin-bottom:0.5rem}
+.empty-state a,.empty-state button.linkish{color:var(--accent);background:none;border:none;font-size:inherit;cursor:pointer;text-decoration:underline}
+
+.modal{display:none;position:fixed;inset:0;z-index:1000;background:rgba(6,8,12,0.85);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:1rem}
+.modal.open{display:flex}
+.modal-box{background:var(--card);border:1px solid var(--border-light);border-radius:14px;max-width:440px;width:100%;padding:2rem;box-shadow:0 16px 64px rgba(0,0,0,0.6)}
+.modal-box h3{color:var(--text-bright);margin-bottom:0.5rem}
+.modal-box p{color:var(--text-dim);font-size:0.9rem;margin-bottom:1.2rem}
+.modal-box select{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:8px;color:var(--text-bright);font-family:var(--font);font-size:0.95rem;padding:0.65rem 0.9rem;margin-bottom:1rem}
+@media(max-width:820px){#shell{flex-direction:column}#sidebar{width:100%;flex-direction:row;flex-wrap:wrap;align-items:center}#scout-roster{margin-top:0;display:none}#main{padding:1.25rem 1rem 3rem}}
+
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div id="demo-banner">
+    <span>&#127942; <strong>Enterprise demo</strong> &mdash; a simulated club workspace on sample data. Your state is saved locally.</span>
+    <span><a href="mailto:kunal@generativeducation.com?subject=PitchIntel%20Enterprise%20walkthrough">Book a walkthrough</a> &middot; <button id="reset-demo">Reset demo</button></span>
+  </div>
+
+  <div id="shell">
+    <aside id="sidebar">
+      <div class="logo"><span class="logo-pitch">Pitch</span><span class="logo-intel">Intel</span></div>
+      <div class="ent-chip">ENTERPRISE</div>
+      <div id="club-badge">
+        <div class="cb-label">Club workspace</div>
+        <div class="cb-name" id="club-name">&mdash;</div>
+        <div class="cb-budget" id="club-budget"></div>
+        <button id="switch-club">switch</button>
+      </div>
+      <nav>
+        <button class="nav-item active" data-view="dashboard">&#9632; DoF Dashboard</button>
+        <button class="nav-item" data-view="discovery">&#9678; Discovery</button>
+        <button class="nav-item" data-view="assignments">&#9998; Scouting Desk</button>
+      </nav>
+      <div id="scout-roster">
+        <div class="sr-title">Scouting department</div>
+        <div id="roster-list"></div>
+      </div>
+    </aside>
+
+    <main id="main">
+      <section id="view-dashboard" class="view active"></section>
+      <section id="view-discovery" class="view"></section>
+      <section id="view-assignments" class="view"></section>
+      <section id="view-report" class="view"></section>
+    </main>
+  </div>
+
+  <div id="club-modal" class="modal">
+    <div class="modal-box">
+      <h3>Set up your club workspace</h3>
+      <p>Pick the club you're running. The engine reads your squad context &mdash; formation, style, position depth, structural gaps &mdash; and drives discovery from it.</p>
+      <select id="club-select"></select>
+      <button class="btn-primary" id="club-confirm">Open workspace</button>
+    </div>
+  </div>
+
+</div>
+<script>
+var PLAYERS_RAW = [{"name":"Declan Rice","age":25,"position":"CDM","club":"Arsenal","league":"Premier League","nationality":"England","marketValue":110,"contractYearsLeft":4,"passCompletionRate":0.88,"avgPassDistance":14.2,"defensiveWorkRate":0.82,"sprintCapacity":18,"avgSpeed":5.6,"currentPageRank":0.32,"currentConnections":9,"currentPassWeight":0.38,"avgX":-2,"avgY":0},{"name":"Bukayo Saka","age":23,"position":"RW","club":"Arsenal","league":"Premier League","nationality":"England","marketValue":140,"contractYearsLeft":4,"passCompletionRate":0.8,"avgPassDistance":16.5,"defensiveWorkRate":0.48,"sprintCapacity":32,"avgSpeed":6.1,"currentPageRank":0.24,"currentConnections":7,"currentPassWeight":0.3,"avgX":25,"avgY":22},{"name":"Martin Odegaard","age":25,"position":"CAM","club":"Arsenal","league":"Premier League","nationality":"Norway","marketValue":120,"contractYearsLeft":4,"passCompletionRate":0.87,"avgPassDistance":15.8,"defensiveWorkRate":0.52,"sprintCapacity":20,"avgSpeed":5.5,"currentPageRank":0.33,"currentConnections":9,"currentPassWeight":0.42,"avgX":12,"avgY":0},{"name":"Erling Haaland","age":24,"position":"ST","club":"Manchester City","league":"Premier League","nationality":"Norway","marketValue":180,"contractYearsLeft":3,"passCompletionRate":0.76,"avgPassDistance":11,"defensiveWorkRate":0.22,"sprintCapacity":24,"avgSpeed":6,"currentPageRank":0.16,"currentConnections":5,"currentPassWeight":0.22,"avgX":30,"avgY":0},{"name":"Phil Foden","age":24,"position":"LW","club":"Manchester City","league":"Premier League","nationality":"England","marketValue":130,"contractYearsLeft":4,"passCompletionRate":0.85,"avgPassDistance":14,"defensiveWorkRate":0.4,"sprintCapacity":26,"avgSpeed":5.8,"currentPageRank":0.27,"currentConnections":8,"currentPassWeight":0.35,"avgX":18,"avgY":-15},{"name":"Rodri","age":28,"position":"CDM","club":"Manchester City","league":"Premier League","nationality":"Spain","marketValue":120,"contractYearsLeft":3,"passCompletionRate":0.92,"avgPassDistance":15.5,"defensiveWorkRate":0.8,"sprintCapacity":14,"avgSpeed":5.3,"currentPageRank":0.38,"currentConnections":10,"currentPassWeight":0.45,"avgX":-5,"avgY":0},{"name":"Cole Palmer","age":22,"position":"CAM","club":"Chelsea","league":"Premier League","nationality":"England","marketValue":100,"contractYearsLeft":5,"passCompletionRate":0.82,"avgPassDistance":15,"defensiveWorkRate":0.35,"sprintCapacity":22,"avgSpeed":5.7,"currentPageRank":0.26,"currentConnections":8,"currentPassWeight":0.33,"avgX":15,"avgY":5},{"name":"Moises Caicedo","age":23,"position":"CDM","club":"Chelsea","league":"Premier League","nationality":"Ecuador","marketValue":80,"contractYearsLeft":5,"passCompletionRate":0.86,"avgPassDistance":13.8,"defensiveWorkRate":0.78,"sprintCapacity":19,"avgSpeed":5.6,"currentPageRank":0.3,"currentConnections":9,"currentPassWeight":0.36,"avgX":-5,"avgY":2},{"name":"Alexander Isak","age":25,"position":"ST","club":"Newcastle United","league":"Premier League","nationality":"Sweden","marketValue":90,"contractYearsLeft":4,"passCompletionRate":0.78,"avgPassDistance":12.5,"defensiveWorkRate":0.38,"sprintCapacity":26,"avgSpeed":6.1,"currentPageRank":0.18,"currentConnections":5,"currentPassWeight":0.24,"avgX":28,"avgY":-3},{"name":"Bruno Fernandes","age":30,"position":"CAM","club":"Manchester United","league":"Premier League","nationality":"Portugal","marketValue":70,"contractYearsLeft":3,"passCompletionRate":0.81,"avgPassDistance":17.2,"defensiveWorkRate":0.55,"sprintCapacity":21,"avgSpeed":5.5,"currentPageRank":0.31,"currentConnections":9,"currentPassWeight":0.4,"avgX":10,"avgY":0},{"name":"Kobbie Mainoo","age":19,"position":"CM","club":"Manchester United","league":"Premier League","nationality":"England","marketValue":60,"contractYearsLeft":4,"passCompletionRate":0.85,"avgPassDistance":13,"defensiveWorkRate":0.62,"sprintCapacity":20,"avgSpeed":5.7,"currentPageRank":0.25,"currentConnections":8,"currentPassWeight":0.32,"avgX":0,"avgY":-3},{"name":"Dominik Szoboszlai","age":24,"position":"CM","club":"Liverpool","league":"Premier League","nationality":"Hungary","marketValue":70,"contractYearsLeft":4,"passCompletionRate":0.83,"avgPassDistance":15,"defensiveWorkRate":0.6,"sprintCapacity":23,"avgSpeed":5.8,"currentPageRank":0.24,"currentConnections":8,"currentPassWeight":0.31,"avgX":5,"avgY":-4},{"name":"Mohamed Salah","age":32,"position":"RW","club":"Liverpool","league":"Premier League","nationality":"Egypt","marketValue":60,"contractYearsLeft":1,"passCompletionRate":0.79,"avgPassDistance":15,"defensiveWorkRate":0.42,"sprintCapacity":30,"avgSpeed":6.2,"currentPageRank":0.22,"currentConnections":6,"currentPassWeight":0.28,"avgX":26,"avgY":20},{"name":"Alexis Mac Allister","age":26,"position":"CM","club":"Liverpool","league":"Premier League","nationality":"Argentina","marketValue":80,"contractYearsLeft":4,"passCompletionRate":0.89,"avgPassDistance":14.5,"defensiveWorkRate":0.68,"sprintCapacity":18,"avgSpeed":5.5,"currentPageRank":0.3,"currentConnections":9,"currentPassWeight":0.39,"avgX":-2,"avgY":3},{"name":"Ollie Watkins","age":29,"position":"ST","club":"Aston Villa","league":"Premier League","nationality":"England","marketValue":60,"contractYearsLeft":3,"passCompletionRate":0.77,"avgPassDistance":11.5,"defensiveWorkRate":0.5,"sprintCapacity":27,"avgSpeed":6,"currentPageRank":0.17,"currentConnections":5,"currentPassWeight":0.23,"avgX":28,"avgY":-2},{"name":"Eberechi Eze","age":26,"position":"CAM","club":"Crystal Palace","league":"Premier League","nationality":"England","marketValue":55,"contractYearsLeft":3,"passCompletionRate":0.83,"avgPassDistance":14,"defensiveWorkRate":0.38,"sprintCapacity":24,"avgSpeed":5.8,"currentPageRank":0.25,"currentConnections":7,"currentPassWeight":0.3,"avgX":12,"avgY":-5},{"name":"James Maddison","age":28,"position":"CAM","club":"Tottenham Hotspur","league":"Premier League","nationality":"England","marketValue":50,"contractYearsLeft":3,"passCompletionRate":0.84,"avgPassDistance":15.5,"defensiveWorkRate":0.35,"sprintCapacity":18,"avgSpeed":5.4,"currentPageRank":0.26,"currentConnections":8,"currentPassWeight":0.33,"avgX":10,"avgY":2},{"name":"Pedro Neto","age":24,"position":"RW","club":"Chelsea","league":"Premier League","nationality":"Portugal","marketValue":55,"contractYearsLeft":5,"passCompletionRate":0.79,"avgPassDistance":14.5,"defensiveWorkRate":0.4,"sprintCapacity":34,"avgSpeed":6.3,"currentPageRank":0.19,"currentConnections":6,"currentPassWeight":0.26,"avgX":22,"avgY":20},{"name":"Josko Gvardiol","age":22,"position":"CB","club":"Manchester City","league":"Premier League","nationality":"Croatia","marketValue":75,"contractYearsLeft":4,"passCompletionRate":0.89,"avgPassDistance":18,"defensiveWorkRate":0.75,"sprintCapacity":16,"avgSpeed":5.5,"currentPageRank":0.22,"currentConnections":7,"currentPassWeight":0.3,"avgX":-30,"avgY":-10},{"name":"William Saliba","age":23,"position":"CB","club":"Arsenal","league":"Premier League","nationality":"France","marketValue":90,"contractYearsLeft":4,"passCompletionRate":0.9,"avgPassDistance":19.5,"defensiveWorkRate":0.78,"sprintCapacity":15,"avgSpeed":5.6,"currentPageRank":0.24,"currentConnections":7,"currentPassWeight":0.32,"avgX":-32,"avgY":5},{"name":"Lamine Yamal","age":17,"position":"RW","club":"Barcelona","league":"La Liga","nationality":"Spain","marketValue":150,"contractYearsLeft":5,"passCompletionRate":0.81,"avgPassDistance":14.5,"defensiveWorkRate":0.35,"sprintCapacity":33,"avgSpeed":6.2,"currentPageRank":0.22,"currentConnections":7,"currentPassWeight":0.29,"avgX":24,"avgY":22},{"name":"Pedri","age":22,"position":"CM","club":"Barcelona","league":"La Liga","nationality":"Spain","marketValue":100,"contractYearsLeft":4,"passCompletionRate":0.91,"avgPassDistance":13,"defensiveWorkRate":0.58,"sprintCapacity":17,"avgSpeed":5.4,"currentPageRank":0.35,"currentConnections":10,"currentPassWeight":0.44,"avgX":2,"avgY":-2},{"name":"Gavi","age":20,"position":"CM","club":"Barcelona","league":"La Liga","nationality":"Spain","marketValue":80,"contractYearsLeft":4,"passCompletionRate":0.86,"avgPassDistance":12.5,"defensiveWorkRate":0.7,"sprintCapacity":22,"avgSpeed":5.7,"currentPageRank":0.28,"currentConnections":9,"currentPassWeight":0.36,"avgX":3,"avgY":3},{"name":"Raphinha","age":28,"position":"LW","club":"Barcelona","league":"La Liga","nationality":"Brazil","marketValue":80,"contractYearsLeft":3,"passCompletionRate":0.8,"avgPassDistance":15.5,"defensiveWorkRate":0.45,"sprintCapacity":30,"avgSpeed":6.1,"currentPageRank":0.21,"currentConnections":7,"currentPassWeight":0.28,"avgX":24,"avgY":-20},{"name":"Jude Bellingham","age":21,"position":"CAM","club":"Real Madrid","league":"La Liga","nationality":"England","marketValue":150,"contractYearsLeft":5,"passCompletionRate":0.84,"avgPassDistance":14.8,"defensiveWorkRate":0.55,"sprintCapacity":25,"avgSpeed":5.9,"currentPageRank":0.28,"currentConnections":8,"currentPassWeight":0.35,"avgX":14,"avgY":0},{"name":"Vinicius Jr","age":24,"position":"LW","club":"Real Madrid","league":"La Liga","nationality":"Brazil","marketValue":180,"contractYearsLeft":3,"passCompletionRate":0.78,"avgPassDistance":14,"defensiveWorkRate":0.3,"sprintCapacity":35,"avgSpeed":6.5,"currentPageRank":0.2,"currentConnections":6,"currentPassWeight":0.25,"avgX":26,"avgY":-24},{"name":"Federico Valverde","age":26,"position":"CM","club":"Real Madrid","league":"La Liga","nationality":"Uruguay","marketValue":120,"contractYearsLeft":4,"passCompletionRate":0.86,"avgPassDistance":16,"defensiveWorkRate":0.72,"sprintCapacity":28,"avgSpeed":6,"currentPageRank":0.29,"currentConnections":9,"currentPassWeight":0.37,"avgX":5,"avgY":8},{"name":"Antoine Griezmann","age":33,"position":"CAM","club":"Atletico Madrid","league":"La Liga","nationality":"France","marketValue":30,"contractYearsLeft":1,"passCompletionRate":0.83,"avgPassDistance":14.5,"defensiveWorkRate":0.65,"sprintCapacity":22,"avgSpeed":5.6,"currentPageRank":0.27,"currentConnections":8,"currentPassWeight":0.34,"avgX":12,"avgY":-3},{"name":"Nico Williams","age":22,"position":"LW","club":"Athletic Bilbao","league":"La Liga","nationality":"Spain","marketValue":70,"contractYearsLeft":3,"passCompletionRate":0.79,"avgPassDistance":14,"defensiveWorkRate":0.38,"sprintCapacity":34,"avgSpeed":6.4,"currentPageRank":0.19,"currentConnections":6,"currentPassWeight":0.26,"avgX":24,"avgY":-22},{"name":"Dani Olmo","age":26,"position":"CAM","club":"Barcelona","league":"La Liga","nationality":"Spain","marketValue":60,"contractYearsLeft":4,"passCompletionRate":0.84,"avgPassDistance":14.8,"defensiveWorkRate":0.48,"sprintCapacity":21,"avgSpeed":5.6,"currentPageRank":0.25,"currentConnections":8,"currentPassWeight":0.32,"avgX":14,"avgY":-2},{"name":"Alejandro Grimaldo","age":29,"position":"LB","club":"Bayer Leverkusen","league":"La Liga","nationality":"Spain","marketValue":40,"contractYearsLeft":3,"passCompletionRate":0.84,"avgPassDistance":18.5,"defensiveWorkRate":0.62,"sprintCapacity":25,"avgSpeed":5.8,"currentPageRank":0.22,"currentConnections":7,"currentPassWeight":0.3,"avgX":-20,"avgY":-28},{"name":"Joao Felix","age":25,"position":"CAM","club":"Chelsea","league":"La Liga","nationality":"Portugal","marketValue":30,"contractYearsLeft":3,"passCompletionRate":0.8,"avgPassDistance":13.5,"defensiveWorkRate":0.35,"sprintCapacity":23,"avgSpeed":5.7,"currentPageRank":0.2,"currentConnections":6,"currentPassWeight":0.27,"avgX":16,"avgY":-5},{"name":"Alex Baena","age":23,"position":"CM","club":"Villarreal","league":"La Liga","nationality":"Spain","marketValue":40,"contractYearsLeft":4,"passCompletionRate":0.87,"avgPassDistance":15,"defensiveWorkRate":0.5,"sprintCapacity":18,"avgSpeed":5.4,"currentPageRank":0.27,"currentConnections":8,"currentPassWeight":0.35,"avgX":3,"avgY":0},{"name":"Arda Guler","age":19,"position":"CAM","club":"Real Madrid","league":"La Liga","nationality":"Turkey","marketValue":40,"contractYearsLeft":5,"passCompletionRate":0.82,"avgPassDistance":14.2,"defensiveWorkRate":0.3,"sprintCapacity":20,"avgSpeed":5.5,"currentPageRank":0.2,"currentConnections":6,"currentPassWeight":0.28,"avgX":15,"avgY":8},{"name":"Rodrigo De Paul","age":30,"position":"CM","club":"Atletico Madrid","league":"La Liga","nationality":"Argentina","marketValue":30,"contractYearsLeft":2,"passCompletionRate":0.84,"avgPassDistance":15.5,"defensiveWorkRate":0.68,"sprintCapacity":22,"avgSpeed":5.6,"currentPageRank":0.26,"currentConnections":8,"currentPassWeight":0.33,"avgX":2,"avgY":5},{"name":"Lautaro Martinez","age":27,"position":"ST","club":"Inter Milan","league":"Serie A","nationality":"Argentina","marketValue":100,"contractYearsLeft":3,"passCompletionRate":0.78,"avgPassDistance":11.5,"defensiveWorkRate":0.5,"sprintCapacity":25,"avgSpeed":5.9,"currentPageRank":0.18,"currentConnections":5,"currentPassWeight":0.24,"avgX":28,"avgY":-3},{"name":"Hakan Calhanoglu","age":30,"position":"CDM","club":"Inter Milan","league":"Serie A","nationality":"Turkey","marketValue":50,"contractYearsLeft":2,"passCompletionRate":0.9,"avgPassDistance":18,"defensiveWorkRate":0.72,"sprintCapacity":15,"avgSpeed":5.3,"currentPageRank":0.34,"currentConnections":10,"currentPassWeight":0.42,"avgX":-5,"avgY":0},{"name":"Khvicha Kvaratskhelia","age":23,"position":"LW","club":"Napoli","league":"Serie A","nationality":"Georgia","marketValue":85,"contractYearsLeft":3,"passCompletionRate":0.78,"avgPassDistance":13.5,"defensiveWorkRate":0.35,"sprintCapacity":33,"avgSpeed":6.3,"currentPageRank":0.19,"currentConnections":6,"currentPassWeight":0.25,"avgX":24,"avgY":-22},{"name":"Rafael Leao","age":25,"position":"LW","club":"AC Milan","league":"Serie A","nationality":"Portugal","marketValue":75,"contractYearsLeft":3,"passCompletionRate":0.79,"avgPassDistance":13,"defensiveWorkRate":0.28,"sprintCapacity":34,"avgSpeed":6.4,"currentPageRank":0.18,"currentConnections":6,"currentPassWeight":0.24,"avgX":25,"avgY":-23},{"name":"Nicolo Barella","age":27,"position":"CM","club":"Inter Milan","league":"Serie A","nationality":"Italy","marketValue":80,"contractYearsLeft":3,"passCompletionRate":0.86,"avgPassDistance":16,"defensiveWorkRate":0.7,"sprintCapacity":24,"avgSpeed":5.8,"currentPageRank":0.3,"currentConnections":9,"currentPassWeight":0.38,"avgX":5,"avgY":5},{"name":"Federico Chiesa","age":27,"position":"RW","club":"Liverpool","league":"Serie A","nationality":"Italy","marketValue":35,"contractYearsLeft":3,"passCompletionRate":0.78,"avgPassDistance":14,"defensiveWorkRate":0.42,"sprintCapacity":31,"avgSpeed":6.2,"currentPageRank":0.18,"currentConnections":6,"currentPassWeight":0.25,"avgX":24,"avgY":20},{"name":"Dusan Vlahovic","age":24,"position":"ST","club":"Juventus","league":"Serie A","nationality":"Serbia","marketValue":70,"contractYearsLeft":2,"passCompletionRate":0.76,"avgPassDistance":11,"defensiveWorkRate":0.32,"sprintCapacity":22,"avgSpeed":5.8,"currentPageRank":0.16,"currentConnections":5,"currentPassWeight":0.22,"avgX":30,"avgY":0},{"name":"Ademola Lookman","age":27,"position":"RW","club":"Atalanta","league":"Serie A","nationality":"Nigeria","marketValue":55,"contractYearsLeft":3,"passCompletionRate":0.8,"avgPassDistance":14,"defensiveWorkRate":0.45,"sprintCapacity":29,"avgSpeed":6,"currentPageRank":0.2,"currentConnections":6,"currentPassWeight":0.27,"avgX":22,"avgY":18},{"name":"Victor Osimhen","age":25,"position":"ST","club":"Napoli","league":"Serie A","nationality":"Nigeria","marketValue":100,"contractYearsLeft":2,"passCompletionRate":0.75,"avgPassDistance":10.5,"defensiveWorkRate":0.4,"sprintCapacity":28,"avgSpeed":6.2,"currentPageRank":0.15,"currentConnections":4,"currentPassWeight":0.2,"avgX":32,"avgY":0},{"name":"Sandro Tonali","age":24,"position":"CM","club":"Newcastle United","league":"Serie A","nationality":"Italy","marketValue":50,"contractYearsLeft":5,"passCompletionRate":0.87,"avgPassDistance":14.5,"defensiveWorkRate":0.72,"sprintCapacity":19,"avgSpeed":5.6,"currentPageRank":0.28,"currentConnections":8,"currentPassWeight":0.35,"avgX":0,"avgY":2},{"name":"Marcus Thuram","age":27,"position":"ST","club":"Inter Milan","league":"Serie A","nationality":"France","marketValue":65,"contractYearsLeft":3,"passCompletionRate":0.78,"avgPassDistance":12,"defensiveWorkRate":0.45,"sprintCapacity":26,"avgSpeed":6,"currentPageRank":0.17,"currentConnections":5,"currentPassWeight":0.24,"avgX":27,"avgY":5},{"name":"Riccardo Calafiori","age":22,"position":"CB","club":"Arsenal","league":"Serie A","nationality":"Italy","marketValue":50,"contractYearsLeft":4,"passCompletionRate":0.89,"avgPassDistance":20,"defensiveWorkRate":0.76,"sprintCapacity":16,"avgSpeed":5.5,"currentPageRank":0.23,"currentConnections":7,"currentPassWeight":0.31,"avgX":-30,"avgY":-8},{"name":"Yves Bissouma","age":28,"position":"CDM","club":"Tottenham Hotspur","league":"Serie A","nationality":"Mali","marketValue":30,"contractYearsLeft":3,"passCompletionRate":0.85,"avgPassDistance":13,"defensiveWorkRate":0.78,"sprintCapacity":17,"avgSpeed":5.5,"currentPageRank":0.26,"currentConnections":8,"currentPassWeight":0.33,"avgX":-5,"avgY":-2},{"name":"Giacomo Raspadori","age":24,"position":"ST","club":"Napoli","league":"Serie A","nationality":"Italy","marketValue":28,"contractYearsLeft":3,"passCompletionRate":0.81,"avgPassDistance":12,"defensiveWorkRate":0.42,"sprintCapacity":20,"avgSpeed":5.6,"currentPageRank":0.19,"currentConnections":6,"currentPassWeight":0.26,"avgX":22,"avgY":-2},{"name":"Giovanni Di Lorenzo","age":31,"position":"RB","club":"Napoli","league":"Serie A","nationality":"Italy","marketValue":25,"contractYearsLeft":2,"passCompletionRate":0.84,"avgPassDistance":17,"defensiveWorkRate":0.72,"sprintCapacity":22,"avgSpeed":5.7,"currentPageRank":0.22,"currentConnections":7,"currentPassWeight":0.3,"avgX":-18,"avgY":28},{"name":"Florian Wirtz","age":21,"position":"CAM","club":"Bayer Leverkusen","league":"Bundesliga","nationality":"Germany","marketValue":130,"contractYearsLeft":3,"passCompletionRate":0.86,"avgPassDistance":14.5,"defensiveWorkRate":0.42,"sprintCapacity":23,"avgSpeed":5.7,"currentPageRank":0.3,"currentConnections":9,"currentPassWeight":0.4,"avgX":14,"avgY":-2},{"name":"Jamal Musiala","age":21,"position":"CAM","club":"Bayern Munich","league":"Bundesliga","nationality":"Germany","marketValue":130,"contractYearsLeft":3,"passCompletionRate":0.85,"avgPassDistance":13.5,"defensiveWorkRate":0.38,"sprintCapacity":24,"avgSpeed":5.8,"currentPageRank":0.28,"currentConnections":8,"currentPassWeight":0.36,"avgX":15,"avgY":-5},{"name":"Harry Kane","age":31,"position":"ST","club":"Bayern Munich","league":"Bundesliga","nationality":"England","marketValue":80,"contractYearsLeft":3,"passCompletionRate":0.8,"avgPassDistance":13,"defensiveWorkRate":0.35,"sprintCapacity":18,"avgSpeed":5.5,"currentPageRank":0.22,"currentConnections":7,"currentPassWeight":0.3,"avgX":25,"avgY":0},{"name":"Leroy Sane","age":28,"position":"RW","club":"Bayern Munich","league":"Bundesliga","nationality":"Germany","marketValue":50,"contractYearsLeft":1,"passCompletionRate":0.8,"avgPassDistance":15,"defensiveWorkRate":0.35,"sprintCapacity":32,"avgSpeed":6.3,"currentPageRank":0.2,"currentConnections":6,"currentPassWeight":0.27,"avgX":24,"avgY":22},{"name":"Joshua Kimmich","age":29,"position":"CDM","club":"Bayern Munich","league":"Bundesliga","nationality":"Germany","marketValue":50,"contractYearsLeft":1,"passCompletionRate":0.91,"avgPassDistance":17.5,"defensiveWorkRate":0.75,"sprintCapacity":17,"avgSpeed":5.5,"currentPageRank":0.35,"currentConnections":10,"currentPassWeight":0.43,"avgX":-3,"avgY":2},{"name":"Xavi Simons","age":21,"position":"CAM","club":"RB Leipzig","league":"Bundesliga","nationality":"Netherlands","marketValue":80,"contractYearsLeft":3,"passCompletionRate":0.82,"avgPassDistance":14,"defensiveWorkRate":0.4,"sprintCapacity":26,"avgSpeed":5.9,"currentPageRank":0.25,"currentConnections":8,"currentPassWeight":0.33,"avgX":14,"avgY":0},{"name":"Serhou Guirassy","age":28,"position":"ST","club":"Borussia Dortmund","league":"Bundesliga","nationality":"Guinea","marketValue":50,"contractYearsLeft":3,"passCompletionRate":0.76,"avgPassDistance":11,"defensiveWorkRate":0.3,"sprintCapacity":22,"avgSpeed":5.8,"currentPageRank":0.16,"currentConnections":5,"currentPassWeight":0.22,"avgX":30,"avgY":0},{"name":"Jeremie Frimpong","age":24,"position":"RB","club":"Bayer Leverkusen","league":"Bundesliga","nationality":"Netherlands","marketValue":45,"contractYearsLeft":3,"passCompletionRate":0.82,"avgPassDistance":16,"defensiveWorkRate":0.6,"sprintCapacity":35,"avgSpeed":6.4,"currentPageRank":0.21,"currentConnections":7,"currentPassWeight":0.28,"avgX":-10,"avgY":28},{"name":"Granit Xhaka","age":32,"position":"CM","club":"Bayer Leverkusen","league":"Bundesliga","nationality":"Switzerland","marketValue":25,"contractYearsLeft":2,"passCompletionRate":0.9,"avgPassDistance":16.5,"defensiveWorkRate":0.68,"sprintCapacity":14,"avgSpeed":5.2,"currentPageRank":0.32,"currentConnections":9,"currentPassWeight":0.4,"avgX":-2,"avgY":-3},{"name":"Nico Schlotterbeck","age":25,"position":"CB","club":"Borussia Dortmund","league":"Bundesliga","nationality":"Germany","marketValue":35,"contractYearsLeft":3,"passCompletionRate":0.88,"avgPassDistance":20,"defensiveWorkRate":0.76,"sprintCapacity":14,"avgSpeed":5.4,"currentPageRank":0.22,"currentConnections":7,"currentPassWeight":0.3,"avgX":-32,"avgY":-6},{"name":"Jonathan Tah","age":28,"position":"CB","club":"Bayer Leverkusen","league":"Bundesliga","nationality":"Germany","marketValue":30,"contractYearsLeft":1,"passCompletionRate":0.9,"avgPassDistance":19.5,"defensiveWorkRate":0.78,"sprintCapacity":13,"avgSpeed":5.3,"currentPageRank":0.23,"currentConnections":7,"currentPassWeight":0.31,"avgX":-33,"avgY":5},{"name":"Dani Carvajal","age":32,"position":"RB","club":"Real Madrid","league":"Bundesliga","nationality":"Spain","marketValue":20,"contractYearsLeft":2,"passCompletionRate":0.85,"avgPassDistance":17,"defensiveWorkRate":0.72,"sprintCapacity":22,"avgSpeed":5.7,"currentPageRank":0.22,"currentConnections":7,"currentPassWeight":0.3,"avgX":-18,"avgY":28},{"name":"Christopher Nkunku","age":27,"position":"CAM","club":"Chelsea","league":"Bundesliga","nationality":"France","marketValue":55,"contractYearsLeft":4,"passCompletionRate":0.82,"avgPassDistance":14,"defensiveWorkRate":0.42,"sprintCapacity":24,"avgSpeed":5.8,"currentPageRank":0.24,"currentConnections":7,"currentPassWeight":0.3,"avgX":14,"avgY":2},{"name":"Lois Openda","age":24,"position":"ST","club":"RB Leipzig","league":"Bundesliga","nationality":"Belgium","marketValue":55,"contractYearsLeft":4,"passCompletionRate":0.75,"avgPassDistance":10.5,"defensiveWorkRate":0.45,"sprintCapacity":30,"avgSpeed":6.3,"currentPageRank":0.16,"currentConnections":5,"currentPassWeight":0.21,"avgX":30,"avgY":-2},{"name":"Palhinha","age":29,"position":"CDM","club":"Bayern Munich","league":"Bundesliga","nationality":"Portugal","marketValue":40,"contractYearsLeft":3,"passCompletionRate":0.86,"avgPassDistance":13.5,"defensiveWorkRate":0.85,"sprintCapacity":16,"avgSpeed":5.4,"currentPageRank":0.28,"currentConnections":8,"currentPassWeight":0.34,"avgX":-6,"avgY":0},{"name":"Kylian Mbappe","age":25,"position":"ST","club":"Real Madrid","league":"Ligue 1","nationality":"France","marketValue":180,"contractYearsLeft":5,"passCompletionRate":0.8,"avgPassDistance":13,"defensiveWorkRate":0.25,"sprintCapacity":36,"avgSpeed":6.6,"currentPageRank":0.19,"currentConnections":6,"currentPassWeight":0.24,"avgX":30,"avgY":-8},{"name":"Ousmane Dembele","age":27,"position":"RW","club":"Paris Saint-Germain","league":"Ligue 1","nationality":"France","marketValue":70,"contractYearsLeft":3,"passCompletionRate":0.78,"avgPassDistance":14.5,"defensiveWorkRate":0.32,"sprintCapacity":34,"avgSpeed":6.4,"currentPageRank":0.2,"currentConnections":6,"currentPassWeight":0.26,"avgX":24,"avgY":22},{"name":"Bradley Barcola","age":22,"position":"LW","club":"Paris Saint-Germain","league":"Ligue 1","nationality":"France","marketValue":60,"contractYearsLeft":4,"passCompletionRate":0.8,"avgPassDistance":13,"defensiveWorkRate":0.32,"sprintCapacity":33,"avgSpeed":6.3,"currentPageRank":0.19,"currentConnections":6,"currentPassWeight":0.25,"avgX":24,"avgY":-22},{"name":"Warren Zaire-Emery","age":18,"position":"CM","club":"Paris Saint-Germain","league":"Ligue 1","nationality":"France","marketValue":60,"contractYearsLeft":5,"passCompletionRate":0.86,"avgPassDistance":13.5,"defensiveWorkRate":0.65,"sprintCapacity":21,"avgSpeed":5.7,"currentPageRank":0.27,"currentConnections":8,"currentPassWeight":0.34,"avgX":0,"avgY":2},{"name":"Vitinha","age":24,"position":"CM","club":"Paris Saint-Germain","league":"Ligue 1","nationality":"Portugal","marketValue":70,"contractYearsLeft":3,"passCompletionRate":0.89,"avgPassDistance":14.5,"defensiveWorkRate":0.6,"sprintCapacity":18,"avgSpeed":5.5,"currentPageRank":0.31,"currentConnections":9,"currentPassWeight":0.4,"avgX":-2,"avgY":-3},{"name":"Goncalo Ramos","age":23,"position":"ST","club":"Paris Saint-Germain","league":"Ligue 1","nationality":"Portugal","marketValue":50,"contractYearsLeft":4,"passCompletionRate":0.77,"avgPassDistance":11,"defensiveWorkRate":0.35,"sprintCapacity":23,"avgSpeed":5.8,"currentPageRank":0.16,"currentConnections":5,"currentPassWeight":0.22,"avgX":30,"avgY":0},{"name":"Jonathan David","age":25,"position":"ST","club":"Lille","league":"Ligue 1","nationality":"Canada","marketValue":55,"contractYearsLeft":1,"passCompletionRate":0.78,"avgPassDistance":11.5,"defensiveWorkRate":0.4,"sprintCapacity":25,"avgSpeed":5.9,"currentPageRank":0.17,"currentConnections":5,"currentPassWeight":0.23,"avgX":28,"avgY":0},{"name":"Mohamed-Ali Cho","age":20,"position":"RW","club":"Real Sociedad","league":"Ligue 1","nationality":"France","marketValue":18,"contractYearsLeft":3,"passCompletionRate":0.77,"avgPassDistance":13.5,"defensiveWorkRate":0.35,"sprintCapacity":30,"avgSpeed":6.1,"currentPageRank":0.17,"currentConnections":5,"currentPassWeight":0.23,"avgX":22,"avgY":20},{"name":"Elye Wahi","age":21,"position":"ST","club":"Marseille","league":"Ligue 1","nationality":"France","marketValue":25,"contractYearsLeft":4,"passCompletionRate":0.76,"avgPassDistance":10.5,"defensiveWorkRate":0.3,"sprintCapacity":26,"avgSpeed":6,"currentPageRank":0.15,"currentConnections":4,"currentPassWeight":0.2,"avgX":30,"avgY":-2},{"name":"Amine Gouiri","age":24,"position":"LW","club":"Rennes","league":"Ligue 1","nationality":"France","marketValue":22,"contractYearsLeft":3,"passCompletionRate":0.8,"avgPassDistance":13.5,"defensiveWorkRate":0.38,"sprintCapacity":25,"avgSpeed":5.8,"currentPageRank":0.2,"currentConnections":6,"currentPassWeight":0.26,"avgX":20,"avgY":-18},{"name":"Castello Lukeba","age":21,"position":"CB","club":"RB Leipzig","league":"Ligue 1","nationality":"France","marketValue":40,"contractYearsLeft":4,"passCompletionRate":0.88,"avgPassDistance":19,"defensiveWorkRate":0.77,"sprintCapacity":15,"avgSpeed":5.5,"currentPageRank":0.22,"currentConnections":7,"currentPassWeight":0.3,"avgX":-32,"avgY":-5},{"name":"Manu Kone","age":23,"position":"CM","club":"Borussia Monchengladbach","league":"Ligue 1","nationality":"France","marketValue":28,"contractYearsLeft":2,"passCompletionRate":0.84,"avgPassDistance":14,"defensiveWorkRate":0.68,"sprintCapacity":22,"avgSpeed":5.7,"currentPageRank":0.24,"currentConnections":8,"currentPassWeight":0.32,"avgX":0,"avgY":0},{"name":"Youssouf Fofana","age":25,"position":"CDM","club":"AC Milan","league":"Ligue 1","nationality":"France","marketValue":30,"contractYearsLeft":4,"passCompletionRate":0.86,"avgPassDistance":14,"defensiveWorkRate":0.75,"sprintCapacity":18,"avgSpeed":5.5,"currentPageRank":0.27,"currentConnections":8,"currentPassWeight":0.34,"avgX":-4,"avgY":0},{"name":"Khephren Thuram","age":23,"position":"CM","club":"Juventus","league":"Ligue 1","nationality":"France","marketValue":30,"contractYearsLeft":4,"passCompletionRate":0.85,"avgPassDistance":14.5,"defensiveWorkRate":0.65,"sprintCapacity":22,"avgSpeed":5.8,"currentPageRank":0.25,"currentConnections":8,"currentPassWeight":0.33,"avgX":2,"avgY":3},{"name":"Desire Doue","age":19,"position":"LW","club":"Paris Saint-Germain","league":"Ligue 1","nationality":"France","marketValue":35,"contractYearsLeft":4,"passCompletionRate":0.79,"avgPassDistance":13,"defensiveWorkRate":0.35,"sprintCapacity":28,"avgSpeed":6,"currentPageRank":0.18,"currentConnections":6,"currentPassWeight":0.25,"avgX":20,"avgY":-20}];
+var TEAMS_RAW = [{"name":"Arsenal","league":"Premier League","budget":150,"formation":"4-3-3","style":"possession","avgMincut":0.65,"networkDensity":0.82,"weakestZone":"center-right","hubPlayer":"Martin Odegaard","hubDependency":0.62,"pressEfficiency":0.46,"positionDepth":[["GK",3],["CB",5],["LB",2],["RB",2],["CDM",2],["CM",4],["CAM",2],["LM",1],["RM",1],["LW",2],["RW",2],["ST",2]],"avgPlayerCentrality":0.28,"avgPlayerConnections":7.4},{"name":"Manchester City","league":"Premier League","budget":200,"formation":"4-3-3","style":"possession","avgMincut":0.72,"networkDensity":0.89,"weakestZone":"left","hubPlayer":"Rodri","hubDependency":0.42,"pressEfficiency":0.44,"positionDepth":[["GK",3],["CB",5],["LB",2],["RB",3],["CDM",2],["CM",5],["CAM",2],["LM",1],["RM",1],["LW",3],["RW",3],["ST",2]],"avgPlayerCentrality":0.32,"avgPlayerConnections":8.6},{"name":"Liverpool","league":"Premier League","budget":150,"formation":"4-3-3","style":"pressing","avgMincut":0.68,"networkDensity":0.78,"weakestZone":"center-left","hubPlayer":"Alexis Mac Allister","hubDependency":0.48,"pressEfficiency":0.52,"positionDepth":[["GK",3],["CB",4],["LB",2],["RB",2],["CDM",2],["CM",4],["CAM",2],["LM",1],["RM",1],["LW",2],["RW",2],["ST",2]],"avgPlayerCentrality":0.29,"avgPlayerConnections":7.8},{"name":"Chelsea","league":"Premier League","budget":180,"formation":"4-2-3-1","style":"balanced","avgMincut":0.55,"networkDensity":0.72,"weakestZone":"center-right","hubPlayer":"Cole Palmer","hubDependency":0.65,"pressEfficiency":0.38,"positionDepth":[["GK",3],["CB",6],["LB",3],["RB",3],["CDM",3],["CM",5],["CAM",3],["LM",2],["RM",2],["LW",3],["RW",3],["ST",3]],"avgPlayerCentrality":0.22,"avgPlayerConnections":6.2},{"name":"Manchester United","league":"Premier League","budget":140,"formation":"4-2-3-1","style":"balanced","avgMincut":0.48,"networkDensity":0.68,"weakestZone":"left","hubPlayer":"Bruno Fernandes","hubDependency":0.72,"pressEfficiency":0.35,"positionDepth":[["GK",3],["CB",5],["LB",2],["RB",2],["CDM",2],["CM",4],["CAM",2],["LM",1],["RM",1],["LW",2],["RW",2],["ST",3]],"avgPlayerCentrality":0.23,"avgPlayerConnections":6},{"name":"Tottenham","league":"Premier League","budget":120,"formation":"4-3-3","style":"pressing","avgMincut":0.5,"networkDensity":0.74,"weakestZone":"right","hubPlayer":"James Maddison","hubDependency":0.58,"pressEfficiency":0.45,"positionDepth":[["GK",3],["CB",4],["LB",2],["RB",2],["CDM",2],["CM",4],["CAM",2],["LM",1],["RM",1],["LW",2],["RW",2],["ST",3]],"avgPlayerCentrality":0.25,"avgPlayerConnections":6.8},{"name":"Newcastle","league":"Premier League","budget":100,"formation":"4-3-3","style":"balanced","avgMincut":0.62,"networkDensity":0.73,"weakestZone":"center-left","hubPlayer":"Bruno Guimaraes","hubDependency":0.6,"pressEfficiency":0.42,"positionDepth":[["GK",3],["CB",4],["LB",2],["RB",2],["CDM",2],["CM",3],["CAM",1],["LM",1],["RM",1],["LW",2],["RW",2],["ST",2]],"avgPlayerCentrality":0.26,"avgPlayerConnections":7},{"name":"Aston Villa","league":"Premier League","budget":90,"formation":"4-2-3-1","style":"balanced","avgMincut":0.58,"networkDensity":0.71,"weakestZone":"right","hubPlayer":"Ollie Watkins","hubDependency":0.55,"pressEfficiency":0.4,"positionDepth":[["GK",3],["CB",4],["LB",2],["RB",2],["CDM",2],["CM",3],["CAM",2],["LM",1],["RM",1],["LW",2],["RW",2],["ST",2]],"avgPlayerCentrality":0.25,"avgPlayerConnections":6.9},{"name":"Barcelona","league":"La Liga","budget":130,"formation":"4-3-3","style":"possession","avgMincut":0.64,"networkDensity":0.87,"weakestZone":"right","hubPlayer":"Pedri","hubDependency":0.55,"pressEfficiency":0.47,"positionDepth":[["GK",3],["CB",5],["LB",2],["RB",2],["CDM",2],["CM",5],["CAM",2],["LM",1],["RM",1],["LW",3],["RW",2],["ST",2]],"avgPlayerCentrality":0.3,"avgPlayerConnections":8.2},{"name":"Real Madrid","league":"La Liga","budget":250,"formation":"4-3-3","style":"balanced","avgMincut":0.7,"networkDensity":0.81,"weakestZone":"left","hubPlayer":"Jude Bellingham","hubDependency":0.68,"pressEfficiency":0.38,"positionDepth":[["GK",3],["CB",5],["LB",2],["RB",2],["CDM",2],["CM",4],["CAM",2],["LM",1],["RM",1],["LW",2],["RW",3],["ST",2]],"avgPlayerCentrality":0.29,"avgPlayerConnections":7.6},{"name":"Atletico Madrid","league":"La Liga","budget":90,"formation":"4-4-2","style":"counter","avgMincut":0.75,"networkDensity":0.65,"weakestZone":"center-right","hubPlayer":"Antoine Griezmann","hubDependency":0.63,"pressEfficiency":0.4,"positionDepth":[["GK",3],["CB",5],["LB",2],["RB",2],["CDM",3],["CM",4],["CAM",1],["LM",2],["RM",2],["LW",1],["RW",1],["ST",3]],"avgPlayerCentrality":0.22,"avgPlayerConnections":6.1},{"name":"Real Sociedad","league":"La Liga","budget":50,"formation":"4-3-3","style":"possession","avgMincut":0.58,"networkDensity":0.76,"weakestZone":"center-left","hubPlayer":"Mikel Merino","hubDependency":0.52,"pressEfficiency":0.41,"positionDepth":[["GK",3],["CB",4],["LB",2],["RB",2],["CDM",2],["CM",3],["CAM",2],["LM",1],["RM",1],["LW",2],["RW",2],["ST",2]],"avgPlayerCentrality":0.26,"avgPlayerConnections":7},{"name":"Athletic Bilbao","league":"La Liga","budget":40,"formation":"4-2-3-1","style":"pressing","avgMincut":0.6,"networkDensity":0.72,"weakestZone":"right","hubPlayer":"Nico Williams","hubDependency":0.58,"pressEfficiency":0.48,"positionDepth":[["GK",3],["CB",4],["LB",2],["RB",2],["CDM",2],["CM",3],["CAM",2],["LM",1],["RM",1],["LW",2],["RW",2],["ST",2]],"avgPlayerCentrality":0.25,"avgPlayerConnections":6.8},{"name":"Villarreal","league":"La Liga","budget":45,"formation":"4-3-3","style":"possession","avgMincut":0.55,"networkDensity":0.75,"weakestZone":"left","hubPlayer":"Alex Baena","hubDependency":0.54,"pressEfficiency":0.39,"positionDepth":[["GK",3],["CB",4],["LB",2],["RB",2],["CDM",2],["CM",3],["CAM",2],["LM",1],["RM",1],["LW",2],["RW",2],["ST",2]],"avgPlayerCentrality":0.26,"avgPlayerConnections":7.1},{"name":"Inter Milan","league":"Serie A","budget":80,"formation":"3-5-2","style":"balanced","avgMincut":0.73,"networkDensity":0.77,"weakestZone":"left","hubPlayer":"Hakan Calhanoglu","hubDependency":0.6,"pressEfficiency":0.42,"positionDepth":[["GK",3],["CB",6],["LB",3],["RB",3],["CDM",2],["CM",4],["CAM",1],["LM",2],["RM",2],["LW",1],["RW",1],["ST",3]],"avgPlayerCentrality":0.27,"avgPlayerConnections":7.2},{"name":"AC Milan","league":"Serie A","budget":75,"formation":"4-2-3-1","style":"balanced","avgMincut":0.56,"networkDensity":0.71,"weakestZone":"right","hubPlayer":"Rafael Leao","hubDependency":0.62,"pressEfficiency":0.36,"positionDepth":[["GK",3],["CB",4],["LB",2],["RB",2],["CDM",2],["CM",4],["CAM",2],["LM",1],["RM",1],["LW",2],["RW",2],["ST",2]],"avgPlayerCentrality":0.24,"avgPlayerConnections":6.5},{"name":"Juventus","league":"Serie A","budget":100,"formation":"3-5-2","style":"balanced","avgMincut":0.66,"networkDensity":0.7,"weakestZone":"center-left","hubPlayer":"Federico Chiesa","hubDependency":0.5,"pressEfficiency":0.37,"positionDepth":[["GK",3],["CB",5],["LB",2],["RB",2],["CDM",3],["CM",4],["CAM",1],["LM",2],["RM",2],["LW",2],["RW",1],["ST",3]],"avgPlayerCentrality":0.24,"avgPlayerConnections":6.4},{"name":"Napoli","league":"Serie A","budget":70,"formation":"4-3-3","style":"counter","avgMincut":0.64,"networkDensity":0.73,"weakestZone":"center-right","hubPlayer":"Khvicha Kvaratskhelia","hubDependency":0.65,"pressEfficiency":0.43,"positionDepth":[["GK",3],["CB",4],["LB",2],["RB",2],["CDM",2],["CM",3],["CAM",2],["LM",1],["RM",1],["LW",2],["RW",2],["ST",2]],"avgPlayerCentrality":0.25,"avgPlayerConnections":6.7},{"name":"Atalanta","league":"Serie A","budget":60,"formation":"3-4-2-1","style":"pressing","avgMincut":0.61,"networkDensity":0.76,"weakestZone":"left","hubPlayer":"Charles De Ketelaere","hubDependency":0.48,"pressEfficiency":0.5,"positionDepth":[["GK",3],["CB",5],["LB",2],["RB",2],["CDM",2],["CM",4],["CAM",2],["LM",2],["RM",2],["LW",1],["RW",1],["ST",2]],"avgPlayerCentrality":0.27,"avgPlayerConnections":7.3},{"name":"Roma","league":"Serie A","budget":55,"formation":"4-3-3","style":"counter","avgMincut":0.52,"networkDensity":0.67,"weakestZone":"center-left","hubPlayer":"Paulo Dybala","hubDependency":0.68,"pressEfficiency":0.33,"positionDepth":[["GK",3],["CB",4],["LB",2],["RB",2],["CDM",2],["CM",3],["CAM",2],["LM",1],["RM",1],["LW",2],["RW",2],["ST",2]],"avgPlayerCentrality":0.22,"avgPlayerConnections":5.9},{"name":"Bayern Munich","league":"Bundesliga","budget":180,"formation":"4-2-3-1","style":"possession","avgMincut":0.7,"networkDensity":0.84,"weakestZone":"center-left","hubPlayer":"Jamal Musiala","hubDependency":0.58,"pressEfficiency":0.48,"positionDepth":[["GK",3],["CB",5],["LB",2],["RB",2],["CDM",2],["CM",4],["CAM",3],["LM",1],["RM",1],["LW",3],["RW",2],["ST",2]],"avgPlayerCentrality":0.3,"avgPlayerConnections":8},{"name":"Borussia Dortmund","league":"Bundesliga","budget":90,"formation":"4-2-3-1","style":"balanced","avgMincut":0.52,"networkDensity":0.73,"weakestZone":"right","hubPlayer":"Julian Brandt","hubDependency":0.56,"pressEfficiency":0.41,"positionDepth":[["GK",3],["CB",4],["LB",2],["RB",2],["CDM",2],["CM",3],["CAM",2],["LM",1],["RM",1],["LW",2],["RW",2],["ST",2]],"avgPlayerCentrality":0.25,"avgPlayerConnections":6.8},{"name":"Bayer Leverkusen","league":"Bundesliga","budget":100,"formation":"3-4-2-1","style":"pressing","avgMincut":0.67,"networkDensity":0.8,"weakestZone":"center-right","hubPlayer":"Florian Wirtz","hubDependency":0.66,"pressEfficiency":0.53,"positionDepth":[["GK",3],["CB",5],["LB",2],["RB",2],["CDM",2],["CM",4],["CAM",2],["LM",2],["RM",2],["LW",2],["RW",2],["ST",2]],"avgPlayerCentrality":0.29,"avgPlayerConnections":7.7},{"name":"RB Leipzig","league":"Bundesliga","budget":80,"formation":"4-2-2-2","style":"pressing","avgMincut":0.6,"networkDensity":0.75,"weakestZone":"left","hubPlayer":"Xavi Simons","hubDependency":0.6,"pressEfficiency":0.49,"positionDepth":[["GK",3],["CB",5],["LB",2],["RB",2],["CDM",3],["CM",4],["CAM",2],["LM",1],["RM",1],["LW",2],["RW",2],["ST",3]],"avgPlayerCentrality":0.26,"avgPlayerConnections":7.1},{"name":"Stuttgart","league":"Bundesliga","budget":45,"formation":"4-2-2-2","style":"pressing","avgMincut":0.57,"networkDensity":0.74,"weakestZone":"center-right","hubPlayer":"Enzo Millot","hubDependency":0.5,"pressEfficiency":0.47,"positionDepth":[["GK",3],["CB",4],["LB",2],["RB",2],["CDM",2],["CM",3],["CAM",2],["LM",1],["RM",1],["LW",2],["RW",2],["ST",2]],"avgPlayerCentrality":0.25,"avgPlayerConnections":7},{"name":"PSG","league":"Ligue 1","budget":200,"formation":"4-3-3","style":"possession","avgMincut":0.63,"networkDensity":0.8,"weakestZone":"center-right","hubPlayer":"Ousmane Dembele","hubDependency":0.55,"pressEfficiency":0.42,"positionDepth":[["GK",3],["CB",5],["LB",2],["RB",2],["CDM",2],["CM",4],["CAM",2],["LM",1],["RM",1],["LW",2],["RW",3],["ST",2]],"avgPlayerCentrality":0.28,"avgPlayerConnections":7.5},{"name":"Monaco","league":"Ligue 1","budget":60,"formation":"4-2-3-1","style":"balanced","avgMincut":0.54,"networkDensity":0.72,"weakestZone":"left","hubPlayer":"Aleksandr Golovin","hubDependency":0.52,"pressEfficiency":0.4,"positionDepth":[["GK",3],["CB",4],["LB",2],["RB",2],["CDM",2],["CM",3],["CAM",2],["LM",1],["RM",1],["LW",2],["RW",2],["ST",2]],"avgPlayerCentrality":0.24,"avgPlayerConnections":6.6},{"name":"Lille","league":"Ligue 1","budget":40,"formation":"4-2-3-1","style":"counter","avgMincut":0.62,"networkDensity":0.69,"weakestZone":"right","hubPlayer":"Jonathan David","hubDependency":0.58,"pressEfficiency":0.43,"positionDepth":[["GK",3],["CB",4],["LB",2],["RB",2],["CDM",2],["CM",3],["CAM",1],["LM",1],["RM",1],["LW",2],["RW",2],["ST",2]],"avgPlayerCentrality":0.23,"avgPlayerConnections":6.3},{"name":"Lyon","league":"Ligue 1","budget":50,"formation":"4-3-3","style":"balanced","avgMincut":0.5,"networkDensity":0.71,"weakestZone":"center-left","hubPlayer":"Rayan Cherki","hubDependency":0.6,"pressEfficiency":0.37,"positionDepth":[["GK",3],["CB",4],["LB",2],["RB",2],["CDM",2],["CM",3],["CAM",2],["LM",1],["RM",1],["LW",2],["RW",2],["ST",2]],"avgPlayerCentrality":0.24,"avgPlayerConnections":6.5},{"name":"Marseille","league":"Ligue 1","budget":55,"formation":"3-4-3","style":"pressing","avgMincut":0.53,"networkDensity":0.73,"weakestZone":"left","hubPlayer":"Pierre-Emerick Aubameyang","hubDependency":0.55,"pressEfficiency":0.46,"positionDepth":[["GK",3],["CB",5],["LB",2],["RB",2],["CDM",2],["CM",3],["CAM",1],["LM",2],["RM",2],["LW",2],["RW",2],["ST",2]],"avgPlayerCentrality":0.25,"avgPlayerConnections":6.9}];
+
+// ─── 2. Dimension Completeness Counter ───────────────────────────────
+const TIER1_FIELDS = [
+    'passCompletionShort', 'passCompletionMedium', 'passCompletionLong',
+    'progressivePassesPer90', 'keyPassesPer90', 'throughBallsPer90',
+    'crossesPer90', 'crossAccuracy', 'switchPlayPer90',
+    'passesIntoFinalThird', 'passesIntoPenaltyArea', 'avgPassDistance',
+    'xGper90', 'xGperShot', 'goalsMinusXG', 'shotsOnTargetPct',
+    'shotDistanceAvg', 'shotsFromInsideBoxPct', 'freeKickGoals', 'penaltyConversion',
+    'xAper90', 'shotCreatingActionsPer90', 'goalCreatingActionsPer90',
+    'progressiveCarriesPer90', 'carriesIntoFinalThird', 'carriesIntoPenaltyArea',
+    'dribbleSuccessRate', 'dribblesPer90',
+    'tacklesPer90', 'tackleWinPct', 'interceptionsPer90', 'blocksPer90',
+    'clearancesPer90', 'aerialDuelsWonPct', 'foulsCommittedPer90',
+    'yellowCardsPer90', 'dribblersTackledPct', 'challengesLostPer90',
+    'pressuresPer90', 'pressureSuccessRate', 'pressuresAttThirdPct',
+    'pressuresMidThirdPct', 'pressuresDefThirdPct',
+    'counterpressingRecoveries', 'ppda', 'pressureTriggerRate',
+    'topSpeed', 'avgMatchSpeed', 'sprintsPerMatch',
+    'highSpeedRunsPerMatch', 'distancePerMatch', 'accelerationsPer90',
+];
+const TIER2_FIELDS = [
+    'avgX', 'avgY', 'positionHeatmapEntropy', 'territoryControlled',
+    'spaceCreatedPerRun', 'offBallRunsPerMatch', 'runsBehindLinePer90',
+    'avgDistFromBall', 'avgDistFromTeamCentroid', 'widthContribution',
+    'depthContribution', 'defensiveLineHeight',
+    'pageRankCentrality', 'betweennessCentrality', 'clusteringCoefficient',
+    'passingConnections', 'avgPassEdgeWeight', 'receivingFrequency',
+    'passUnderPressureRate', 'passUnderPressureAccuracy',
+    'networkImpactOnRemoval', 'hubScore',
+    'teamMincutWith', 'teamMincutWithout', 'mincutContribution',
+    'formationComplianceScore', 'coverShadowArea',
+    'pressingChainParticipation', 'defensiveTransitionSpeed',
+    'offensiveTransitionSpeed',
+    'performanceWhenWinning', 'performanceWhenLosing', 'performanceWhenDrawing',
+    'last15minPerformance', 'performanceVsTopTeams', 'performanceInBigMoments',
+];
+const TIER3_FIELDS = [
+    'positionalAwareness', 'decisionMakingSpeed', 'pressReadingAbility',
+    'transitionReading', 'setPlayIntelligence', 'coachability',
+    'mentality', 'leadershipPresence', 'cultureFit', 'mediaHandling',
+    'adaptability', 'injuryProneness',
+    'holdUpPlayQuality', 'aerialPresence', 'runTiming', 'movementInBox',
+    'oneOnOneDefending', 'organizationalVoice', 'recoverySpeed',
+    'composureUnderPress',
+    'clutchFactor', 'dressingRoomEffect', 'fanAppeal', 'agentDifficulty',
+];
+function vectorCompleteness(v) {
+    const count = (fields) => fields.filter(f => v[f] !== undefined).length;
+    const tier1 = count(TIER1_FIELDS);
+    const tier2 = count(TIER2_FIELDS);
+    const tier3 = count(TIER3_FIELDS);
+    return {
+        tier1,
+        tier2,
+        tier3,
+        total: tier1 + tier2 + tier3,
+        maxTotal: TIER1_FIELDS.length + TIER2_FIELDS.length + TIER3_FIELDS.length,
+    };
+}
+// ─── 3. ScoutProfile to PlayerVector Converter ───────────────────────
+function scoutProfileToVector(p) {
+    // Estimate pass completion bands from the single rate.
+    // Short passes are typically higher, long passes lower.
+    const shortEst = Math.min(1, p.passCompletionRate + 0.05);
+    const medEst = p.passCompletionRate;
+    const longEst = Math.max(0, p.passCompletionRate - 0.15);
+    return {
+        // Identity (direct map)
+        name: p.name,
+        age: p.age,
+        position: p.position,
+        club: p.club,
+        league: p.league,
+        nationality: p.nationality,
+        marketValue: p.marketValue,
+        contractYearsLeft: p.contractYearsLeft,
+        // Tier 1 — what we can infer from ScoutProfile
+        passCompletionShort: shortEst,
+        passCompletionMedium: medEst,
+        passCompletionLong: longEst,
+        avgPassDistance: p.avgPassDistance,
+        // Physical — map sprint capacity and speed
+        topSpeed: p.sprintCapacity > 30 ? 35 : p.sprintCapacity > 20 ? 32 : 29,
+        avgMatchSpeed: p.avgSpeed,
+        sprintsPerMatch: p.sprintCapacity,
+        // Tier 2 — spatial (from old avgX/avgY)
+        avgX: p.avgX,
+        avgY: p.avgY,
+        // Tier 2 — network (from old PageRank/connections/passWeight)
+        pageRankCentrality: p.currentPageRank,
+        passingConnections: p.currentConnections,
+        avgPassEdgeWeight: p.currentPassWeight,
+        // Derive a hub score from PageRank and connections
+        hubScore: Math.min(1, (p.currentPageRank * 1.5 + p.currentConnections / 15) / 2),
+        // Estimate pressing/defensive from defensiveWorkRate
+        pressuresPer90: p.defensiveWorkRate > 0.6 ? 22 : p.defensiveWorkRate > 0.4 ? 15 : 8,
+        tacklesPer90: p.defensiveWorkRate > 0.7 ? 3.5 : p.defensiveWorkRate > 0.4 ? 2.0 : 0.8,
+        interceptionsPer90: p.defensiveWorkRate > 0.7 ? 2.0 : p.defensiveWorkRate > 0.4 ? 1.2 : 0.4,
+    };
+}
+// ─── Utility helpers ─────────────────────────────────────────────────
+function clamp(v, lo = -1, hi = 1) {
+    return Math.max(lo, Math.min(hi, v));
+}
+function has(v) {
+    return v !== undefined;
+}
+function avg(...nums) {
+    const valid = nums.filter(has);
+    if (valid.length === 0)
+        return undefined;
+    return valid.reduce((a, b) => a + b, 0) / valid.length;
+}
+// ─── Tier 1 Factor Functions ─────────────────────────────────────────
+function evalSystemFit(p, t) {
+    var _a;
+    const posNeed = (_a = t.positionDepth.get(p.position)) !== null && _a !== void 0 ? _a : 0;
+    const posFit = posNeed === 0 ? 0.9 : posNeed === 1 ? 0.5 : posNeed === 2 ? 0 : -0.4;
+    let formFit = 0;
+    const f = t.formation;
+    if (f.includes('4-3-3')) {
+        if (['CM', 'CDM', 'LW', 'RW', 'ST'].includes(p.position))
+            formFit = 0.4;
+        if (['LM', 'RM'].includes(p.position))
+            formFit = -0.1;
+        if (['CAM'].includes(p.position))
+            formFit = 0.1;
+    }
+    else if (f.includes('4-4-2')) {
+        if (['CM', 'LM', 'RM', 'ST'].includes(p.position))
+            formFit = 0.4;
+        if (['CAM', 'CDM'].includes(p.position))
+            formFit = -0.1;
+        if (['LW', 'RW'].includes(p.position))
+            formFit = 0.2;
+    }
+    else if (f.includes('3-5-2') || f.includes('3-4-3') || f.includes('3-4-2-1')) {
+        if (['CB', 'CM', 'LM', 'RM', 'ST'].includes(p.position))
+            formFit = 0.4;
+        if (['LB', 'RB'].includes(p.position))
+            formFit = -0.2;
+    }
+    else if (f.includes('4-2-3-1') || f.includes('4-2-2-2')) {
+        if (['CDM', 'CAM', 'LW', 'RW', 'ST'].includes(p.position))
+            formFit = 0.4;
+        if (['CM'].includes(p.position))
+            formFit = 0.2;
+    }
+    let styleFit = 0;
+    const passRate = avg(p.passCompletionShort, p.passCompletionMedium, p.passCompletionLong);
+    if (t.style === 'possession') {
+        if (has(passRate) && passRate > 0.85)
+            styleFit = 0.5;
+        else if (has(passRate) && passRate < 0.78)
+            styleFit = -0.3;
+    }
+    if (t.style === 'counter') {
+        if (has(p.sprintsPerMatch) && p.sprintsPerMatch > 25)
+            styleFit = 0.5;
+        else if (has(p.sprintsPerMatch) && p.sprintsPerMatch < 15)
+            styleFit = -0.3;
+        else if (has(p.topSpeed) && p.topSpeed > 33)
+            styleFit = 0.4;
+    }
+    if (t.style === 'pressing') {
+        if (has(p.pressuresPer90) && p.pressuresPer90 > 18)
+            styleFit = 0.5;
+        else if (has(p.tacklesPer90) && p.tacklesPer90 > 3)
+            styleFit = 0.3;
+        else if (has(p.pressuresPer90) && p.pressuresPer90 < 10)
+            styleFit = -0.4;
+    }
+    if (t.style === 'balanced')
+        styleFit = 0.1;
+    const score = posFit * 0.4 + formFit * 0.3 + styleFit * 0.3;
+    return {
+        name: 'System Fit',
+        score: clamp(score),
+        weight: 1.0,
+        tier: 1,
+        explanation: `Position need: ${posNeed === 0 ? 'CRITICAL' : posNeed === 1 ? 'high' : posNeed === 2 ? 'adequate' : 'saturated'}. ` +
+            `Formation: ${formFit > 0 ? 'compatible' : formFit < 0 ? 'awkward' : 'neutral'}. ` +
+            `Style: ${styleFit > 0.2 ? 'strong match' : styleFit < -0.2 ? 'mismatch' : 'acceptable'}.`,
+    };
+}
+function evalPassingProfile(p, t) {
+    const available = [
+        p.passCompletionShort, p.passCompletionMedium, p.passCompletionLong,
+        p.progressivePassesPer90, p.keyPassesPer90, p.avgPassDistance,
+    ].filter(has);
+    if (available.length === 0)
+        return null;
+    let score = 0;
+    const parts = [];
+    // High-density networks need high completion
+    if (has(p.passCompletionMedium)) {
+        const threshold = t.networkDensity > 0.8 ? 0.87 : 0.82;
+        const delta = (p.passCompletionMedium - threshold) * 3;
+        score += clamp(delta) * 0.4;
+        parts.push(p.passCompletionMedium > threshold ? 'passing suits network' : 'completion below network standard');
+    }
+    // Progressive passing valued in possession teams
+    if (has(p.progressivePassesPer90) && t.style === 'possession') {
+        score += clamp((p.progressivePassesPer90 - 5) / 5) * 0.3;
+    }
+    // Key passes
+    if (has(p.keyPassesPer90)) {
+        score += clamp((p.keyPassesPer90 - 1.5) / 2) * 0.3;
+        if (p.keyPassesPer90 > 2.5)
+            parts.push('elite key passer');
+    }
+    return {
+        name: 'Passing Profile',
+        score: clamp(score),
+        weight: 1.0,
+        tier: 1,
+        explanation: parts.length > 0 ? parts.join('; ') + '.' : 'Passing profile evaluated.',
+    };
+}
+function evalShootingValue(p, t) {
+    const available = [p.xGper90, p.xGperShot, p.goalsMinusXG, p.shotsOnTargetPct].filter(has);
+    if (available.length === 0)
+        return null;
+    let score = 0;
+    const parts = [];
+    if (has(p.xGper90)) {
+        // Forwards expected higher xG
+        const threshold = ['ST', 'LW', 'RW'].includes(p.position) ? 0.4 : 0.15;
+        score += clamp((p.xGper90 - threshold) / threshold) * 0.4;
+        if (p.xGper90 > 0.5)
+            parts.push('elite xG output');
+    }
+    if (has(p.goalsMinusXG)) {
+        score += clamp(p.goalsMinusXG / 5) * 0.3;
+        if (p.goalsMinusXG > 3)
+            parts.push('clinical finisher');
+        if (p.goalsMinusXG < -3)
+            parts.push('underperforming xG');
+    }
+    if (has(p.shotsOnTargetPct)) {
+        score += clamp((p.shotsOnTargetPct - 35) / 30) * 0.3;
+    }
+    return {
+        name: 'Shooting Value',
+        score: clamp(score),
+        weight: 1.0,
+        tier: 1,
+        explanation: parts.length > 0 ? parts.join('; ') + '.' : 'Shooting profile evaluated.',
+    };
+}
+function evalCreativeValue(p, t) {
+    const available = [
+        p.xAper90, p.shotCreatingActionsPer90, p.goalCreatingActionsPer90,
+        p.progressiveCarriesPer90, p.dribbleSuccessRate,
+    ].filter(has);
+    if (available.length === 0)
+        return null;
+    let score = 0;
+    const parts = [];
+    if (has(p.xAper90)) {
+        score += clamp((p.xAper90 - 0.15) / 0.25) * 0.35;
+        if (p.xAper90 > 0.3)
+            parts.push('elite chance creator');
+    }
+    if (has(p.shotCreatingActionsPer90)) {
+        score += clamp((p.shotCreatingActionsPer90 - 3) / 3) * 0.25;
+    }
+    if (has(p.progressiveCarriesPer90)) {
+        const bonus = t.style === 'counter' ? 0.1 : 0;
+        score += (clamp((p.progressiveCarriesPer90 - 3) / 5) + bonus) * 0.2;
+        if (p.progressiveCarriesPer90 > 6)
+            parts.push('dangerous ball carrier');
+    }
+    if (has(p.dribbleSuccessRate)) {
+        score += clamp((p.dribbleSuccessRate - 50) / 30) * 0.2;
+    }
+    return {
+        name: 'Creative Value',
+        score: clamp(score),
+        weight: 1.0,
+        tier: 1,
+        explanation: parts.length > 0 ? parts.join('; ') + '.' : 'Creative output evaluated.',
+    };
+}
+function evalDefensiveValue(p, t) {
+    const available = [
+        p.tacklesPer90, p.tackleWinPct, p.interceptionsPer90,
+        p.aerialDuelsWonPct, p.dribblersTackledPct,
+    ].filter(has);
+    if (available.length === 0)
+        return null;
+    let score = 0;
+    const parts = [];
+    if (has(p.tacklesPer90)) {
+        score += clamp((p.tacklesPer90 - 1.5) / 2.5) * 0.3;
+    }
+    if (has(p.interceptionsPer90)) {
+        score += clamp((p.interceptionsPer90 - 0.8) / 1.5) * 0.25;
+    }
+    if (has(p.aerialDuelsWonPct)) {
+        const bonus = ['CB', 'ST'].includes(p.position) ? 0.1 : 0;
+        score += (clamp((p.aerialDuelsWonPct - 50) / 30) + bonus) * 0.2;
+        if (p.aerialDuelsWonPct > 70)
+            parts.push('aerial dominance');
+    }
+    if (has(p.dribblersTackledPct)) {
+        score += clamp((p.dribblersTackledPct - 50) / 30) * 0.25;
+    }
+    // Pressing teams value defenders who tackle
+    if (t.style === 'pressing' && has(p.tacklesPer90) && p.tacklesPer90 > 3) {
+        score += 0.15;
+        parts.push('fits pressing identity');
+    }
+    return {
+        name: 'Defensive Value',
+        score: clamp(score),
+        weight: 1.0,
+        tier: 1,
+        explanation: parts.length > 0 ? parts.join('; ') + '.' : 'Defensive profile evaluated.',
+    };
+}
+function evalPhysicalProfile(p, t) {
+    const available = [
+        p.topSpeed, p.avgMatchSpeed, p.sprintsPerMatch,
+        p.highSpeedRunsPerMatch, p.distancePerMatch,
+    ].filter(has);
+    if (available.length === 0)
+        return null;
+    let score = 0;
+    const parts = [];
+    if (t.style === 'counter') {
+        if (has(p.topSpeed) && p.topSpeed > 33) {
+            score += 0.4;
+            parts.push('pace suits counter-attack');
+        }
+        if (has(p.sprintsPerMatch) && p.sprintsPerMatch > 25) {
+            score += 0.3;
+        }
+    }
+    if (t.style === 'pressing') {
+        if (has(p.distancePerMatch) && p.distancePerMatch > 11) {
+            score += 0.3;
+            parts.push('high work rate for pressing');
+        }
+        if (has(p.sprintsPerMatch) && p.sprintsPerMatch > 20) {
+            score += 0.2;
+        }
+    }
+    if (t.style === 'possession') {
+        // Possession teams less reliant on raw pace
+        if (has(p.avgMatchSpeed)) {
+            score += clamp((p.avgMatchSpeed - 5.2) / 1.5) * 0.3;
+        }
+    }
+    if (t.style === 'balanced') {
+        // Reward well-rounded physical profiles
+        const phys = avg(has(p.topSpeed) ? (p.topSpeed - 28) / 8 : undefined, has(p.sprintsPerMatch) ? (p.sprintsPerMatch - 15) / 20 : undefined, has(p.distancePerMatch) ? (p.distancePerMatch - 9) / 3 : undefined);
+        if (has(phys))
+            score += clamp(phys) * 0.5;
+    }
+    return {
+        name: 'Physical Profile',
+        score: clamp(score),
+        weight: 1.0,
+        tier: 1,
+        explanation: parts.length > 0 ? parts.join('; ') + '.' : 'Physical profile evaluated.',
+    };
+}
+function evalRedundancy(p, t) {
+    var _a;
+    const depth = (_a = t.positionDepth.get(p.position)) !== null && _a !== void 0 ? _a : 0;
+    const score = depth === 0 ? 0.9 : depth === 1 ? 0.5 : depth === 2 ? -0.1 : depth === 3 ? -0.5 : -0.7;
+    return {
+        name: 'Redundancy',
+        score,
+        weight: 1.0,
+        tier: 1,
+        explanation: `${depth} players at ${p.position}. ` +
+            `${depth === 0 ? 'CRITICAL GAP' : depth === 1 ? 'Low depth' : depth === 2 ? 'Adequate' : 'Saturated'}.`,
+    };
+}
+function evalAgeContract(p, _t) {
+    let score = 0;
+    const parts = [];
+    // Age component
+    if (p.age <= 21) {
+        score += 0.4;
+        parts.push(`age ${p.age} — massive upside`);
+    }
+    else if (p.age <= 24) {
+        score += 0.25;
+        parts.push(`age ${p.age} — significant development`);
+    }
+    else if (p.age <= 27) {
+        score += 0.1;
+        parts.push(`age ${p.age} — prime years`);
+    }
+    else if (p.age <= 29) {
+        score -= 0.1;
+        parts.push(`age ${p.age} — peak but declining horizon`);
+    }
+    else {
+        score -= 0.35;
+        parts.push(`age ${p.age} — limited resale window`);
+    }
+    // Contract component: short contract = lower price = buyer advantage
+    if (p.contractYearsLeft <= 1) {
+        score += 0.3;
+        parts.push('expiring contract — transfer leverage');
+    }
+    else if (p.contractYearsLeft <= 2) {
+        score += 0.1;
+        parts.push('short contract');
+    }
+    else if (p.contractYearsLeft >= 5) {
+        score -= 0.15;
+        parts.push('long contract — seller has leverage');
+    }
+    // Combined penalty: old + short contract = declining asset
+    if (p.age >= 30 && p.contractYearsLeft <= 2) {
+        score -= 0.2;
+        parts.push('aging with limited window');
+    }
+    // Same-league premium
+    // (handled in system fit already, omitted here to avoid double-counting)
+    return {
+        name: 'Age & Contract',
+        score: clamp(score),
+        weight: 1.0,
+        tier: 1,
+        explanation: parts.join('; ') + '.',
+    };
+}
+// ─── Tier 2 Factor Functions ─────────────────────────────────────────
+function evalSpatialImpact(p, t) {
+    const available = [
+        p.avgX, p.avgY, p.positionHeatmapEntropy, p.territoryControlled,
+        p.spaceCreatedPerRun, p.widthContribution, p.depthContribution,
+    ].filter(has);
+    if (available.length < 2)
+        return null;
+    let score = 0;
+    const parts = [];
+    // Zone weakness fill
+    if (has(p.avgY)) {
+        const playsLeft = p.avgY < -10;
+        const playsRight = p.avgY > 10;
+        if (t.weakestZone.includes('left') && playsLeft) {
+            score += 0.5;
+            parts.push('fills weak left zone');
+        }
+        else if (t.weakestZone.includes('right') && playsRight) {
+            score += 0.5;
+            parts.push('fills weak right zone');
+        }
+        else if (t.weakestZone.includes('center') && !playsLeft && !playsRight) {
+            score += 0.3;
+            parts.push('strengthens center');
+        }
+    }
+    // Space creation value
+    if (has(p.spaceCreatedPerRun) && p.spaceCreatedPerRun > 20) {
+        score += 0.2;
+        parts.push('creates space for teammates');
+    }
+    // Width/depth contribution
+    if (has(p.widthContribution) && has(p.depthContribution)) {
+        if (t.style === 'possession' && p.widthContribution > 0.6) {
+            score += 0.15;
+            parts.push('stretches play wide');
+        }
+        if (t.style === 'counter' && p.depthContribution > 0.6) {
+            score += 0.15;
+            parts.push('provides depth in transition');
+        }
+    }
+    // Positional entropy — versatile players fill multiple zones
+    if (has(p.positionHeatmapEntropy) && p.positionHeatmapEntropy > 0.7) {
+        score += 0.1;
+        parts.push('positionally versatile');
+    }
+    return {
+        name: 'Spatial Impact',
+        score: clamp(score),
+        weight: 1.5,
+        tier: 2,
+        explanation: parts.length > 0 ? parts.join('; ') + '.' : 'Spatial profile evaluated.',
+    };
+}
+function evalNetworkIntegration(p, t) {
+    const available = [
+        p.pageRankCentrality, p.betweennessCentrality, p.passingConnections,
+        p.avgPassEdgeWeight, p.hubScore, p.networkImpactOnRemoval,
+    ].filter(has);
+    if (available.length < 2)
+        return null;
+    let score = 0;
+    const parts = [];
+    // Centrality match with team average
+    if (has(p.pageRankCentrality)) {
+        const centMatch = 1 - Math.abs(p.pageRankCentrality - t.avgPlayerCentrality) /
+            Math.max(t.avgPlayerCentrality, 0.01);
+        score += clamp(centMatch) * 0.25;
+    }
+    // Connection density vs team
+    if (has(p.passingConnections)) {
+        const connDelta = (p.passingConnections - t.avgPlayerConnections) /
+            Math.max(t.avgPlayerConnections, 1);
+        score += clamp(connDelta * 0.8) * 0.25;
+        if (connDelta > 0.2)
+            parts.push('boosts connectivity');
+    }
+    // Hub dependency management
+    if (has(p.hubScore) && t.hubDependency > 0.5) {
+        if (p.hubScore > 0.5) {
+            score += 0.3;
+            parts.push('reduces hub dependency');
+        }
+        else {
+            score -= 0.1;
+        }
+    }
+    // Network impact — high-impact players are valuable
+    if (has(p.networkImpactOnRemoval) && p.networkImpactOnRemoval > 0.5) {
+        score += 0.15;
+        parts.push('high network impact');
+    }
+    // Pass edge weight quality
+    if (has(p.avgPassEdgeWeight) && p.avgPassEdgeWeight > 0.35) {
+        score += 0.1;
+    }
+    return {
+        name: 'Network Integration',
+        score: clamp(score),
+        weight: 1.5,
+        tier: 2,
+        explanation: parts.length > 0 ? parts.join('; ') + '.' : 'Network integration evaluated.',
+    };
+}
+function evalStructuralDefense(p, t) {
+    const available = [
+        p.teamMincutWith, p.teamMincutWithout, p.mincutContribution,
+        p.coverShadowArea, p.pressingChainParticipation,
+        p.defensiveTransitionSpeed, p.offensiveTransitionSpeed,
+    ].filter(has);
+    if (available.length < 2)
+        return null;
+    let score = 0;
+    const parts = [];
+    // MinCut contribution
+    if (has(p.mincutContribution)) {
+        if (p.mincutContribution > 0.1) {
+            score += 0.4;
+            parts.push('strengthens structural resilience');
+        }
+        else if (p.mincutContribution < -0.05) {
+            score -= 0.2;
+            parts.push('weakens team structure');
+        }
+    }
+    else if (has(p.teamMincutWith) && has(p.teamMincutWithout)) {
+        const contrib = p.teamMincutWith - p.teamMincutWithout;
+        if (contrib > 0.1) {
+            score += 0.4;
+            parts.push('strengthens structural resilience');
+        }
+    }
+    // Cover shadow
+    if (has(p.coverShadowArea) && p.coverShadowArea > 25) {
+        score += 0.15;
+        parts.push('effective cover shadow');
+    }
+    // Pressing chain fit
+    if (has(p.pressingChainParticipation)) {
+        if (t.style === 'pressing' && p.pressingChainParticipation > 0.6) {
+            score += 0.25;
+            parts.push('excellent pressing chain participation');
+        }
+        else if (p.pressingChainParticipation > 0.4) {
+            score += 0.1;
+        }
+    }
+    // Transition speed
+    if (has(p.defensiveTransitionSpeed) && p.defensiveTransitionSpeed < 3) {
+        score += 0.1;
+        parts.push('quick defensive transitions');
+    }
+    return {
+        name: 'Structural Defense',
+        score: clamp(score),
+        weight: 1.5,
+        tier: 2,
+        explanation: parts.length > 0 ? parts.join('; ') + '.' : 'Structural defense evaluated.',
+    };
+}
+function evalGameStateResilience(p, _t) {
+    const available = [
+        p.performanceWhenWinning, p.performanceWhenLosing, p.performanceWhenDrawing,
+        p.last15minPerformance, p.performanceVsTopTeams, p.performanceInBigMoments,
+    ].filter(has);
+    if (available.length < 2)
+        return null;
+    let score = 0;
+    const parts = [];
+    // Performs when losing — clutch mentality
+    if (has(p.performanceWhenLosing) && p.performanceWhenLosing > 1.1) {
+        score += 0.3;
+        parts.push('raises game when behind');
+    }
+    // Late-game performer
+    if (has(p.last15minPerformance) && p.last15minPerformance > 1.2) {
+        score += 0.2;
+        parts.push('strong in closing minutes');
+    }
+    // Big-game player
+    if (has(p.performanceVsTopTeams) && p.performanceVsTopTeams > 1.0) {
+        score += 0.25;
+        parts.push('steps up vs top teams');
+    }
+    if (has(p.performanceInBigMoments) && p.performanceInBigMoments > 1.0) {
+        score += 0.15;
+        parts.push('decisive in big moments');
+    }
+    // Consistency across game states
+    if (has(p.performanceWhenWinning) && has(p.performanceWhenLosing) && has(p.performanceWhenDrawing)) {
+        const variance = Math.abs(p.performanceWhenWinning - p.performanceWhenLosing) +
+            Math.abs(p.performanceWhenWinning - p.performanceWhenDrawing);
+        if (variance < 0.3) {
+            score += 0.1;
+            parts.push('consistent across game states');
+        }
+    }
+    return {
+        name: 'Game State Resilience',
+        score: clamp(score),
+        weight: 1.5,
+        tier: 2,
+        explanation: parts.length > 0 ? parts.join('; ') + '.' : 'Game state resilience evaluated.',
+    };
+}
+// ─── Tier 3 Factor Functions ─────────────────────────────────────────
+function evalTacticalIntelligence(p, t) {
+    const available = [
+        p.positionalAwareness, p.decisionMakingSpeed, p.pressReadingAbility,
+        p.transitionReading, p.setPlayIntelligence, p.coachability,
+    ].filter(has);
+    if (available.length < 2)
+        return null;
+    let score = 0;
+    const parts = [];
+    // Positional awareness — more important in possession systems
+    if (has(p.positionalAwareness)) {
+        const baseline = t.style === 'possession' ? 7 : 5;
+        score += clamp((p.positionalAwareness - baseline) / 4) * 0.25;
+        if (p.positionalAwareness >= 8)
+            parts.push('elite positional IQ');
+    }
+    // Decision-making speed — universally valuable
+    if (has(p.decisionMakingSpeed)) {
+        score += clamp((p.decisionMakingSpeed - 5) / 4) * 0.2;
+    }
+    // Press reading — critical for pressing teams
+    if (has(p.pressReadingAbility) && t.style === 'pressing') {
+        score += clamp((p.pressReadingAbility - 5) / 4) * 0.25;
+        if (p.pressReadingAbility >= 8)
+            parts.push('reads the press expertly');
+    }
+    // Coachability — high value for complex tactical systems
+    if (has(p.coachability)) {
+        const complexSystem = t.networkDensity > 0.8 || t.style === 'possession';
+        const baseline = complexSystem ? 6 : 4;
+        score += clamp((p.coachability - baseline) / 5) * 0.15;
+        if (p.coachability >= 8)
+            parts.push('highly coachable');
+    }
+    // Transition reading — for counter and balanced
+    if (has(p.transitionReading) && (t.style === 'counter' || t.style === 'balanced')) {
+        score += clamp((p.transitionReading - 5) / 4) * 0.15;
+    }
+    return {
+        name: 'Tactical Intelligence',
+        score: clamp(score),
+        weight: 2.0,
+        tier: 3,
+        explanation: parts.length > 0 ? parts.join('; ') + '.' : 'Tactical IQ evaluated.',
+    };
+}
+function evalPersonalityCulture(p, _t) {
+    const available = [
+        p.mentality, p.leadershipPresence, p.cultureFit,
+        p.mediaHandling, p.adaptability, p.injuryProneness,
+    ].filter(has);
+    if (available.length < 2)
+        return null;
+    let score = 0;
+    const parts = [];
+    if (has(p.mentality)) {
+        score += clamp((p.mentality - 5) / 4) * 0.25;
+        if (p.mentality >= 8)
+            parts.push('winner mentality');
+    }
+    if (has(p.leadershipPresence)) {
+        score += clamp((p.leadershipPresence - 5) / 4) * 0.15;
+        if (p.leadershipPresence >= 8)
+            parts.push('natural leader');
+    }
+    if (has(p.cultureFit)) {
+        score += clamp((p.cultureFit - 5) / 4) * 0.2;
+        if (p.cultureFit <= 3)
+            parts.push('culture fit concerns');
+    }
+    if (has(p.adaptability)) {
+        score += clamp((p.adaptability - 5) / 4) * 0.15;
+    }
+    // Injury proneness is a negative: higher = worse
+    if (has(p.injuryProneness)) {
+        score -= clamp((p.injuryProneness - 3) / 6) * 0.25;
+        if (p.injuryProneness >= 7)
+            parts.push('significant injury risk');
+    }
+    return {
+        name: 'Personality & Culture',
+        score: clamp(score),
+        weight: 2.0,
+        tier: 3,
+        explanation: parts.length > 0 ? parts.join('; ') + '.' : 'Personality profile evaluated.',
+    };
+}
+function evalRoleSpecificQuality(p, _t) {
+    const isForward = ['ST', 'LW', 'RW', 'CAM'].includes(p.position);
+    const isDefender = ['CB', 'LB', 'RB', 'CDM'].includes(p.position);
+    let available;
+    if (isForward) {
+        available = [p.holdUpPlayQuality, p.aerialPresence, p.runTiming, p.movementInBox];
+    }
+    else if (isDefender) {
+        available = [p.oneOnOneDefending, p.organizationalVoice, p.recoverySpeed, p.composureUnderPress];
+    }
+    else {
+        // Midfielders: use a mix
+        available = [p.composureUnderPress, p.recoverySpeed, p.runTiming];
+    }
+    const validCount = available.filter(has).length;
+    if (validCount < 2)
+        return null;
+    let score = 0;
+    const parts = [];
+    if (isForward) {
+        if (has(p.movementInBox) && p.movementInBox >= 8) {
+            score += 0.3;
+            parts.push('intelligent movement in the box');
+        }
+        if (has(p.runTiming) && p.runTiming >= 7) {
+            score += 0.25;
+            parts.push('well-timed runs');
+        }
+        if (has(p.holdUpPlayQuality)) {
+            score += clamp((p.holdUpPlayQuality - 5) / 4) * 0.25;
+        }
+        if (has(p.aerialPresence)) {
+            score += clamp((p.aerialPresence - 5) / 4) * 0.2;
+        }
+    }
+    else if (isDefender) {
+        if (has(p.oneOnOneDefending) && p.oneOnOneDefending >= 8) {
+            score += 0.3;
+            parts.push('elite 1v1 defender');
+        }
+        if (has(p.organizationalVoice) && p.organizationalVoice >= 7) {
+            score += 0.25;
+            parts.push('organizes the backline');
+        }
+        if (has(p.recoverySpeed)) {
+            score += clamp((p.recoverySpeed - 5) / 4) * 0.25;
+        }
+        if (has(p.composureUnderPress)) {
+            score += clamp((p.composureUnderPress - 5) / 4) * 0.2;
+        }
+    }
+    else {
+        // Midfielders
+        if (has(p.composureUnderPress)) {
+            score += clamp((p.composureUnderPress - 5) / 4) * 0.4;
+            if (p.composureUnderPress >= 8)
+                parts.push('composed under pressure');
+        }
+        if (has(p.recoverySpeed)) {
+            score += clamp((p.recoverySpeed - 5) / 4) * 0.3;
+        }
+        if (has(p.runTiming)) {
+            score += clamp((p.runTiming - 5) / 4) * 0.3;
+        }
+    }
+    return {
+        name: 'Role-Specific Quality',
+        score: clamp(score),
+        weight: 2.0,
+        tier: 3,
+        explanation: parts.length > 0 ? parts.join('; ') + '.' : 'Role-specific quality evaluated.',
+    };
+}
+function evalIntangibleValue(p, _t) {
+    const available = [
+        p.clutchFactor, p.dressingRoomEffect, p.fanAppeal, p.agentDifficulty,
+    ].filter(has);
+    if (available.length < 2)
+        return null;
+    let score = 0;
+    const parts = [];
+    if (has(p.clutchFactor)) {
+        score += clamp((p.clutchFactor - 5) / 4) * 0.3;
+        if (p.clutchFactor >= 8)
+            parts.push('elite clutch performer');
+    }
+    if (has(p.dressingRoomEffect)) {
+        score += clamp((p.dressingRoomEffect - 5) / 4) * 0.25;
+        if (p.dressingRoomEffect >= 8)
+            parts.push('positive dressing room influence');
+        if (p.dressingRoomEffect <= 3)
+            parts.push('dressing room risk');
+    }
+    if (has(p.fanAppeal)) {
+        score += clamp((p.fanAppeal - 5) / 4) * 0.15;
+        if (p.fanAppeal >= 8)
+            parts.push('commercial value');
+    }
+    // Agent difficulty is negative: higher = harder deal
+    if (has(p.agentDifficulty)) {
+        score -= clamp((p.agentDifficulty - 4) / 5) * 0.3;
+        if (p.agentDifficulty >= 8)
+            parts.push('nightmare agent');
+    }
+    return {
+        name: 'Intangible Value',
+        score: clamp(score),
+        weight: 2.0,
+        tier: 3,
+        explanation: parts.length > 0 ? parts.join('; ') + '.' : 'Intangible value evaluated.',
+    };
+}
+// ─── Core Valuation Computation ──────────────────────────────────────
+/** Maximum possible weight when all 16 factors fire. */
+const MAX_POSSIBLE_WEIGHT = 8 * 1.0 + // 8 tier-1 factors at weight 1.0 each
+    4 * 1.5 + // 4 tier-2 factors at weight 1.5 each
+    4 * 2.0; // 4 tier-3 factors at weight 2.0 each
+function computeEnhancedValuation(player, team) {
+    var _a;
+    // Skip if player is already at this club
+    if (player.club === team.name) {
+        return {
+            team: team.name,
+            player: player.name,
+            position: player.position,
+            club: player.club,
+            league: player.league,
+            age: player.age,
+            marketValue: player.marketValue,
+            contextValue: player.marketValue,
+            multiplier: 1.0,
+            verdict: 'fair',
+            confidence: 0,
+            tierBreakdown: { tier1Score: 0, tier2Score: null, tier3Score: null },
+            factors: [],
+            topPositive: 'Current club',
+            topNegative: 'N/A',
+        };
+    }
+    // Collect all factors (nullable ones are skipped when data is missing)
+    const allResults = [
+        // Tier 1 (always-on: system fit, redundancy, age/contract)
+        evalSystemFit(player, team),
+        evalPassingProfile(player, team),
+        evalShootingValue(player, team),
+        evalCreativeValue(player, team),
+        evalDefensiveValue(player, team),
+        evalPhysicalProfile(player, team),
+        evalRedundancy(player, team),
+        evalAgeContract(player, team),
+        // Tier 2
+        evalSpatialImpact(player, team),
+        evalNetworkIntegration(player, team),
+        evalStructuralDefense(player, team),
+        evalGameStateResilience(player, team),
+        // Tier 3
+        evalTacticalIntelligence(player, team),
+        evalPersonalityCulture(player, team),
+        evalRoleSpecificQuality(player, team),
+        evalIntangibleValue(player, team),
+    ];
+    const factors = allResults.filter((f) => f !== null);
+    // Compute tier-level scores
+    const tier1Factors = factors.filter(f => f.tier === 1);
+    const tier2Factors = factors.filter(f => f.tier === 2);
+    const tier3Factors = factors.filter(f => f.tier === 3);
+    const tierAvg = (fs) => {
+        if (fs.length === 0)
+            return null;
+        const totalW = fs.reduce((s, f) => s + f.weight, 0);
+        return fs.reduce((s, f) => s + f.score * f.weight, 0) / totalW;
+    };
+    const tier1Score = (_a = tierAvg(tier1Factors)) !== null && _a !== void 0 ? _a : 0;
+    const tier2Score = tierAvg(tier2Factors);
+    const tier3Score = tierAvg(tier3Factors);
+    // Weighted total across all active factors
+    const activeWeight = factors.reduce((s, f) => s + f.weight, 0);
+    const weightedScore = factors.reduce((s, f) => s + f.score * f.weight, 0);
+    const norm = activeWeight > 0 ? weightedScore / activeWeight : 0;
+    // Confidence: ratio of active weights to maximum possible
+    const confidence = Math.min(1, activeWeight / MAX_POSSIBLE_WEIGHT);
+    // Multiplier: confidence-scaled exponential
+    // Low data => conservative (exponent dampened), high data => full swing
+    const exponent = norm * 0.92 * (0.7 + 0.3 * confidence);
+    const multiplier = Math.round(Math.exp(exponent) * 100) / 100;
+    const contextValue = Math.round(player.marketValue * multiplier * 10) / 10;
+    // Verdict
+    const verdict = multiplier > 1.3 ? 'bargain' :
+        multiplier > 0.85 ? 'fair' :
+            multiplier > 0.55 ? 'overpay' :
+                'avoid';
+    // Top positive and negative factors
+    const sorted = [...factors].sort((a, b) => (b.score * b.weight) - (a.score * a.weight));
+    const topPositive = sorted.length > 0 && sorted[0].score > 0
+        ? `${sorted[0].name}: ${sorted[0].explanation}`
+        : 'None';
+    const reverseSorted = [...factors].sort((a, b) => (a.score * a.weight) - (b.score * b.weight));
+    const topNegative = reverseSorted.length > 0 && reverseSorted[0].score < 0
+        ? `${reverseSorted[0].name}: ${reverseSorted[0].explanation}`
+        : 'None';
+    return {
+        team: team.name,
+        player: player.name,
+        position: player.position,
+        club: player.club,
+        league: player.league,
+        age: player.age,
+        marketValue: player.marketValue,
+        contextValue,
+        multiplier,
+        verdict,
+        confidence,
+        tierBreakdown: {
+            tier1Score,
+            tier2Score,
+            tier3Score,
+        },
+        factors,
+        topPositive,
+        topNegative,
+    };
+}
+
+
+/* PitchIntel Enterprise demo UI.
+ * Embedded verbatim into pitchintel-enterprise.html by enterprise.ts.
+ * Constraint: no backticks and no dollar-brace sequences (template embedding).
+ * PLAYERS_RAW, TEAMS_RAW and the engine (computeEnhancedValuation,
+ * scoutProfileToVector, vectorCompleteness) are defined before this script.
+ */
+
+// ─── Data setup ───────────────────────────────────────────────
+
+var TEAMS = TEAMS_RAW.map(function (t) {
+  var copy = Object.assign({}, t);
+  copy.positionDepth = new Map(t.positionDepth);
+  return copy;
+});
+var PLAYERS = PLAYERS_RAW;
+
+var SCOUTS = [
+  { id: 'mv', name: 'Marta Vidal', region: 'South America & La Liga' },
+  { id: 'so', name: 'Sam Okafor', region: 'West Africa & Ligue 1' },
+  { id: 'll', name: 'Lars Lindqvist', region: 'Scandinavia & Bundesliga' },
+  { id: 'jb', name: 'Jimmy Barnes', region: 'UK & EFL' }
+];
+
+var T3_COMMON_GROUPS = [
+  { title: 'Tactical IQ', fields: [
+    { id: 'positionalAwareness', label: 'Positional awareness' },
+    { id: 'decisionMakingSpeed', label: 'Decision-making speed' },
+    { id: 'pressReadingAbility', label: 'Press reading' },
+    { id: 'transitionReading', label: 'Transition reading' },
+    { id: 'setPlayIntelligence', label: 'Set-play intelligence' },
+    { id: 'coachability', label: 'Coachability' }
+  ]},
+  { title: 'Personality & Character', fields: [
+    { id: 'mentality', label: 'Mentality' },
+    { id: 'leadershipPresence', label: 'Leadership presence' },
+    { id: 'cultureFit', label: 'Culture fit' },
+    { id: 'mediaHandling', label: 'Media handling' },
+    { id: 'adaptability', label: 'Adaptability' },
+    { id: 'injuryProneness', label: 'Injury proneness', inverse: true }
+  ]}
+];
+var T3_ROLE_FORWARD = { title: 'Role: Attacking', fields: [
+  { id: 'holdUpPlayQuality', label: 'Hold-up play' },
+  { id: 'aerialPresence', label: 'Aerial presence' },
+  { id: 'runTiming', label: 'Run timing' },
+  { id: 'movementInBox', label: 'Movement in box' }
+]};
+var T3_ROLE_DEFENDER = { title: 'Role: Defending', fields: [
+  { id: 'oneOnOneDefending', label: '1v1 defending' },
+  { id: 'organizationalVoice', label: 'Organizational voice' },
+  { id: 'recoverySpeed', label: 'Recovery speed' },
+  { id: 'composureUnderPress', label: 'Composure under press' }
+]};
+var T3_ROLE_MID = { title: 'Role: Midfield', fields: [
+  { id: 'composureUnderPress', label: 'Composure under press' },
+  { id: 'recoverySpeed', label: 'Recovery speed' },
+  { id: 'runTiming', label: 'Run timing' }
+]};
+var T3_INTANGIBLES = { title: 'Intangibles', fields: [
+  { id: 'clutchFactor', label: 'Clutch factor' },
+  { id: 'dressingRoomEffect', label: 'Dressing-room effect' },
+  { id: 'fanAppeal', label: 'Fan appeal' },
+  { id: 'agentDifficulty', label: 'Agent difficulty', inverse: true }
+]};
+
+function t3GroupsFor(position) {
+  var role;
+  if (['ST', 'LW', 'RW', 'CAM'].indexOf(position) >= 0) role = T3_ROLE_FORWARD;
+  else if (['CB', 'LB', 'RB', 'CDM'].indexOf(position) >= 0) role = T3_ROLE_DEFENDER;
+  else role = T3_ROLE_MID;
+  return T3_COMMON_GROUPS.concat([role, T3_INTANGIBLES]);
+}
+
+// ─── State ────────────────────────────────────────────────────
+
+var STORE_KEY = 'pitchintel-enterprise-v1';
+var state = { club: null, shortlist: [] };
+
+function saveState() { localStorage.setItem(STORE_KEY, JSON.stringify(state)); }
+function loadState() {
+  try {
+    var raw = localStorage.getItem(STORE_KEY);
+    if (raw) { state = JSON.parse(raw); return true; }
+  } catch (e) { /* corrupted state — reseed */ }
+  return false;
+}
+
+function teamByName(n) { return TEAMS.find(function (t) { return t.name === n; }); }
+function playerByName(n) { return PLAYERS.find(function (p) { return p.name === n; }); }
+function scoutById(id) { return SCOUTS.find(function (s) { return s.id === id; }); }
+function entryFor(playerName) {
+  return state.shortlist.find(function (e) { return e.player === playerName; });
+}
+
+// ─── Valuation helpers ────────────────────────────────────────
+
+function mergedVector(player, entry) {
+  var vec = Object.assign({}, scoutProfileToVector(player));
+  if (!entry || !entry.reports || entry.reports.length === 0) return vec;
+  var sums = {}, counts = {};
+  entry.reports.forEach(function (r) {
+    Object.keys(r.values).forEach(function (k) {
+      sums[k] = (sums[k] || 0) + r.values[k];
+      counts[k] = (counts[k] || 0) + 1;
+    });
+  });
+  Object.keys(sums).forEach(function (k) {
+    vec[k] = Math.round((sums[k] / counts[k]) * 10) / 10;
+  });
+  return vec;
+}
+
+function baseValuation(player, team) {
+  return computeEnhancedValuation(scoutProfileToVector(player), team);
+}
+function adjustedValuation(player, team, entry) {
+  return computeEnhancedValuation(mergedVector(player, entry), team);
+}
+
+function multClass(m) { return m >= 1.15 ? 'g' : m < 0.85 ? 'r' : 'n'; }
+function fmtM(v) { return '€' + v + 'M'; }
+function pct(v) { return Math.round(v * 100) + '%'; }
+function escapeHtml(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// Deterministic per-player pseudo-random for seeded demo reports
+function hashRand(seedStr) {
+  var h = 2166136261;
+  for (var i = 0; i < seedStr.length; i++) {
+    h ^= seedStr.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return function () {
+    h = Math.imul(h ^ (h >>> 15), 2246822507);
+    h = Math.imul(h ^ (h >>> 13), 3266489909);
+    return ((h ^= h >>> 16) >>> 0) / 4294967296;
+  };
+}
+
+// ─── Seeding ──────────────────────────────────────────────────
+
+var SEED_NOTES_GEM = 'Watched him three times live. The data undersells the off-ball intelligence: presses in coordinated waves, always scanning before receiving. Signable, hungry, no baggage. I would push hard this window.';
+var SEED_NOTES_MIXED = 'Talented but streaky. Dominant against mid-table sides, quieter in the big matches. Agent situation needs careful handling. Worth one more window of tracking before we commit.';
+
+function seededReport(player, scoutId, flavor) {
+  var rand = hashRand(player.name + flavor);
+  var values = {};
+  t3GroupsFor(player.position).forEach(function (g) {
+    g.fields.forEach(function (f) {
+      var v;
+      if (flavor === 'gem') {
+        v = f.inverse ? 2 + Math.floor(rand() * 2) : 7 + Math.floor(rand() * 3);
+      } else {
+        v = f.inverse ? 3 + Math.floor(rand() * 4) : 4 + Math.floor(rand() * 5);
+      }
+      values[f.id] = v;
+    });
+  });
+  return {
+    scout: scoutId,
+    date: 'last week',
+    values: values,
+    note: flavor === 'gem' ? SEED_NOTES_GEM : SEED_NOTES_MIXED
+  };
+}
+
+function discoveryCandidates(team) {
+  return PLAYERS
+    .filter(function (p) { return p.club !== team.name; })
+    .map(function (p) { return { player: p, val: baseValuation(p, team) }; })
+    .sort(function (a, b) { return b.val.multiplier - a.val.multiplier; });
+}
+
+function needPositions(team) {
+  var needs = [];
+  team.positionDepth.forEach(function (depth, pos) {
+    if (pos !== 'GK' && depth <= 1) needs.push({ pos: pos, depth: depth });
+  });
+  return needs.sort(function (a, b) { return a.depth - b.depth; });
+}
+
+// Squad-depth labels don't always match player-DB labels (a squad thin at LM
+// is covered by an LW in the modern DB) — expand needs to equivalent roles.
+var POS_EQUIV = { LM: ['LM', 'LW'], RM: ['RM', 'RW'], LW: ['LW', 'LM'], RW: ['RW', 'RM'] };
+function expandPositions(positions) {
+  var out = [];
+  positions.forEach(function (pos) {
+    (POS_EQUIV[pos] || [pos]).forEach(function (p) {
+      if (out.indexOf(p) < 0) out.push(p);
+    });
+  });
+  return out;
+}
+
+function seedWorkspace(clubName) {
+  state = { club: clubName, shortlist: [] };
+  var team = teamByName(clubName);
+  var candidates = discoveryCandidates(team);
+  var needs = expandPositions(needPositions(team).map(function (n) { return n.pos; }));
+
+  // Prefer realistic targets: fills a squad gap, young, within the window budget
+  var affordable = candidates.filter(function (c) { return c.player.marketValue <= team.budget; });
+  var atNeed = affordable.filter(function (c) {
+    return needs.indexOf(c.player.position) >= 0 && c.player.age <= 27;
+  });
+  var pool = atNeed.concat(affordable).concat(candidates);
+  var picked = [];
+  for (var i = 0; i < pool.length && picked.length < 4; i++) {
+    if (!picked.some(function (p) { return p.player.name === pool[i].player.name; })) {
+      picked.push(pool[i]);
+    }
+  }
+
+  picked.forEach(function (c, idx) {
+    var entry = { player: c.player.name, scout: SCOUTS[idx % SCOUTS.length].id, status: 'awaiting', reports: [] };
+    if (idx === 0) {
+      entry.reports.push(seededReport(c.player, entry.scout, 'gem'));
+      entry.status = 'reported';
+    } else if (idx === 1) {
+      entry.reports.push(seededReport(c.player, entry.scout, 'mixed'));
+      entry.status = 'reported';
+    }
+    state.shortlist.push(entry);
+  });
+  saveState();
+}
+
+// ─── Rendering: shared pieces ─────────────────────────────────
+
+function factorRowsHTML(factors) {
+  var html = '';
+  factors.forEach(function (f) {
+    var w = Math.min(50, Math.abs(f.score) * 50);
+    var left = f.score >= 0 ? 50 : 50 - w;
+    var color = f.score >= 0 ? 'var(--green)' : 'var(--red)';
+    html += '<div class="factor-row">' +
+      '<span class="f-tier t' + f.tier + '">T' + f.tier + '</span>' +
+      '<span class="f-name">' + escapeHtml(f.name) + '</span>' +
+      '<span class="f-bar"><i style="left:' + left + '%;width:' + w + '%;background:' + color + '"></i></span>' +
+      '<span class="f-score ' + (f.score >= 0 ? 'pos' : 'neg') + '">' +
+      (f.score >= 0 ? '+' : '') + f.score.toFixed(2) + '</span>' +
+      '</div>';
+  });
+  return html;
+}
+
+function boardNote(player, team, base, adj, entry) {
+  var reported = entry.reports.length > 0;
+  var deltaPct = Math.round((adj.contextValue / player.marketValue - 1) * 100);
+  var confPts = Math.round((adj.confidence - base.confidence) * 100);
+  var line;
+  if (!reported) {
+    line = 'Public-data read only (confidence ' + pct(adj.confidence) + '). Engine sees ' +
+      (adj.multiplier >= 1.1 ? 'clear upside' : adj.multiplier >= 0.9 ? 'a fair-value profile' : 'weak fit') +
+      ' at ' + escapeHtml(team.name) + ' — awaiting scouting before a recommendation.';
+  } else if (adj.verdict === 'bargain') {
+    line = 'RECOMMEND. Scouted value ' + fmtM(adj.contextValue) + ' vs market ' + fmtM(player.marketValue) +
+      ' (' + (deltaPct >= 0 ? '+' : '') + deltaPct + '%). Scouting lifted confidence by ' + confPts +
+      ' pts to ' + pct(adj.confidence) + '. ' + escapeHtml(adj.topPositive.split(':')[0]) + ' is the headline driver.';
+  } else if (adj.verdict === 'fair') {
+    line = 'PROCEED WITH DISCIPLINE. Fair value at ' + fmtM(adj.contextValue) + ' — do not chase above market. Confidence ' +
+      pct(adj.confidence) + ' after scouting. Watch: ' + escapeHtml(adj.topNegative.split(':')[0]) + '.';
+  } else {
+    line = 'STEP BACK. Scouted value ' + fmtM(adj.contextValue) + ' vs market ' + fmtM(player.marketValue) +
+      '. The fit is not there — ' + escapeHtml(adj.topNegative.split(':')[0]).toLowerCase() +
+      ' drags the profile. Redirect scouting hours.';
+  }
+  return line;
+}
+
+function confBarHTML(conf) {
+  return '<div class="conf-wrap"><span style="font-size:0.7rem;color:var(--text-dim)">Confidence ' + pct(conf) + '</span>' +
+    '<div class="conf-bar"><i class="' + (conf >= 0.6 ? 'high' : '') + '" style="width:' + Math.round(conf * 100) + '%"></i></div></div>';
+}
+
+// ─── Rendering: DoF Dashboard ─────────────────────────────────
+
+function renderDashboard() {
+  var team = teamByName(state.club);
+  var el = document.getElementById('view-dashboard');
+  if (state.shortlist.length === 0) {
+    el.innerHTML = viewHeader('DoF Dashboard', 'Board-ready view of every tracked target') +
+      '<div class="empty-state"><div class="es-icon">&#9678;</div>No targets tracked yet. ' +
+      '<button class="linkish" onclick="showView(\'discovery\')">Run discovery</button> to build your shortlist.</div>';
+    return;
+  }
+
+  var rows = state.shortlist.map(function (entry) {
+    var player = playerByName(entry.player);
+    var base = baseValuation(player, team);
+    var adj = adjustedValuation(player, team, entry);
+    return { entry: entry, player: player, base: base, adj: adj };
+  }).sort(function (a, b) { return b.adj.multiplier - a.adj.multiplier; });
+
+  var reported = rows.filter(function (r) { return r.entry.reports.length > 0; });
+  var totalReports = state.shortlist.reduce(function (s, e) { return s + e.reports.length; }, 0);
+  var avgConf = rows.reduce(function (s, r) { return s + r.adj.confidence; }, 0) / rows.length;
+  var avgBaseConf = rows.reduce(function (s, r) { return s + r.base.confidence; }, 0) / rows.length;
+  var valueEdge = reported.reduce(function (s, r) { return s + (r.adj.contextValue - r.player.marketValue); }, 0);
+
+  var html = viewHeader('DoF Dashboard', 'Board-ready view of every tracked target — values shift as scouting comes in');
+  html += '<div class="kpi-row">' +
+    kpi('Targets tracked', rows.length, '') +
+    kpi('Scout reports filed', totalReports, '') +
+    kpi('Avg confidence', pct(avgConf), '+' + Math.round((avgConf - avgBaseConf) * 100) + ' pts vs public data alone', avgConf >= 0.55 ? 'green' : '') +
+    kpi('Identified value edge', (valueEdge >= 0 ? '+' : '') + fmtM(Math.round(valueEdge * 10) / 10), 'scouted value minus market, reported targets', valueEdge > 0 ? 'gold' : '') +
+    '</div>';
+
+  rows.forEach(function (r) {
+    html += targetCardHTML(r.player, team, r.base, r.adj, r.entry);
+  });
+  el.innerHTML = html;
+  wireTargetCards(el);
+}
+
+function kpi(label, value, sub, cls) {
+  return '<div class="kpi"><div class="k-label">' + label + '</div>' +
+    '<div class="k-value ' + (cls || '') + '">' + value + '</div>' +
+    (sub ? '<div class="k-sub">' + sub + '</div>' : '') + '</div>';
+}
+
+function viewHeader(title, subtitle) {
+  return '<div class="view-header"><h2>' + title + '</h2><p class="subtitle">' + subtitle + '</p></div>';
+}
+
+function targetCardHTML(player, team, base, adj, entry) {
+  var scout = scoutById(entry.scout);
+  var hasReports = entry.reports.length > 0;
+  var deltaV = Math.round((adj.contextValue - base.contextValue) * 10) / 10;
+  var confDelta = Math.round((adj.confidence - base.confidence) * 100);
+
+  var html = '<div class="target-card" data-player="' + escapeHtml(player.name) + '">' +
+    '<div class="tc-top">' +
+    '<div class="tc-who"><div class="t-name">' + escapeHtml(player.name) + '</div>' +
+    '<div class="t-meta">' + player.position + ' · ' + player.age + ' · ' + escapeHtml(player.club) + ' (' + escapeHtml(player.league) + ') · scout: ' + escapeHtml(scout ? scout.name : '—') + '</div></div>' +
+    '<div class="tc-nums">' +
+    '<div class="tc-num"><div class="n-label">Market</div><div class="n-value">' + fmtM(player.marketValue) + '</div></div>' +
+    '<div class="tc-num"><div class="n-label">' + (hasReports ? 'Scouted value' : 'Engine value') + '</div>' +
+    '<div class="n-value ' + (adj.multiplier >= 1.15 ? 'green' : adj.multiplier < 0.85 ? 'red' : '') + '">' + fmtM(adj.contextValue) +
+    (hasReports && Math.abs(deltaV) >= 0.1 ? ' <span class="n-delta ' + (deltaV >= 0 ? 'up' : 'down') + '">' + (deltaV >= 0 ? '▲' : '▼') + fmtM(Math.abs(deltaV)) + '</span>' : '') +
+    '</div></div>' +
+    '<div class="tc-num"><div class="n-label">Multiplier</div><div class="n-value">' + adj.multiplier.toFixed(2) + 'x</div></div>' +
+    confBarHTML(adj.confidence) +
+    '<span class="verdict-chip ' + adj.verdict + '">' + adj.verdict + '</span>' +
+    '<span class="status-chip ' + (hasReports ? 'reported' : 'awaiting') + '">' + (hasReports ? entry.reports.length + ' report' + (entry.reports.length > 1 ? 's' : '') : 'awaiting scout') + '</span>' +
+    '</div></div>';
+
+  html += '<div class="tc-body">' +
+    '<div class="board-note"><div class="bn-label">Board note</div>' + boardNote(player, team, base, adj, entry) + '</div>' +
+    factorRowsHTML(adj.factors);
+
+  entry.reports.forEach(function (rep) {
+    var s = scoutById(rep.scout);
+    html += '<div class="scout-note-row"><div class="scout-avatar">' + escapeHtml(initials(s ? s.name : '?')) + '</div>' +
+      '<div class="snr-body"><div class="snr-head">' + escapeHtml(s ? s.name : 'Scout') + ' <span>· ' + escapeHtml(rep.date) + '</span></div>' +
+      '<div class="snr-note">“' + escapeHtml(rep.note || 'No written note.') + '”</div></div></div>';
+  });
+
+  html += '<div class="tc-actions">' +
+    '<button class="btn-primary" onclick="openReport(\'' + jsName(player.name) + '\')">' + (hasReports ? 'Add another report' : 'File scout report') + '</button>' +
+    '<button class="btn-danger" onclick="removeTarget(\'' + jsName(player.name) + '\')">Remove from shortlist</button>' +
+    '</div></div></div>';
+  return html;
+}
+
+function initials(name) {
+  return name.split(' ').map(function (w) { return w.charAt(0); }).join('').slice(0, 2);
+}
+function jsName(name) { return name.replace(/\\/g, '').replace(/'/g, "\\'"); }
+
+function wireTargetCards(container) {
+  container.querySelectorAll('.target-card .tc-top').forEach(function (top) {
+    top.addEventListener('click', function () {
+      top.parentElement.classList.toggle('expanded');
+    });
+  });
+}
+
+// ─── Rendering: Discovery ─────────────────────────────────────
+
+var discFilter = { position: 'needs', maxAge: 40, minMult: 0 };
+
+function renderDiscovery() {
+  var team = teamByName(state.club);
+  var el = document.getElementById('view-discovery');
+  var needs = needPositions(team);
+
+  var html = viewHeader('Discovery', 'Engine-ranked candidates from public (Tier 1) data — scouting sharpens them into decisions');
+
+  if (needs.length > 0) {
+    html += '<div class="filter-row"><label>Squad gaps:</label>';
+    needs.forEach(function (n) {
+      html += '<button class="need-chip' + (n.depth > 0 ? ' mild' : '') + '" data-pos="' + n.pos + '">' +
+        n.pos + ' · depth ' + n.depth + '</button>';
+    });
+    html += '</div>';
+  }
+
+  var positions = [];
+  PLAYERS.forEach(function (p) { if (positions.indexOf(p.position) < 0) positions.push(p.position); });
+  positions.sort();
+
+  html += '<div class="filter-row">' +
+    '<label>Position</label><select id="disc-pos">' +
+    '<option value="needs"' + (discFilter.position === 'needs' ? ' selected' : '') + '>Squad needs</option>' +
+    '<option value="all"' + (discFilter.position === 'all' ? ' selected' : '') + '>All</option>' +
+    positions.map(function (p) {
+      return '<option value="' + p + '"' + (discFilter.position === p ? ' selected' : '') + '>' + p + '</option>';
+    }).join('') + '</select>' +
+    '<label>Max age</label><input id="disc-age" type="number" min="16" max="40" value="' + discFilter.maxAge + '" style="width:70px">' +
+    '<label>Min multiplier</label><select id="disc-mult">' +
+    [0, 1.0, 1.1, 1.2, 1.3].map(function (m) {
+      return '<option value="' + m + '"' + (discFilter.minMult === m ? ' selected' : '') + '>' + (m === 0 ? 'Any' : m.toFixed(1) + 'x+') + '</option>';
+    }).join('') + '</select></div>';
+
+  var needSet = expandPositions(needs.map(function (n) { return n.pos; }));
+  var rows = discoveryCandidates(team).filter(function (c) {
+    if (discFilter.position === 'needs') { if (needSet.length > 0 && needSet.indexOf(c.player.position) < 0) return false; }
+    else if (discFilter.position !== 'all' && expandPositions([discFilter.position]).indexOf(c.player.position) < 0) return false;
+    if (c.player.age > discFilter.maxAge) return false;
+    if (c.val.multiplier < discFilter.minMult) return false;
+    return true;
+  }).slice(0, 25);
+
+  html += '<table class="disc-table"><thead><tr>' +
+    '<th>#</th><th>Player</th><th>Market</th><th>Value to ' + escapeHtml(team.name) + '</th><th>Mult</th><th>Confidence</th><th></th>' +
+    '</tr></thead><tbody>';
+  rows.forEach(function (c, i) {
+    var shortlisted = !!entryFor(c.player.name);
+    html += '<tr><td>' + (i + 1) + '</td>' +
+      '<td><div class="d-name">' + escapeHtml(c.player.name) + '</div>' +
+      '<div class="d-meta">' + c.player.position + ' · ' + c.player.age + ' · ' + escapeHtml(c.player.club) + '</div></td>' +
+      '<td>' + fmtM(c.player.marketValue) + '</td>' +
+      '<td><strong>' + fmtM(c.val.contextValue) + '</strong></td>' +
+      '<td><span class="mult ' + multClass(c.val.multiplier) + '">' + c.val.multiplier.toFixed(2) + 'x</span></td>' +
+      '<td>' + confBarHTML(c.val.confidence) + '</td>' +
+      '<td><button class="add-btn"' + (shortlisted ? ' disabled' : '') + ' data-player="' + escapeHtml(c.player.name) + '">' +
+      (shortlisted ? 'Shortlisted ✓' : '+ Shortlist') + '</button></td></tr>';
+  });
+  html += '</tbody></table>';
+  if (rows.length === 0) html += '<div class="empty-state">No candidates match these filters.</div>';
+
+  el.innerHTML = html;
+
+  el.querySelectorAll('.need-chip').forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      discFilter.position = chip.getAttribute('data-pos');
+      renderDiscovery();
+    });
+  });
+  var posSel = document.getElementById('disc-pos');
+  if (posSel) posSel.addEventListener('change', function () { discFilter.position = posSel.value; renderDiscovery(); });
+  var ageIn = document.getElementById('disc-age');
+  if (ageIn) ageIn.addEventListener('change', function () { discFilter.maxAge = parseInt(ageIn.value) || 40; renderDiscovery(); });
+  var multSel = document.getElementById('disc-mult');
+  if (multSel) multSel.addEventListener('change', function () { discFilter.minMult = parseFloat(multSel.value); renderDiscovery(); });
+
+  el.querySelectorAll('.add-btn:not([disabled])').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var name = btn.getAttribute('data-player');
+      var nextScout = SCOUTS[state.shortlist.length % SCOUTS.length].id;
+      state.shortlist.push({ player: name, scout: nextScout, status: 'awaiting', reports: [] });
+      saveState();
+      renderDiscovery();
+    });
+  });
+}
+
+// ─── Rendering: Scouting Desk (assignments) ───────────────────
+
+function renderAssignments() {
+  var team = teamByName(state.club);
+  var el = document.getElementById('view-assignments');
+  var html = viewHeader('Scouting Desk', 'Assignments for the department — file reports to feed Tier 3 into the engine');
+
+  if (state.shortlist.length === 0) {
+    html += '<div class="empty-state"><div class="es-icon">&#9998;</div>Nothing assigned. ' +
+      '<button class="linkish" onclick="showView(\'discovery\')">Shortlist targets in Discovery</button> first.</div>';
+    el.innerHTML = html;
+    return;
+  }
+
+  state.shortlist.forEach(function (entry) {
+    var player = playerByName(entry.player);
+    var hasReports = entry.reports.length > 0;
+    html += '<div class="target-card"><div class="tc-top" style="cursor:default">' +
+      '<div class="tc-who"><div class="t-name">' + escapeHtml(player.name) + '</div>' +
+      '<div class="t-meta">' + player.position + ' · ' + player.age + ' · ' + escapeHtml(player.club) + '</div></div>' +
+      '<div class="tc-nums">' +
+      '<div class="tc-num"><div class="n-label">Assigned to</div><div>' +
+      '<select class="assign-sel" data-player="' + escapeHtml(player.name) + '" style="background:var(--bg2);border:1px solid var(--border);border-radius:6px;color:var(--text-bright);font-family:var(--font);padding:0.3rem 0.5rem;font-size:0.82rem">' +
+      SCOUTS.map(function (s) {
+        return '<option value="' + s.id + '"' + (entry.scout === s.id ? ' selected' : '') + '>' + escapeHtml(s.name) + '</option>';
+      }).join('') + '</select></div></div>' +
+      '<span class="status-chip ' + (hasReports ? 'reported' : 'awaiting') + '">' + (hasReports ? entry.reports.length + ' report' + (entry.reports.length > 1 ? 's' : '') + ' filed' : 'awaiting report') + '</span>' +
+      '<button class="btn-primary" onclick="openReport(\'' + jsName(player.name) + '\')">' + (hasReports ? 'Add report' : 'File report') + '</button>' +
+      '</div></div></div>';
+  });
+  el.innerHTML = html;
+
+  el.querySelectorAll('.assign-sel').forEach(function (sel) {
+    sel.addEventListener('change', function () {
+      var entry = entryFor(sel.getAttribute('data-player'));
+      if (entry) { entry.scout = sel.value; saveState(); }
+    });
+  });
+}
+
+// ─── Rendering: Scout report form ─────────────────────────────
+
+var reportTarget = null;
+
+function openReport(playerName) {
+  reportTarget = playerName;
+  showView('report');
+}
+
+function renderReport() {
+  var el = document.getElementById('view-report');
+  if (!reportTarget) { el.innerHTML = ''; return; }
+  var player = playerByName(reportTarget);
+  var team = teamByName(state.club);
+  var entry = entryFor(reportTarget);
+  var groups = t3GroupsFor(player.position);
+
+  var html = '<div class="view-header">' +
+    '<button class="btn-danger" style="padding-left:0" onclick="showView(\'assignments\')">&larr; Back to Scouting Desk</button>' +
+    '<h2>Scout report — ' + escapeHtml(player.name) + '</h2>' +
+    '<p class="subtitle">' + player.position + ' · ' + player.age + ' · ' + escapeHtml(player.club) + ' → ' + escapeHtml(team.name) +
+    ' · these are the engine’s real Tier 3 dimensions — watch the valuation move as you assess</p></div>';
+
+  html += '<div class="report-meta-row"><label style="font-size:0.85rem;color:var(--text-dim)">Filing as</label>' +
+    '<select id="report-scout">' +
+    SCOUTS.map(function (s) {
+      return '<option value="' + s.id + '"' + (entry && entry.scout === s.id ? ' selected' : '') + '>' + escapeHtml(s.name) + ' — ' + escapeHtml(s.region) + '</option>';
+    }).join('') + '</select></div>';
+
+  html += '<div class="report-grid"><div>';
+  groups.forEach(function (g) {
+    html += '<div class="slider-group"><h4>' + g.title + '</h4>';
+    g.fields.forEach(function (f) {
+      html += '<div class="sl-row">' +
+        '<label>' + f.label + (f.inverse ? ' <span class="inv">high = risk</span>' : '') + '</label>' +
+        '<input type="range" min="1" max="10" step="1" value="5" data-field="' + f.id + '">' +
+        '<span class="sl-val" id="slval-' + f.id + '">5</span></div>';
+    });
+    html += '</div>';
+  });
+  html += '<textarea id="report-note" placeholder="Written assessment for the Director of Football…"></textarea>' +
+    '<div style="margin-top:0.9rem;display:flex;gap:0.6rem">' +
+    '<button class="btn-primary" id="file-report">File report</button>' +
+    '<button class="btn-secondary" onclick="showView(\'assignments\')">Cancel</button></div>';
+
+  html += '</div><div class="live-panel"><h4>Live valuation impact</h4><div id="live-body"></div></div></div>';
+
+  el.innerHTML = html;
+
+  el.querySelectorAll('input[type=range]').forEach(function (sl) {
+    sl.addEventListener('input', function () {
+      document.getElementById('slval-' + sl.getAttribute('data-field')).textContent = sl.value;
+      updateLivePanel();
+    });
+  });
+  document.getElementById('file-report').addEventListener('click', fileReport);
+  updateLivePanel();
+}
+
+function draftValues() {
+  var values = {};
+  document.querySelectorAll('#view-report input[type=range]').forEach(function (sl) {
+    values[sl.getAttribute('data-field')] = parseInt(sl.value);
+  });
+  return values;
+}
+
+function updateLivePanel() {
+  var player = playerByName(reportTarget);
+  var team = teamByName(state.club);
+  var entry = entryFor(reportTarget) || { reports: [] };
+
+  var before = adjustedValuation(player, team, entry);
+  var draftEntry = { reports: entry.reports.concat([{ scout: 'draft', values: draftValues(), note: '' }]) };
+  var after = adjustedValuation(player, team, draftEntry);
+
+  var dv = after.contextValue - before.contextValue;
+  var body = lpRow('Market value', '<span class="after">' + fmtM(player.marketValue) + '</span>') +
+    lpRow('Context value', '<span>' + fmtM(before.contextValue) + '</span><span class="arrow">→</span>' +
+      '<span class="after ' + (dv > 0.05 ? 'up' : dv < -0.05 ? 'down' : '') + '">' + fmtM(after.contextValue) + '</span>') +
+    lpRow('Multiplier', '<span>' + before.multiplier.toFixed(2) + 'x</span><span class="arrow">→</span>' +
+      '<span class="after">' + after.multiplier.toFixed(2) + 'x</span>') +
+    lpRow('Confidence', '<span>' + pct(before.confidence) + '</span><span class="arrow">→</span>' +
+      '<span class="after up">' + pct(after.confidence) + '</span>') +
+    '<div class="lp-row"><span class="lp-label">Verdict</span><span class="lp-verdicts">' +
+    '<span class="verdict-chip ' + before.verdict + '">' + before.verdict + '</span><span class="arrow">→</span>' +
+    '<span class="verdict-chip ' + after.verdict + '">' + after.verdict + '</span></span></div>';
+
+  var t3 = after.factors.filter(function (f) { return f.tier === 3; });
+  if (t3.length > 0) {
+    body += '<div style="margin-top:0.8rem;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-dim)">Tier 3 factors (your input)</div>' +
+      factorRowsHTML(t3);
+  }
+  document.getElementById('live-body').innerHTML = body;
+}
+
+function lpRow(label, valsHTML) {
+  return '<div class="lp-row"><span class="lp-label">' + label + '</span><span class="lp-vals">' + valsHTML + '</span></div>';
+}
+
+function fileReport() {
+  var entry = entryFor(reportTarget);
+  if (!entry) {
+    entry = { player: reportTarget, scout: SCOUTS[0].id, status: 'awaiting', reports: [] };
+    state.shortlist.push(entry);
+  }
+  var scoutSel = document.getElementById('report-scout');
+  var note = document.getElementById('report-note').value.trim();
+  entry.reports.push({
+    scout: scoutSel.value,
+    date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
+    values: draftValues(),
+    note: note
+  });
+  entry.status = 'reported';
+  saveState();
+  showView('dashboard');
+}
+
+// ─── Global actions ───────────────────────────────────────────
+
+function removeTarget(playerName) {
+  state.shortlist = state.shortlist.filter(function (e) { return e.player !== playerName; });
+  saveState();
+  renderAll();
+}
+
+// ─── Navigation & bootstrap ───────────────────────────────────
+
+function showView(name) {
+  document.querySelectorAll('.view').forEach(function (v) { v.classList.remove('active'); });
+  document.getElementById('view-' + name).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(function (n) {
+    n.classList.toggle('active', n.getAttribute('data-view') === (name === 'report' ? 'assignments' : name));
+  });
+  if (name === 'dashboard') renderDashboard();
+  if (name === 'discovery') renderDiscovery();
+  if (name === 'assignments') renderAssignments();
+  if (name === 'report') renderReport();
+}
+
+function renderAll() {
+  document.getElementById('club-name').textContent = state.club || '—';
+  var team = state.club ? teamByName(state.club) : null;
+  document.getElementById('club-budget').textContent = team ? 'window budget ' + fmtM(team.budget) : '';
+  var active = document.querySelector('.nav-item.active');
+  showView(active ? active.getAttribute('data-view') : 'dashboard');
+}
+
+function openClubModal() {
+  var sel = document.getElementById('club-select');
+  sel.innerHTML = TEAMS.map(function (t) {
+    return '<option value="' + escapeHtml(t.name) + '"' + (state.club === t.name ? ' selected' : '') + '>' +
+      escapeHtml(t.name) + ' — ' + escapeHtml(t.league) + '</option>';
+  }).join('');
+  document.getElementById('club-modal').classList.add('open');
+}
+
+document.getElementById('club-confirm').addEventListener('click', function () {
+  var chosen = document.getElementById('club-select').value;
+  document.getElementById('club-modal').classList.remove('open');
+  if (chosen !== state.club) seedWorkspace(chosen);
+  renderAll();
+});
+
+document.getElementById('switch-club').addEventListener('click', openClubModal);
+document.getElementById('reset-demo').addEventListener('click', function () {
+  localStorage.removeItem(STORE_KEY);
+  location.reload();
+});
+
+document.querySelectorAll('.nav-item').forEach(function (btn) {
+  btn.addEventListener('click', function () { showView(btn.getAttribute('data-view')); });
+});
+
+document.getElementById('roster-list').innerHTML = SCOUTS.map(function (s) {
+  return '<div class="scout-row"><div class="scout-avatar">' + initials(s.name) + '</div>' +
+    '<div class="scout-meta"><div class="s-name">' + escapeHtml(s.name) + '</div>' +
+    '<div class="s-region">' + escapeHtml(s.region) + '</div></div></div>';
+}).join('');
+
+if (loadState() && state.club) {
+  renderAll();
+} else {
+  openClubModal();
+}
+
+</script>
+</body>
+</html>
