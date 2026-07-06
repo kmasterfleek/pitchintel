@@ -14,6 +14,14 @@ var TEAMS = TEAMS_RAW.map(function (t) {
 });
 var PLAYERS = PLAYERS_RAW;
 
+// Northbridge United — the mature demo club (fictional). Its squad
+// carries full three-tier vectors; its workspace seeds rich state.
+var NB_TEAM = Object.assign({}, NB.context);
+NB_TEAM.positionDepth = new Map(NB.context.positionDepth);
+TEAMS.unshift(NB_TEAM);
+function isNB() { return state.club === NB_TEAM.name; }
+function nbSquadByName(n) { return NB.squad.find(function (p) { return p.name === n; }); }
+
 var SCOUTS = [
   { id: 'mv', name: 'Marta Vidal', region: 'South America & La Liga' },
   { id: 'so', name: 'Sam Okafor', region: 'West Africa & Ligue 1' },
@@ -144,24 +152,29 @@ function hashRand(seedStr) {
 var SEED_NOTES_GEM = 'Watched him three times live. The data undersells the off-ball intelligence: presses in coordinated waves, always scanning before receiving. Signable, hungry, no baggage. I would push hard this window.';
 var SEED_NOTES_MIXED = 'Talented but streaky. Dominant against mid-table sides, quieter in the big matches. Agent situation needs careful handling. Worth one more window of tracking before we commit.';
 
-function seededReport(player, scoutId, flavor) {
+function seededValues(player, flavor) {
   var rand = hashRand(player.name + flavor);
   var values = {};
   t3GroupsFor(player.position).forEach(function (g) {
     g.fields.forEach(function (f) {
       var v;
-      if (flavor === 'gem') {
-        v = f.inverse ? 2 + Math.floor(rand() * 2) : 7 + Math.floor(rand() * 3);
-      } else {
-        v = f.inverse ? 3 + Math.floor(rand() * 4) : 4 + Math.floor(rand() * 5);
-      }
+      if (flavor === 'gem') v = f.inverse ? 2 + Math.floor(rand() * 2) : 7 + Math.floor(rand() * 3);
+      else if (flavor === 'solid') v = f.inverse ? 3 + Math.floor(rand() * 3) : 6 + Math.floor(rand() * 3);
+      else if (flavor === 'split-low') v = f.inverse ? 4 + Math.floor(rand() * 3) : 4 + Math.floor(rand() * 3);
+      else if (flavor === 'kill') v = f.inverse ? 7 + Math.floor(rand() * 3) : 3 + Math.floor(rand() * 3);
+      else v = f.inverse ? 3 + Math.floor(rand() * 4) : 4 + Math.floor(rand() * 5);
       values[f.id] = v;
     });
   });
+  if (flavor === 'kill') { values.cultureFit = 2; values.agentDifficulty = 9; }
+  return values;
+}
+
+function seededReport(player, scoutId, flavor) {
   return {
     scout: scoutId,
     date: 'last week',
-    values: values,
+    values: seededValues(player, flavor),
     note: flavor === 'gem' ? SEED_NOTES_GEM : SEED_NOTES_MIXED
   };
 }
@@ -194,7 +207,28 @@ function expandPositions(positions) {
   return out;
 }
 
+function seedNorthbridge() {
+  state = { club: NB_TEAM.name, shortlist: [] };
+  NB.seed.forEach(function (t) {
+    var player = playerByName(t.player);
+    if (!player) return;
+    var entry = { player: t.player, scout: t.scout, status: 'awaiting', reports: [] };
+    t.reports.forEach(function (r) {
+      entry.reports.push({
+        scout: r.scout,
+        date: r.date,
+        values: seededValues(player, r.flavor),
+        note: r.note
+      });
+    });
+    if (entry.reports.length > 0) entry.status = 'reported';
+    state.shortlist.push(entry);
+  });
+  saveState();
+}
+
 function seedWorkspace(clubName) {
+  if (clubName === NB_TEAM.name) { seedNorthbridge(); return; }
   state = { club: clubName, shortlist: [] };
   var team = teamByName(clubName);
   var candidates = discoveryCandidates(team);
@@ -627,6 +661,131 @@ function fileReport() {
   showView('dashboard');
 }
 
+// ─── Rendering: Today (morning briefing) ──────────────────────
+
+function renderToday() {
+  var el = document.getElementById('view-today');
+  if (!isNB()) { el.innerHTML = ''; return; }
+
+  var dateStr = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  var reports = state.shortlist.reduce(function (s, e) { return s + e.reports.length; }, 0);
+
+  var html = viewHeader('Good morning', 'The overnight picture across scouting, squad, and the board');
+  html += '<div class="today-date"><strong>' + dateStr + '</strong> · transfer window opens in 26 days · budget €' + NB_TEAM.budget + 'M · ' +
+    state.shortlist.length + ' targets tracked · ' + reports + ' reports on file</div>';
+
+  NB.feed.forEach(function (item) {
+    html += '<div class="feed-card"><span class="fc-time">' + item.time + '</span>' +
+      '<span class="fc-icon">' + item.icon + '</span>' +
+      '<div class="fc-body"><div class="fc-title">' + item.title + '</div>' +
+      '<div class="fc-text">' + item.body + '</div>';
+    if (item.action) {
+      html += '<div class="fc-action"><button data-view="' + (item.action.view || '') + '" data-player="' + (item.action.player || '') + '">' +
+        item.action.label + ' &rarr;</button></div>';
+    }
+    html += '</div></div>';
+  });
+
+  html += '<div class="decision-log"><h4>Decision log — the process, working</h4>';
+  NB.decisions.forEach(function (d) {
+    html += '<div class="dl-row"><span class="dl-date">' + d.date + '</span><span class="dl-text">' + d.text + '</span></div>';
+  });
+  html += '</div>';
+
+  el.innerHTML = html;
+  el.querySelectorAll('.fc-action button').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var p = btn.getAttribute('data-player');
+      var v = btn.getAttribute('data-view');
+      if (p) openTarget(p);
+      else if (v) showView(v);
+    });
+  });
+}
+
+function openTarget(playerName) {
+  showView('dashboard');
+  var card = document.querySelector('#view-dashboard .target-card[data-player="' + playerName + '"]');
+  if (card) {
+    card.classList.add('expanded');
+    card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+// ─── Rendering: Squad (our players, full 118-dim profiles) ────
+
+// Internal valuation = what the player is worth to the squad WITHOUT him
+// (replacement value). The engine skips own-club players by design, so we
+// value against a squad model with his own depth slot vacated.
+function nbInternalValuation(p) {
+  var ctx = Object.assign({}, NB_TEAM);
+  ctx.name = NB_TEAM.name + ' (squad model)';
+  ctx.positionDepth = new Map(NB_TEAM.positionDepth);
+  ctx.positionDepth.set(p.position, Math.max(0, (ctx.positionDepth.get(p.position) || 1) - 1));
+  return computeEnhancedValuation(p, ctx);
+}
+
+function renderSquad() {
+  var el = document.getElementById('view-squad');
+  if (!isNB()) { el.innerHTML = ''; return; }
+
+  var vals = NB.squad.map(function (p) {
+    return { p: p, val: nbInternalValuation(p), meta: NB.meta[p.name] || { flags: [], rec: { label: 'HOLD', cls: 'blue' }, note: '' } };
+  });
+  var totalMarket = vals.reduce(function (s, r) { return s + r.p.marketValue; }, 0);
+  var totalInternal = vals.reduce(function (s, r) { return s + r.val.contextValue; }, 0);
+  var avgConf = vals.reduce(function (s, r) { return s + r.val.confidence; }, 0) / vals.length;
+
+  var html = viewHeader('Squad', 'Our players on full data — Tier 1 public, Tier 2 tracking, Tier 3 from three seasons of internal scouting');
+  html += '<div class="kpi-row">' +
+    kpi('Squad size', vals.length, '') +
+    kpi('Market value', fmtM(Math.round(totalMarket)), 'public estimates') +
+    kpi('Internal valuation', fmtM(Math.round(totalInternal * 10) / 10), 'engine, full 118-dim', 'gold') +
+    kpi('Profile confidence', pct(avgConf), 'all three tiers populated', 'green') +
+    '</div>';
+
+  NB.order.forEach(function (pos) {
+    var group = vals.filter(function (r) { return r.p.position === pos; });
+    if (group.length === 0) return;
+    html += '<div class="unit-title">' + pos + '</div>';
+    group.forEach(function (r) {
+      html += squadCardHTML(r.p, r.val, r.meta);
+    });
+  });
+
+  el.innerHTML = html;
+  wireTargetCards(el);
+}
+
+function squadCardHTML(p, val, meta) {
+  var delta = Math.round((val.contextValue - p.marketValue) * 10) / 10;
+  var html = '<div class="squad-card target-card" data-player="' + escapeHtml(p.name) + '">' +
+    '<div class="tc-top">' +
+    '<div class="tc-who"><div class="t-name">' + escapeHtml(p.name) + '</div>' +
+    '<div class="t-meta">' + p.position + ' · ' + p.age + ' · ' + escapeHtml(p.nationality) + ' · contract ' + p.contractYearsLeft + 'yr' +
+    (meta.flags.length ? ' · ' : '') +
+    meta.flags.map(function (f) {
+      var hot = f === 'wanted' || f === 'bid expected' || f === 'final year' || f === 'dependency risk';
+      return '<span class="flag-chip' + (hot ? ' hot' : '') + '">' + escapeHtml(f) + '</span>';
+    }).join(' ') +
+    '</div></div>' +
+    '<div class="tc-nums">' +
+    '<div class="tc-num"><div class="n-label">Market</div><div class="n-value">' + fmtM(p.marketValue) + '</div></div>' +
+    '<div class="tc-num"><div class="n-label">Internal valuation</div>' +
+    '<div class="n-value ' + (delta > 0.5 ? 'green' : delta < -0.5 ? 'red' : '') + '">' + fmtM(val.contextValue) +
+    (Math.abs(delta) >= 0.5 ? ' <span class="n-delta ' + (delta >= 0 ? 'up' : 'down') + '">' + (delta >= 0 ? '▲' : '▼') + fmtM(Math.abs(delta)) + '</span>' : '') +
+    '</div></div>' +
+    confBarHTML(val.confidence) +
+    '<span class="rec-chip ' + meta.rec.cls + '">' + escapeHtml(meta.rec.label) + '</span>' +
+    '</div></div>';
+
+  html += '<div class="tc-body">' +
+    '<div class="dna-note">' + escapeHtml(meta.note) + '</div>' +
+    factorRowsHTML(val.factors) +
+    '</div></div>';
+  return html;
+}
+
 // ─── Global actions ───────────────────────────────────────────
 
 function removeTarget(playerName) {
@@ -638,30 +797,40 @@ function removeTarget(playerName) {
 // ─── Navigation & bootstrap ───────────────────────────────────
 
 function showView(name) {
+  if ((name === 'today' || name === 'squad') && !isNB()) name = 'dashboard';
   document.querySelectorAll('.view').forEach(function (v) { v.classList.remove('active'); });
   document.getElementById('view-' + name).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(function (n) {
     n.classList.toggle('active', n.getAttribute('data-view') === (name === 'report' ? 'assignments' : name));
   });
+  if (name === 'today') renderToday();
   if (name === 'dashboard') renderDashboard();
   if (name === 'discovery') renderDiscovery();
   if (name === 'assignments') renderAssignments();
   if (name === 'report') renderReport();
+  if (name === 'squad') renderSquad();
 }
 
 function renderAll() {
   document.getElementById('club-name').textContent = state.club || '—';
   var team = state.club ? teamByName(state.club) : null;
   document.getElementById('club-budget').textContent = team ? 'window budget ' + fmtM(team.budget) : '';
+  document.querySelectorAll('.nav-item.nb-only').forEach(function (n) {
+    n.style.display = isNB() ? '' : 'none';
+  });
   var active = document.querySelector('.nav-item.active');
-  showView(active ? active.getAttribute('data-view') : 'dashboard');
+  var view = active ? active.getAttribute('data-view') : (isNB() ? 'today' : 'dashboard');
+  showView(view);
 }
 
 function openClubModal() {
   var sel = document.getElementById('club-select');
   sel.innerHTML = TEAMS.map(function (t) {
+    var label = t.name === NB_TEAM.name
+      ? t.name + ' — your club (mature demo: full data, live workspace)'
+      : t.name + ' — ' + t.league;
     return '<option value="' + escapeHtml(t.name) + '"' + (state.club === t.name ? ' selected' : '') + '>' +
-      escapeHtml(t.name) + ' — ' + escapeHtml(t.league) + '</option>';
+      escapeHtml(label) + '</option>';
   }).join('');
   document.getElementById('club-modal').classList.add('open');
 }
@@ -689,8 +858,11 @@ document.getElementById('roster-list').innerHTML = SCOUTS.map(function (s) {
     '<div class="s-region">' + escapeHtml(s.region) + '</div></div></div>';
 }).join('');
 
+// First open: boot straight into the mature Northbridge workspace —
+// "a day in the life" — no setup friction. Switch club to explore others.
 if (loadState() && state.club) {
   renderAll();
 } else {
-  openClubModal();
+  seedNorthbridge();
+  renderAll();
 }

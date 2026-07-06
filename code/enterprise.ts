@@ -21,6 +21,7 @@
 import { getPlayerDatabase } from './data/players-db.js';
 import { getTeamDatabase } from './data/teams-db.js';
 import { computeEnhancedValuation, scoutProfileToVector } from './player-vector.js';
+import { NB_CONTEXT, buildSquad, NB_SQUAD_META, NB_SQUAD_ORDER, NB_SEED, NB_FEED, NB_DECISIONS } from './northbridge.js';
 import ts from 'typescript';
 import { readFileSync, writeFileSync } from 'fs';
 import { join, dirname } from 'path';
@@ -94,7 +95,34 @@ async function main() {
   const engineJS = buildEngineJS();
   verifyEngineParity(engineJS);
 
-  const html = generateHTML(JSON.stringify(players), serializeTeams(teams), engineJS);
+  const squad = buildSquad();
+  const nbPayload = JSON.stringify({
+    context: { ...NB_CONTEXT, positionDepth: Array.from(NB_CONTEXT.positionDepth.entries()) },
+    squad,
+    meta: NB_SQUAD_META,
+    order: NB_SQUAD_ORDER,
+    seed: NB_SEED,
+    feed: NB_FEED,
+    decisions: NB_DECISIONS,
+  });
+
+  // Print the engine's actual take on the narrative players so authored
+  // notes (Herrera hold price, Benali resale, Diallo multiple) stay honest.
+  for (const name of ['Santi Herrera', 'Youssef Benali', 'Adama Diallo', 'Tomas Vrana', 'Marcus Whitfield']) {
+    const vec = squad.find(s => s.name === name)!;
+    // Mirror the UI's internal-valuation semantics: replacement value
+    // against the squad with this player's own depth slot vacated.
+    const ctx: TeamContext = {
+      ...NB_CONTEXT,
+      name: NB_CONTEXT.name + ' (squad model)',
+      positionDepth: new Map(NB_CONTEXT.positionDepth),
+    };
+    ctx.positionDepth.set(vec.position, Math.max(0, (ctx.positionDepth.get(vec.position) || 1) - 1));
+    const val = computeEnhancedValuation(vec, ctx);
+    console.log(`  ${name}: market €${vec.marketValue}M → internal €${val.contextValue}M (${val.multiplier}x, conf ${Math.round(val.confidence * 100)}%)`);
+  }
+
+  const html = generateHTML(JSON.stringify(players), serializeTeams(teams), nbPayload, engineJS);
   const outPath = join(__dirname, 'pitchintel-enterprise.html');
   writeFileSync(outPath, html, 'utf-8');
   console.log(`Written to ${outPath} (${(html.length / 1024).toFixed(0)} KB)`);
@@ -102,7 +130,7 @@ async function main() {
 
 // ─── 4. HTML generation ──────────────────────────────────────────────
 
-function generateHTML(playersJSON: string, teamsJSON: string, engineJS: string): string {
+function generateHTML(playersJSON: string, teamsJSON: string, nbJSON: string, engineJS: string): string {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -132,9 +160,11 @@ ${getCSS()}
         <button id="switch-club">switch</button>
       </div>
       <nav>
-        <button class="nav-item active" data-view="dashboard">&#9632; DoF Dashboard</button>
+        <button class="nav-item nb-only active" data-view="today">&#9728;&#65039; Today</button>
+        <button class="nav-item" data-view="dashboard">&#9632; DoF Dashboard</button>
         <button class="nav-item" data-view="discovery">&#9678; Discovery</button>
         <button class="nav-item" data-view="assignments">&#9998; Scouting Desk</button>
+        <button class="nav-item nb-only" data-view="squad">&#128101; Squad</button>
       </nav>
       <div id="scout-roster">
         <div class="sr-title">Scouting department</div>
@@ -143,10 +173,12 @@ ${getCSS()}
     </aside>
 
     <main id="main">
-      <section id="view-dashboard" class="view active"></section>
+      <section id="view-today" class="view active"></section>
+      <section id="view-dashboard" class="view"></section>
       <section id="view-discovery" class="view"></section>
       <section id="view-assignments" class="view"></section>
       <section id="view-report" class="view"></section>
+      <section id="view-squad" class="view"></section>
     </main>
   </div>
 
@@ -163,6 +195,7 @@ ${getCSS()}
 <script>
 var PLAYERS_RAW = ${playersJSON};
 var TEAMS_RAW = ${teamsJSON};
+var NB = ${nbJSON};
 
 ${engineJS}
 
@@ -332,6 +365,33 @@ nav{display:flex;flex-direction:column;gap:0.25rem}
 .empty-state .es-icon{font-size:2rem;margin-bottom:0.5rem}
 .empty-state a,.empty-state button.linkish{color:var(--accent);background:none;border:none;font-size:inherit;cursor:pointer;text-decoration:underline}
 
+.today-date{font-size:0.85rem;color:var(--text-dim);margin-bottom:1.25rem}
+.today-date strong{color:var(--gold)}
+.feed-card{display:flex;gap:0.9rem;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:1rem 1.2rem;margin-bottom:0.7rem;align-items:flex-start}
+.feed-card .fc-icon{font-size:1.2rem;flex-shrink:0;margin-top:0.1rem}
+.feed-card .fc-time{font-size:0.68rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.6px;white-space:nowrap;margin-top:0.25rem;width:64px;flex-shrink:0;text-align:right}
+.feed-card .fc-body{flex:1;min-width:0}
+.feed-card .fc-title{font-weight:700;color:var(--text-bright);font-size:0.95rem}
+.feed-card .fc-text{font-size:0.85rem;color:var(--text-dim);margin-top:0.15rem}
+.feed-card .fc-action{margin-top:0.5rem}
+.fc-action button{background:var(--accent-dim);color:var(--accent);border:none;border-radius:6px;padding:0.3rem 0.8rem;font-weight:700;font-size:0.78rem;cursor:pointer}
+.fc-action button:hover{background:var(--accent);color:#fff}
+.decision-log{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1.1rem 1.3rem;margin-top:1.5rem}
+.decision-log h4{font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);margin-bottom:0.7rem}
+.dl-row{display:flex;gap:0.9rem;padding:0.4rem 0;font-size:0.85rem;border-top:1px dashed var(--border)}
+.dl-row .dl-date{color:var(--gold);font-weight:700;white-space:nowrap;width:70px;flex-shrink:0}
+.dl-row .dl-text{color:var(--text)}
+.unit-title{font-size:0.75rem;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-dim);margin:1.4rem 0 0.6rem;font-weight:800}
+.squad-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:0.9rem 1.2rem;margin-bottom:0.6rem}
+.squad-card .tc-top{align-items:center}
+.flag-chip{font-size:0.66rem;font-weight:700;padding:0.14rem 0.5rem;border-radius:999px;background:rgba(255,255,255,0.06);color:var(--text-dim);letter-spacing:0.4px;text-transform:uppercase}
+.flag-chip.hot{background:var(--red-dim);color:var(--red)}
+.rec-chip{font-size:0.7rem;font-weight:800;padding:0.22rem 0.7rem;border-radius:6px;letter-spacing:0.5px;white-space:nowrap}
+.rec-chip.green{background:var(--green-dim);color:var(--green)}
+.rec-chip.gold{background:var(--gold-dim);color:var(--gold)}
+.rec-chip.red{background:var(--red-dim);color:var(--red)}
+.rec-chip.blue{background:var(--accent-dim);color:var(--accent)}
+.dna-note{background:var(--bg2);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:0.6rem 0.9rem;font-size:0.85rem;color:var(--text);margin-bottom:0.8rem}
 .modal{display:none;position:fixed;inset:0;z-index:1000;background:rgba(6,8,12,0.85);backdrop-filter:blur(4px);align-items:center;justify-content:center;padding:1rem}
 .modal.open{display:flex}
 .modal-box{background:var(--card);border:1px solid var(--border-light);border-radius:14px;max-width:440px;width:100%;padding:2rem;box-shadow:0 16px 64px rgba(0,0,0,0.6)}
