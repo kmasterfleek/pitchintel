@@ -369,6 +369,26 @@ export const NB_SEED: SeedTarget[] = [
       note: 'KILLED after full workup. Player is fine; the deal is not. Profile duplicates Weiss, wage demand breaks our structure, and the agent wants a release clause we’d regret. Engine agrees — redundancy factor deeply negative. Money saved: ~€30M. Moving on.' },
   ]},
   { player: 'Elye Wahi', scout: 'jb', reports: [] },
+
+  // ── The World Cup "Crazy Files" — opened during the tournament ──
+  { player: 'Haissem Hassan', scout: 'mv', reports: [
+    { scout: 'mv', date: '17 Jul', flavor: 'gem',
+      note: 'Watched every Egypt knockout minute plus six Segunda matches on tape. The relegation discount is real — Oviedo need the fee more than the player. Right-flank profile fits our press triggers, and at this price he is the cheapest credible answer to the RW hole on our board. Move before the Segunda tape becomes La Liga tape.' },
+  ]},
+  { player: 'Sidny Lopes Cabral', scout: 'so', reports: [
+    { scout: 'so', date: '18 Jul', flavor: 'solid',
+      note: 'The goal was worth eight seconds; the eighteen months at Amadora and Benfica’s system are worth more. Genuine left-back athleticism, final ball still inconsistent. If the Kovac succession stalls at Grimaldo’s price, this was the €8M hedge — but Trabzonspor reportedly moved first. Verify the paperwork before we spend more hours.' },
+  ]},
+  { player: 'Vozinha', scout: 'so', reports: [
+    { scout: 'so', date: '18 Jul', flavor: 'solid',
+      note: 'Free agent, zero fee, wants "a good project" — his words to the press. This is not a starter plan at 40: it is a dressing-room professional and a genuine shot-stopper for cup nights on a one-year deal. Nowak would learn more from him in a season than from a loan. Medical decides. Do not overthink a free transfer.' },
+  ]},
+  { player: 'Pico Lopes', scout: 'jb', reports: [
+    { scout: 'jb', date: '17 Jul', flavor: 'solid',
+      note: 'The flight to Dublin cost less than this report’s expenses. Organises like a captain — held a back line against the world champions for 100 minutes. League of Ireland tape is thin; the five World Cup matches are the real file. One-year deal as CB insurance if the skipper’s extension stalls. Costs nothing to be right about this.' },
+  ]},
+  { player: 'Orlando Gill', scout: 'mv', reports: [] },
+  { player: 'Eloy Room', scout: 'mv', reports: [] },
 ];
 
 // ─── Today briefing feed ──────────────────────────────────────────────
@@ -382,6 +402,10 @@ export interface FeedItem {
 }
 
 export const NB_FEED: FeedItem[] = [
+  { time: '08:05', icon: '&#127942;',
+    title: 'World Cup desk: six Crazy Files on the shortlist',
+    body: 'Final day. Four reports filed during the tournament — Hassan is the standout (cheapest credible RW answer; relegation discount at Oviedo). Vozinha is a free transfer, Cabral may already be gone to Trabzonspor. Gill and Room reports due this week.',
+    action: { label: 'Review the WC files', view: 'dashboard' } },
   { time: '07:42', icon: '&#128225;',
     title: 'New report: Grimaldo (report #2, Lars Lindqvist)',
     body: 'Filed overnight after the full 90 in Leverkusen’s friendly. Agrees on quality, flags the age curve — recommends 2yr + option at a €30M ceiling.',

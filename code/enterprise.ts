@@ -22,6 +22,7 @@ import { getPlayerDatabase } from './data/players-db.js';
 import { getTeamDatabase } from './data/teams-db.js';
 import { computeEnhancedValuation, scoutProfileToVector } from './player-vector.js';
 import { NB_CONTEXT, buildSquad, NB_SQUAD_META, NB_SQUAD_ORDER, NB_SEED, NB_FEED, NB_DECISIONS } from './northbridge.js';
+import { getWCFiles } from './data/wc-files.js';
 import ts from 'typescript';
 import { readFileSync, writeFileSync } from 'fs';
 import { join, dirname } from 'path';
@@ -195,6 +196,7 @@ ${getCSS()}
 <script>
 var PLAYERS_RAW = ${playersJSON};
 var TEAMS_RAW = ${teamsJSON};
+var WC_RAW = ${JSON.stringify(getWCFiles().map(f => f.profile))};
 var NB = ${nbJSON};
 
 ${engineJS}
@@ -385,6 +387,7 @@ nav{display:flex;flex-direction:column;gap:0.25rem}
 .squad-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:0.9rem 1.2rem;margin-bottom:0.6rem}
 .squad-card .tc-top{align-items:center}
 .flag-chip{font-size:0.66rem;font-weight:700;padding:0.14rem 0.5rem;border-radius:999px;background:rgba(255,255,255,0.06);color:var(--text-dim);letter-spacing:0.4px;text-transform:uppercase}
+.wc-chip-mini{font-size:0.62rem;font-weight:800;padding:0.08rem 0.5rem;border-radius:999px;background:var(--gold-dim);color:var(--gold);letter-spacing:0.4px;vertical-align:middle;white-space:nowrap}
 .flag-chip.hot{background:var(--red-dim);color:var(--red)}
 .rec-chip{font-size:0.7rem;font-weight:800;padding:0.22rem 0.7rem;border-radius:6px;letter-spacing:0.5px;white-space:nowrap}
 .rec-chip.green{background:var(--green-dim);color:var(--green)}

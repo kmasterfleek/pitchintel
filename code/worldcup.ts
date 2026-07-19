@@ -15,6 +15,7 @@
  */
 
 import { getTeamDatabase } from './data/teams-db.js';
+import { getWCFiles } from './data/wc-files.js';
 import type { ScoutProfile } from './data/players-db.js';
 import { computeEnhancedValuation, scoutProfileToVector } from './player-vector.js';
 import { writeFileSync } from 'fs';
@@ -184,13 +185,16 @@ interface CrazyPlayer {
   scout: { name: string; region: string; initials: string };
 }
 
+const WC_FILES = getWCFiles();
+function wcFile(name: string) {
+  const f = WC_FILES.find(w => w.profile.name === name);
+  if (!f) throw new Error(`WC file missing for ${name} — update data/wc-files.ts`);
+  return { profile: f.profile, flag: f.flag, country: f.country };
+}
+
 const CRAZY: CrazyPlayer[] = [
   {
-    profile: P({ name: 'Vozinha', age: 40, position: 'GK', club: 'Unattached (last: Chaves)', league: 'Liga Portugal 2',
-      nationality: 'Cape Verde', marketValue: 0.3, contractYearsLeft: 0, passCompletionRate: 0.72,
-      avgPassDistance: 32, defensiveWorkRate: 0.5, sprintCapacity: 8, avgSpeed: 5.2,
-      currentPageRank: 0.1, currentConnections: 4, currentPassWeight: 0.2, avgX: -48, avgY: 0 }),
-    flag: '&#127464;&#127483;', country: 'Cape Verde',
+    ...wcFile('Vozinha'),
     status: 'FREE AGENT — "I\'m looking for a good project"', statusHot: true,
     story: [
       'Worked as an electrician; didn\'t sign a professional contract until 26. Career route: Angola, Moldova, Cyprus, Portugal\'s second division.',
@@ -201,11 +205,7 @@ const CRAZY: CrazyPlayer[] = [
     scout: { name: 'Sam Okafor', region: 'West Africa & Ligue 1', initials: 'SO' },
   },
   {
-    profile: P({ name: 'Sidny Lopes Cabral', age: 23, position: 'LB', club: 'Trabzonspor', league: 'Süper Lig',
-      nationality: 'Cape Verde', marketValue: 8, contractYearsLeft: 4, passCompletionRate: 0.8,
-      avgPassDistance: 13, defensiveWorkRate: 0.68, sprintCapacity: 27, avgSpeed: 7.1,
-      currentPageRank: 0.2, currentConnections: 6.5, currentPassWeight: 0.28, avgX: -14, avgY: -24 }),
-    flag: '&#127464;&#127483;', country: 'Cape Verde',
+    ...wcFile('Sidny Lopes Cabral'),
     status: 'REPORTED MOVE — Trabzonspor, off the back of the tournament', statusHot: false,
     story: [
       'The 103rd-minute equalizer against Argentina — cut inside past Mac Allister, curled into the top corner past Mart&iacute;nez — took 88.7% of the public vote for Goal of the Tournament.',
@@ -216,11 +216,7 @@ const CRAZY: CrazyPlayer[] = [
     scout: { name: 'Sam Okafor', region: 'West Africa & Ligue 1', initials: 'SO' },
   },
   {
-    profile: P({ name: 'Pico Lopes', age: 34, position: 'CB', club: 'Shamrock Rovers', league: 'League of Ireland',
-      nationality: 'Cape Verde', marketValue: 0.4, contractYearsLeft: 1, passCompletionRate: 0.84,
-      avgPassDistance: 18, defensiveWorkRate: 0.75, sprintCapacity: 12, avgSpeed: 6.2,
-      currentPageRank: 0.16, currentConnections: 6, currentPassWeight: 0.28, avgX: -34, avgY: 4 }),
-    flag: '&#127464;&#127483;', country: 'Cape Verde',
+    ...wcFile('Pico Lopes'),
     status: 'CONTRACTED — Shamrock Rovers (League of Ireland)', statusHot: false,
     story: [
       'Dublin-born, eligible through his father — he ignored Cape Verde\'s first call-up messages because he assumed they were spam.',
@@ -231,11 +227,7 @@ const CRAZY: CrazyPlayer[] = [
     scout: { name: 'Jimmy Barnes', region: 'UK & EFL', initials: 'JB' },
   },
   {
-    profile: P({ name: 'Eloy Room', age: 37, position: 'GK', club: 'Journeyman (ex-PSV, Columbus Crew)', league: 'career: Eredivisie & MLS',
-      nationality: 'Cura&ccedil;ao', marketValue: 0.5, contractYearsLeft: 0, passCompletionRate: 0.74,
-      avgPassDistance: 30, defensiveWorkRate: 0.5, sprintCapacity: 8, avgSpeed: 5.1,
-      currentPageRank: 0.1, currentConnections: 4, currentPassWeight: 0.2, avgX: -48, avgY: 0 }),
-    flag: '&#127464;&#127484;', country: 'Cura&ccedil;ao',
+    ...wcFile('Eloy Room'),
     status: 'VETERAN — the smallest nation ever at a World Cup (pop. 155,000)', statusHot: false,
     story: [
       '15 saves against Ecuador — the most ever recorded in a 90-minute World Cup match — earning Cura&ccedil;ao their only point.',
@@ -246,11 +238,7 @@ const CRAZY: CrazyPlayer[] = [
     scout: { name: 'Marta Vidal', region: 'South America & La Liga', initials: 'MV' },
   },
   {
-    profile: P({ name: 'Orlando Gill', age: 26, position: 'GK', club: 'San Lorenzo', league: 'Liga Profesional (ARG)',
-      nationality: 'Paraguay', marketValue: 4, contractYearsLeft: 2, passCompletionRate: 0.76,
-      avgPassDistance: 28, defensiveWorkRate: 0.5, sprintCapacity: 9, avgSpeed: 5.4,
-      currentPageRank: 0.11, currentConnections: 4.5, currentPassWeight: 0.22, avgX: -47, avgY: 0 }),
-    flag: '&#127477;&#127486;', country: 'Paraguay',
+    ...wcFile('Orlando Gill'),
     status: 'RISING — international debut only last September', statusHot: false,
     story: [
       '23 saves across the tournament — the most of any goalkeeper.',
@@ -261,11 +249,7 @@ const CRAZY: CrazyPlayer[] = [
     scout: { name: 'Marta Vidal', region: 'South America & La Liga', initials: 'MV' },
   },
   {
-    profile: P({ name: 'Haissem Hassan', age: 24, position: 'RW', club: 'Real Oviedo', league: 'Segunda Divisi&oacute;n',
-      nationality: 'Egypt', marketValue: 4, contractYearsLeft: 2, passCompletionRate: 0.79,
-      avgPassDistance: 11, defensiveWorkRate: 0.5, sprintCapacity: 26, avgSpeed: 7.2,
-      currentPageRank: 0.2, currentConnections: 6.5, currentPassWeight: 0.28, avgX: 16, avgY: 21 }),
-    flag: '&#127466;&#127468;', country: 'Egypt',
+    ...wcFile('Haissem Hassan'),
     status: 'SHOP WINDOW — club relegated, price still tiny', statusHot: true,
     story: [
       'Didn\'t play a single group-stage minute. Debuted in the round of 32 against Australia and became Egypt\'s knockout-stage spark.',

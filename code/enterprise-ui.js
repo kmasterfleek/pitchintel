@@ -12,7 +12,12 @@ var TEAMS = TEAMS_RAW.map(function (t) {
   copy.positionDepth = new Map(t.positionDepth);
   return copy;
 });
-var PLAYERS = PLAYERS_RAW;
+// World Cup "Crazy Files" join the scoutable pool, tagged with a badge.
+var PLAYERS = PLAYERS_RAW.concat(WC_RAW);
+var WC_NAMES = new Set(WC_RAW.map(function (p) { return p.name; }));
+function wcChip(name) {
+  return WC_NAMES.has(name) ? ' <span class="wc-chip-mini">&#127942; WC file</span>' : '';
+}
 
 // Northbridge United — the mature demo club (fictional). Its squad
 // carries full three-tier vectors; its workspace seeds rich state.
@@ -367,7 +372,7 @@ function targetCardHTML(player, team, base, adj, entry) {
 
   var html = '<div class="target-card" data-player="' + escapeHtml(player.name) + '">' +
     '<div class="tc-top">' +
-    '<div class="tc-who"><div class="t-name">' + escapeHtml(player.name) + '</div>' +
+    '<div class="tc-who"><div class="t-name">' + escapeHtml(player.name) + wcChip(player.name) + '</div>' +
     '<div class="t-meta">' + player.position + ' · ' + player.age + ' · ' + escapeHtml(player.club) + ' (' + escapeHtml(player.league) + ') · scout: ' + escapeHtml(scout ? scout.name : '—') + '</div></div>' +
     '<div class="tc-nums">' +
     '<div class="tc-num"><div class="n-label">Market</div><div class="n-value">' + fmtM(player.marketValue) + '</div></div>' +
@@ -464,7 +469,7 @@ function renderDiscovery() {
   rows.forEach(function (c, i) {
     var shortlisted = !!entryFor(c.player.name);
     html += '<tr><td>' + (i + 1) + '</td>' +
-      '<td><div class="d-name">' + escapeHtml(c.player.name) + '</div>' +
+      '<td><div class="d-name">' + escapeHtml(c.player.name) + wcChip(c.player.name) + '</div>' +
       '<div class="d-meta">' + c.player.position + ' · ' + c.player.age + ' · ' + escapeHtml(c.player.club) + '</div></td>' +
       '<td>' + fmtM(c.player.marketValue) + '</td>' +
       '<td><strong>' + fmtM(c.val.contextValue) + '</strong></td>' +
@@ -520,7 +525,7 @@ function renderAssignments() {
     var player = playerByName(entry.player);
     var hasReports = entry.reports.length > 0;
     html += '<div class="target-card"><div class="tc-top" style="cursor:default">' +
-      '<div class="tc-who"><div class="t-name">' + escapeHtml(player.name) + '</div>' +
+      '<div class="tc-who"><div class="t-name">' + escapeHtml(player.name) + wcChip(player.name) + '</div>' +
       '<div class="t-meta">' + player.position + ' · ' + player.age + ' · ' + escapeHtml(player.club) + '</div></div>' +
       '<div class="tc-nums">' +
       '<div class="tc-num"><div class="n-label">Assigned to</div><div>' +
