@@ -50,6 +50,7 @@ const FEATURED: WCPlayer[] = [
       'First player this century with 10+ completed dribbles AND 10+ chances created across his first three World Cup games (Opta).',
       '8 chances created from carries — second in the tournament only to Mbappé.',
       'Five successive high-level performances as Ivory Coast reached the knockouts.',
+      'The arc is barely believable: playing semi-pro in America\'s UPSL in 2023, a nine-figure tug-of-war in 2026.',
     ],
     talking: 'The saga of the summer. He has reportedly agreed a five-year deal with PSG and spoken to Luis Enrique — but Leipzig want €120–130M, Liverpool\'s €100M offer (incl. bonuses) was rebuffed, and Leipzig now say they\'d rather keep him or loan him back. Manchester United and Manchester City are also reported in the race.',
     rumored: ['PSG', 'Liverpool', 'Manchester United', 'Manchester City'],
@@ -145,7 +146,7 @@ const FEATURED: WCPlayer[] = [
       'Three group-stage goals for New Zealand — from the Scottish Premiership.',
       'Reported pre-tournament value ~€3M; suitors are now told to quadruple it.',
     ],
-    talking: 'The tournament\'s cult hero. No big-six chatter — this is a mid-table and second-tier opportunity, and exactly the profile the gem scanner exists for.',
+    talking: 'The tournament\'s cult hero — and the phone is ringing: Celtic and Rangers are now reported to be circling. Still no big-six chatter, which is exactly the window a mid-table club should be moving in.',
     rumored: [],
     scout: { name: 'Jimmy Barnes', region: 'UK & EFL', initials: 'JB' },
     angle: 'The €3M lottery ticket',
@@ -168,6 +169,114 @@ const FEATURED: WCPlayer[] = [
   },
 ];
 
+// ─── The Crazy Files ──────────────────────────────────────────────────
+// Lower-division, semi-pro and free-agent stories — the players the data
+// barely covers, which is precisely where scouting bandwidth wins.
+
+interface CrazyPlayer {
+  profile: ScoutProfile;
+  flag: string;
+  country: string;
+  status: string;        // contract-status chip
+  statusHot: boolean;
+  story: string[];
+  engineNote: string;    // authored editorial line about what the engine can/can't see
+  scout: { name: string; region: string; initials: string };
+}
+
+const CRAZY: CrazyPlayer[] = [
+  {
+    profile: P({ name: 'Vozinha', age: 40, position: 'GK', club: 'Unattached (last: Chaves)', league: 'Liga Portugal 2',
+      nationality: 'Cape Verde', marketValue: 0.3, contractYearsLeft: 0, passCompletionRate: 0.72,
+      avgPassDistance: 32, defensiveWorkRate: 0.5, sprintCapacity: 8, avgSpeed: 5.2,
+      currentPageRank: 0.1, currentConnections: 4, currentPassWeight: 0.2, avgX: -48, avgY: 0 }),
+    flag: '&#127464;&#127483;', country: 'Cape Verde',
+    status: 'FREE AGENT — "I\'m looking for a good project"', statusHot: true,
+    story: [
+      'Worked as an electrician; didn\'t sign a professional contract until 26. Career route: Angola, Moldova, Cyprus, Portugal\'s second division.',
+      'Seven saves in the 0–0 that held Spain in the group opener; eight more in the 3–2 extra-time epic against Argentina.',
+      'Reported ~14M new Instagram followers mid-tournament. At 40, he told reporters after elimination: "At the moment I\'m a free agent and I\'m looking for a good project. I hope to find one soon."',
+    ],
+    engineNote: 'The engine\'s honest answer: almost no usable club data — second-division minutes, 40 years old, goalkeeper markets barely graph. This is a pure Tier 3 signing: a scout\'s eyes, a medical, and a dressing-room bet. The model\'s job here is to price the risk, not to find him.',
+    scout: { name: 'Sam Okafor', region: 'West Africa & Ligue 1', initials: 'SO' },
+  },
+  {
+    profile: P({ name: 'Sidny Lopes Cabral', age: 23, position: 'LB', club: 'Trabzonspor', league: 'Süper Lig',
+      nationality: 'Cape Verde', marketValue: 8, contractYearsLeft: 4, passCompletionRate: 0.8,
+      avgPassDistance: 13, defensiveWorkRate: 0.68, sprintCapacity: 27, avgSpeed: 7.1,
+      currentPageRank: 0.2, currentConnections: 6.5, currentPassWeight: 0.28, avgX: -14, avgY: -24 }),
+    flag: '&#127464;&#127483;', country: 'Cape Verde',
+    status: 'REPORTED MOVE — Trabzonspor, off the back of the tournament', statusHot: false,
+    story: [
+      'The 103rd-minute equalizer against Argentina — cut inside past Mac Allister, curled into the top corner past Mart&iacute;nez — took 88.7% of the public vote for Goal of the Tournament.',
+      'Rotterdam-born, developed via Benfica\'s system after a breakout at Estrela da Amadora; reports list him anywhere from left-back to left wing — which tells you how new all of this is.',
+      'Eighteen months ago he was a Portuguese second-tier name. Now he has the most-watched goal on the planet.',
+    ],
+    engineNote: 'One golazo moved his price more than two seasons of league data. That is exactly the montage-vs-context trap from the top of this page — the engine grades him on the eighteen months, not the eight seconds.',
+    scout: { name: 'Sam Okafor', region: 'West Africa & Ligue 1', initials: 'SO' },
+  },
+  {
+    profile: P({ name: 'Pico Lopes', age: 34, position: 'CB', club: 'Shamrock Rovers', league: 'League of Ireland',
+      nationality: 'Cape Verde', marketValue: 0.4, contractYearsLeft: 1, passCompletionRate: 0.84,
+      avgPassDistance: 18, defensiveWorkRate: 0.75, sprintCapacity: 12, avgSpeed: 6.2,
+      currentPageRank: 0.16, currentConnections: 6, currentPassWeight: 0.28, avgX: -34, avgY: 4 }),
+    flag: '&#127464;&#127483;', country: 'Cape Verde',
+    status: 'CONTRACTED — Shamrock Rovers (League of Ireland)', statusHot: false,
+    story: [
+      'Dublin-born, eligible through his father — he ignored Cape Verde\'s first call-up messages because he assumed they were spam.',
+      'Ever-present through the entire run: draws with Spain, Uruguay and Saudi Arabia, then the extra-time near-miss against the world champions.',
+      'Went straight from marking League of Ireland strikers to marking Lautaro Mart&iacute;nez — and held the line for 100+ minutes.',
+    ],
+    engineNote: 'League of Ireland tracking data essentially doesn\'t reach the public tier — the engine sees a €0.4M 34-year-old and five World Cup matches. A club that had filed ONE scout report on him in 2024 would have had this information for the price of a flight to Dublin.',
+    scout: { name: 'Jimmy Barnes', region: 'UK & EFL', initials: 'JB' },
+  },
+  {
+    profile: P({ name: 'Eloy Room', age: 37, position: 'GK', club: 'Journeyman (ex-PSV, Columbus Crew)', league: 'career: Eredivisie & MLS',
+      nationality: 'Cura&ccedil;ao', marketValue: 0.5, contractYearsLeft: 0, passCompletionRate: 0.74,
+      avgPassDistance: 30, defensiveWorkRate: 0.5, sprintCapacity: 8, avgSpeed: 5.1,
+      currentPageRank: 0.1, currentConnections: 4, currentPassWeight: 0.2, avgX: -48, avgY: 0 }),
+    flag: '&#127464;&#127484;', country: 'Cura&ccedil;ao',
+    status: 'VETERAN — the smallest nation ever at a World Cup (pop. 155,000)', statusHot: false,
+    story: [
+      '15 saves against Ecuador — the most ever recorded in a 90-minute World Cup match — earning Cura&ccedil;ao their only point.',
+      'Cura&ccedil;ao are the smallest country by population ever to reach a World Cup. Their keeper made sure they left with a number in the points column.',
+      'At 37, the tournament was a farewell audition broadcast to two billion people.',
+    ],
+    engineNote: 'One match, fifteen data points of the only kind that matters for a keeper. The engine can\'t weight a single game — a goalkeeping coach watching the tape can, in ninety minutes.',
+    scout: { name: 'Marta Vidal', region: 'South America & La Liga', initials: 'MV' },
+  },
+  {
+    profile: P({ name: 'Orlando Gill', age: 26, position: 'GK', club: 'San Lorenzo', league: 'Liga Profesional (ARG)',
+      nationality: 'Paraguay', marketValue: 4, contractYearsLeft: 2, passCompletionRate: 0.76,
+      avgPassDistance: 28, defensiveWorkRate: 0.5, sprintCapacity: 9, avgSpeed: 5.4,
+      currentPageRank: 0.11, currentConnections: 4.5, currentPassWeight: 0.22, avgX: -47, avgY: 0 }),
+    flag: '&#127477;&#127486;', country: 'Paraguay',
+    status: 'RISING — international debut only last September', statusHot: false,
+    story: [
+      '23 saves across the tournament — the most of any goalkeeper.',
+      'Two penalty saves in the shootout that eliminated Germany in the round of 32.',
+      'First capped ten months before the tournament. From San Lorenzo\'s rotation to the World Cup\'s save leaderboard.',
+    ],
+    engineNote: 'The rare crazy-file case with real league data behind it — Argentine Primera minutes graph well enough for Tier 1. The engine can actually underwrite this one; European moves for South American keepers in their mid-20s are historically the market\'s best GK value.',
+    scout: { name: 'Marta Vidal', region: 'South America & La Liga', initials: 'MV' },
+  },
+  {
+    profile: P({ name: 'Haissem Hassan', age: 24, position: 'RW', club: 'Real Oviedo', league: 'Segunda Divisi&oacute;n',
+      nationality: 'Egypt', marketValue: 4, contractYearsLeft: 2, passCompletionRate: 0.79,
+      avgPassDistance: 11, defensiveWorkRate: 0.5, sprintCapacity: 26, avgSpeed: 7.2,
+      currentPageRank: 0.2, currentConnections: 6.5, currentPassWeight: 0.28, avgX: 16, avgY: 21 }),
+    flag: '&#127466;&#127468;', country: 'Egypt',
+    status: 'SHOP WINDOW — club relegated, price still tiny', statusHot: true,
+    story: [
+      'Didn\'t play a single group-stage minute. Debuted in the round of 32 against Australia and became Egypt\'s knockout-stage spark.',
+      'His club, Real Oviedo, were relegated from La Liga weeks before the tournament — a knockout-stage winger priced by a relegated balance sheet.',
+      'The classic distressed-asset setup: the club needs the fee more than the player.',
+    ],
+    engineNote: 'Relegation prices the club, not the player — the engine\'s redundancy and system-fit factors don\'t care what division his employer just fell into. Squads thin on the right flank should be running this file this week, before Segunda tape turns into La Liga tape.',
+    scout: { name: 'Marta Vidal', region: 'South America & La Liga', initials: 'MV' },
+  },
+];
+
 const SOURCES: { label: string; url: string }[] = [
   { label: 'ESPN — Breakout stars of the 2026 World Cup', url: 'https://www.espn.com/soccer/story/_/id/49308560/world-cup-breakout-stars-diomande-freeman-manzambi-puerta' },
   { label: 'beIN SPORTS — The 5 players who boosted their market value most', url: 'https://www.beinsports.com/en-us/soccer/fifa-world-cup-2026/articles/the-5-players-who-boosted-their-market-value-the-most-at-the-world-cup-2026-07-16' },
@@ -177,6 +286,13 @@ const SOURCES: { label: string; url: string }[] = [
   { label: 'Football Whispers — World Cup 2026 market movers', url: 'https://footballwhispers.com/blog/world-cup-2026-market-movers/' },
   { label: 'GiveMeSport — Why post-tournament transfers are risky business', url: 'https://www.givemesport.com/why-post-international-tournament-transfers-risk-soccer/' },
   { label: 'FIFA — Superstars shining at the 2026 World Cup', url: 'https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026/articles/superstars-shining' },
+  { label: 'beIN SPORTS — Vozinha: from electrician to Cape Verde hero', url: 'https://www.beinsports.com/en-us/soccer/fifa-world-cup-2026/articles/the-inspiring-story-of-vozinha-from-working-as-an-electrician-to-becoming-cape-verde-s-hero-at-the-2026-fifa-world-cup-2026-07-05' },
+  { label: 'beIN SPORTS — Vozinha hopes to find a new team after the World Cup', url: 'https://www.beinsports.com/en-us/soccer/fifa-world-cup-2026/articles/vozinha-hopes-to-find-a-new-team-after-the-world-cup-2026-07-18' },
+  { label: 'ESPN — Cape Verde GK Vozinha stopped Spain, gained 14M followers', url: 'https://www.espn.com/soccer/story/_/id/49074487/cape-verde-gk-vozinha-stopped-world-cup-favourites-spain-gained-14m-followers' },
+  { label: 'FIFA — Sidny Lopes Cabral voted Round of 32\'s best goal', url: 'https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026/articles/sidny-lopes-cabral-cabo-verde-round-of-32-best-goal' },
+  { label: 'beIN SPORTS — Who is Sidny Lopes Cabral?', url: 'https://www.beinsports.com/en-us/soccer/fifa-world-cup-2026/articles/who-is-sidny-lopes-cabral-cape-verde-s-breakout-star-at-the-2026-world-cup-2026-07-03' },
+  { label: 'Planet Football — Top 10 cult heroes of the 2026 World Cup', url: 'https://www.planetfootball.com/lists-and-rankings/world-cup-2026-cult-hero-ranking' },
+  { label: 'NBC Sports — Lesser-known players making waves', url: 'https://www.nbcsports.com/soccer/news/the-lesser-known-players-making-waves-at-the-2026-world-cup-so-far' },
 ];
 
 // ─── Engine pass ──────────────────────────────────────────────────────
@@ -282,9 +398,42 @@ function playerCard(p: WCPlayer, teams: ReturnType<typeof getTeamDatabase>): str
   </article>`;
 }
 
+function crazyCard(p: CrazyPlayer, teams: ReturnType<typeof getTeamDatabase>): string {
+  const vec = scoutProfileToVector(p.profile);
+  const fits = teams
+    .map(t => ({ t, v: computeEnhancedValuation(vec, t) }))
+    .sort((a, b) => b.v.multiplier - a.v.multiplier);
+  const best = fits[0];
+  const conf = Math.round(best.v.confidence * 100);
+
+  return `
+  <article class="crazy-card">
+    <div class="wc-head">
+      <div>
+        <div class="wc-name">${p.flag} ${esc(p.profile.name)}</div>
+        <div class="wc-meta">${p.profile.position} · ${p.profile.age} · ${p.profile.club} (${p.profile.league}) · ${p.country}</div>
+      </div>
+      <span class="status-pill${p.statusHot ? ' hot' : ''}">${p.status}</span>
+    </div>
+    <ul class="crazy-story">${p.story.map(s => `<li>${s}</li>`).join('')}</ul>
+    <div class="crazy-engine">
+      <span class="ce-label">&#9881;&#65039; Engine check</span>
+      best structural fit <strong>${esc(best.t.name)}</strong> at <strong>${best.v.multiplier.toFixed(2)}x</strong>
+      (&euro;${best.v.contextValue}M on a &euro;${p.profile.marketValue}M base) &middot; data confidence <strong>${conf}%</strong>.
+      ${p.engineNote}
+    </div>
+    <div class="wc-scout">
+      <span class="scout-avatar">${p.scout.initials}</span>
+      <span><strong>Who should scout them:</strong> ${esc(p.scout.name)} — ${esc(p.scout.region)}.
+      <a href="enterprise.html">File the Tier&nbsp;3 report &rarr;</a></span>
+    </div>
+  </article>`;
+}
+
 async function main() {
   const teams = getTeamDatabase();
   const cards = FEATURED.map(p => playerCard(p, teams)).join('\n');
+  const crazyCards = CRAZY.map(p => crazyCard(p, teams)).join('\n');
 
   const html = `<!DOCTYPE html>
 <html lang="en">
@@ -349,6 +498,20 @@ nav a{color:var(--text-dim)}nav a:hover{color:var(--text-bright);text-decoration
 .fit-val{width:4.2rem;text-align:right;color:var(--text-dim);font-variant-numeric:tabular-nums;font-size:0.82rem}
 .wc-verdict{margin-top:0.9rem;border-top:1px dashed var(--border);padding-top:0.8rem;font-size:0.88rem}
 .wc-verdict .v-label{display:inline-block;background:var(--gold-dim);color:var(--gold);font-size:0.64rem;font-weight:800;letter-spacing:0.8px;text-transform:uppercase;padding:0.14rem 0.5rem;border-radius:999px;margin-right:0.4rem}
+.crazy-section{margin-top:3rem;border-top:1px solid var(--border);background:radial-gradient(ellipse 60% 40% at 50% 0%,rgba(255,56,96,0.07),transparent);padding:3rem 0 1rem}
+.crazy-head{max-width:760px;margin:0 auto 2rem;text-align:center}
+.crazy-head .kicker{color:var(--red);font-weight:800;letter-spacing:2px;font-size:0.8rem;text-transform:uppercase}
+.crazy-head h2{font-size:clamp(1.5rem,4vw,2.2rem);font-weight:900;color:var(--text-bright);letter-spacing:-0.5px;margin:0.5rem 0 0.8rem}
+.crazy-head p{color:var(--text-dim);font-size:0.95rem;text-align:left}
+.crazy-head p strong{color:var(--text)}
+.crazy-card{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--red);border-radius:14px;padding:1.4rem 1.6rem;margin-bottom:1.2rem}
+.status-pill{font-size:0.72rem;font-weight:800;letter-spacing:0.5px;padding:0.28rem 0.8rem;border-radius:999px;background:var(--bg2);border:1px solid var(--border-light);color:var(--text);max-width:100%}
+.status-pill.hot{border-color:var(--red);color:var(--red);background:var(--red-dim)}
+.crazy-story{padding-left:1.1rem;font-size:0.9rem;margin:0.9rem 0}
+.crazy-story li{margin-bottom:0.4rem}
+.crazy-engine{background:var(--bg2);border-radius:10px;padding:0.8rem 1rem;font-size:0.86rem;color:var(--text)}
+.crazy-engine .ce-label{display:inline-block;background:var(--accent-dim);color:var(--accent);font-size:0.64rem;font-weight:800;letter-spacing:0.8px;text-transform:uppercase;padding:0.14rem 0.5rem;border-radius:999px;margin-right:0.4rem}
+.crazy-card .wc-scout{margin-top:0.8rem}
 .cta-strip{background:linear-gradient(180deg,transparent,rgba(0,180,255,0.06));border-top:1px solid var(--border);text-align:center;padding:3rem 0;margin-top:2.5rem}
 .cta-strip h2{color:var(--text-bright);font-size:1.5rem;font-weight:800;margin-bottom:0.5rem}
 .cta-strip p{color:var(--text-dim);max-width:560px;margin:0 auto 1.4rem}
@@ -366,6 +529,7 @@ footer{border-top:1px solid var(--border);padding:2rem 0 3rem;color:var(--text-d
   <div class="header-inner">
     <div class="logo"><span class="p">Pitch</span><span class="i">Intel</span><span class="wc-chip">&#127942; WC 2026</span></div>
     <nav>
+      <a href="#crazy" style="color:var(--red)">The Crazy Files</a>
       <a href="index.html">Home</a>
       <a href="app.html">App</a>
       <a href="how-it-works.html">How it works</a>
@@ -390,6 +554,17 @@ footer{border-top:1px solid var(--border);padding:2rem 0 3rem;color:var(--text-d
 <main class="wrap" style="padding-top:2rem">
 ${cards}
 </main>
+
+<section id="crazy" class="crazy-section">
+  <div class="wrap">
+    <div class="crazy-head">
+      <div class="kicker">The Crazy Files</div>
+      <h2>From spam-folder call-ups to the world stage</h2>
+      <p>Cape Verde — smallest country by land ever at a World Cup — drew with Spain, drew with Uruguay, and took the champions to the 103rd minute. Cura&ccedil;ao brought 155,000 people's worth of nation and left with a point. These squads are stocked from second divisions, the League of Ireland, and free agency — players the data economy barely covers. <strong>For the stars above, the tournament added hype to good data. For these players, the tournament IS the data.</strong> That asymmetry is the whole scouting opportunity.</p>
+    </div>
+    ${crazyCards}
+  </div>
+</section>
 
 <section class="cta-strip">
   <div class="wrap">

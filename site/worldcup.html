@@ -61,6 +61,20 @@ nav a{color:var(--text-dim)}nav a:hover{color:var(--text-bright);text-decoration
 .fit-val{width:4.2rem;text-align:right;color:var(--text-dim);font-variant-numeric:tabular-nums;font-size:0.82rem}
 .wc-verdict{margin-top:0.9rem;border-top:1px dashed var(--border);padding-top:0.8rem;font-size:0.88rem}
 .wc-verdict .v-label{display:inline-block;background:var(--gold-dim);color:var(--gold);font-size:0.64rem;font-weight:800;letter-spacing:0.8px;text-transform:uppercase;padding:0.14rem 0.5rem;border-radius:999px;margin-right:0.4rem}
+.crazy-section{margin-top:3rem;border-top:1px solid var(--border);background:radial-gradient(ellipse 60% 40% at 50% 0%,rgba(255,56,96,0.07),transparent);padding:3rem 0 1rem}
+.crazy-head{max-width:760px;margin:0 auto 2rem;text-align:center}
+.crazy-head .kicker{color:var(--red);font-weight:800;letter-spacing:2px;font-size:0.8rem;text-transform:uppercase}
+.crazy-head h2{font-size:clamp(1.5rem,4vw,2.2rem);font-weight:900;color:var(--text-bright);letter-spacing:-0.5px;margin:0.5rem 0 0.8rem}
+.crazy-head p{color:var(--text-dim);font-size:0.95rem;text-align:left}
+.crazy-head p strong{color:var(--text)}
+.crazy-card{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--red);border-radius:14px;padding:1.4rem 1.6rem;margin-bottom:1.2rem}
+.status-pill{font-size:0.72rem;font-weight:800;letter-spacing:0.5px;padding:0.28rem 0.8rem;border-radius:999px;background:var(--bg2);border:1px solid var(--border-light);color:var(--text);max-width:100%}
+.status-pill.hot{border-color:var(--red);color:var(--red);background:var(--red-dim)}
+.crazy-story{padding-left:1.1rem;font-size:0.9rem;margin:0.9rem 0}
+.crazy-story li{margin-bottom:0.4rem}
+.crazy-engine{background:var(--bg2);border-radius:10px;padding:0.8rem 1rem;font-size:0.86rem;color:var(--text)}
+.crazy-engine .ce-label{display:inline-block;background:var(--accent-dim);color:var(--accent);font-size:0.64rem;font-weight:800;letter-spacing:0.8px;text-transform:uppercase;padding:0.14rem 0.5rem;border-radius:999px;margin-right:0.4rem}
+.crazy-card .wc-scout{margin-top:0.8rem}
 .cta-strip{background:linear-gradient(180deg,transparent,rgba(0,180,255,0.06));border-top:1px solid var(--border);text-align:center;padding:3rem 0;margin-top:2.5rem}
 .cta-strip h2{color:var(--text-bright);font-size:1.5rem;font-weight:800;margin-bottom:0.5rem}
 .cta-strip p{color:var(--text-dim);max-width:560px;margin:0 auto 1.4rem}
@@ -78,6 +92,7 @@ footer{border-top:1px solid var(--border);padding:2rem 0 3rem;color:var(--text-d
   <div class="header-inner">
     <div class="logo"><span class="p">Pitch</span><span class="i">Intel</span><span class="wc-chip">&#127942; WC 2026</span></div>
     <nav>
+      <a href="#crazy" style="color:var(--red)">The Crazy Files</a>
       <a href="index.html">Home</a>
       <a href="app.html">App</a>
       <a href="how-it-works.html">How it works</a>
@@ -117,7 +132,7 @@ footer{border-top:1px solid var(--border);padding:2rem 0 3rem;color:var(--text-d
     <div class="wc-cols">
       <div class="wc-col">
         <h4>&#127942; The tournament</h4>
-        <ul><li>First player this century with 10+ completed dribbles AND 10+ chances created across his first three World Cup games (Opta).</li><li>8 chances created from carries — second in the tournament only to Mbappé.</li><li>Five successive high-level performances as Ivory Coast reached the knockouts.</li></ul>
+        <ul><li>First player this century with 10+ completed dribbles AND 10+ chances created across his first three World Cup games (Opta).</li><li>8 chances created from carries — second in the tournament only to Mbappé.</li><li>Five successive high-level performances as Ivory Coast reached the knockouts.</li><li>The arc is barely believable: playing semi-pro in America's UPSL in 2023, a nine-figure tug-of-war in 2026.</li></ul>
         <h4>&#128227; Who's talking</h4>
         <p class="wc-talking">The saga of the summer. He has reportedly agreed a five-year deal with PSG and spoken to Luis Enrique — but Leipzig want €120–130M, Liverpool's €100M offer (incl. bonuses) was rebuffed, and Leipzig now say they'd rather keep him or loan him back. Manchester United and Manchester City are also reported in the race.</p>
         <div class="wc-scout">
@@ -484,7 +499,7 @@ footer{border-top:1px solid var(--border);padding:2rem 0 3rem;color:var(--text-d
         <h4>&#127942; The tournament</h4>
         <ul><li>Three group-stage goals for New Zealand — from the Scottish Premiership.</li><li>Reported pre-tournament value ~€3M; suitors are now told to quadruple it.</li></ul>
         <h4>&#128227; Who's talking</h4>
-        <p class="wc-talking">The tournament's cult hero. No big-six chatter — this is a mid-table and second-tier opportunity, and exactly the profile the gem scanner exists for.</p>
+        <p class="wc-talking">The tournament's cult hero — and the phone is ringing: Celtic and Rangers are now reported to be circling. Still no big-six chatter, which is exactly the window a mid-table club should be moving in.</p>
         <div class="wc-scout">
           <span class="scout-avatar">JB</span>
           <span><strong>Who should scout them:</strong> Jimmy Barnes — UK &amp; EFL.
@@ -567,6 +582,148 @@ footer{border-top:1px solid var(--border);padding:2rem 0 3rem;color:var(--text-d
   </article>
 </main>
 
+<section id="crazy" class="crazy-section">
+  <div class="wrap">
+    <div class="crazy-head">
+      <div class="kicker">The Crazy Files</div>
+      <h2>From spam-folder call-ups to the world stage</h2>
+      <p>Cape Verde — smallest country by land ever at a World Cup — drew with Spain, drew with Uruguay, and took the champions to the 103rd minute. Cura&ccedil;ao brought 155,000 people's worth of nation and left with a point. These squads are stocked from second divisions, the League of Ireland, and free agency — players the data economy barely covers. <strong>For the stars above, the tournament added hype to good data. For these players, the tournament IS the data.</strong> That asymmetry is the whole scouting opportunity.</p>
+    </div>
+    
+  <article class="crazy-card">
+    <div class="wc-head">
+      <div>
+        <div class="wc-name">&#127464;&#127483; Vozinha</div>
+        <div class="wc-meta">GK · 40 · Unattached (last: Chaves) (Liga Portugal 2) · Cape Verde</div>
+      </div>
+      <span class="status-pill hot">FREE AGENT — "I'm looking for a good project"</span>
+    </div>
+    <ul class="crazy-story"><li>Worked as an electrician; didn't sign a professional contract until 26. Career route: Angola, Moldova, Cyprus, Portugal's second division.</li><li>Seven saves in the 0–0 that held Spain in the group opener; eight more in the 3–2 extra-time epic against Argentina.</li><li>Reported ~14M new Instagram followers mid-tournament. At 40, he told reporters after elimination: "At the moment I'm a free agent and I'm looking for a good project. I hope to find one soon."</li></ul>
+    <div class="crazy-engine">
+      <span class="ce-label">&#9881;&#65039; Engine check</span>
+      best structural fit <strong>Liverpool</strong> at <strong>0.96x</strong>
+      (&euro;0.3M on a &euro;0.3M base) &middot; data confidence <strong>41%</strong>.
+      The engine's honest answer: almost no usable club data — second-division minutes, 40 years old, goalkeeper markets barely graph. This is a pure Tier 3 signing: a scout's eyes, a medical, and a dressing-room bet. The model's job here is to price the risk, not to find him.
+    </div>
+    <div class="wc-scout">
+      <span class="scout-avatar">SO</span>
+      <span><strong>Who should scout them:</strong> Sam Okafor — West Africa &amp; Ligue 1.
+      <a href="enterprise.html">File the Tier&nbsp;3 report &rarr;</a></span>
+    </div>
+  </article>
+
+  <article class="crazy-card">
+    <div class="wc-head">
+      <div>
+        <div class="wc-name">&#127464;&#127483; Sidny Lopes Cabral</div>
+        <div class="wc-meta">LB · 23 · Trabzonspor (Süper Lig) · Cape Verde</div>
+      </div>
+      <span class="status-pill">REPORTED MOVE — Trabzonspor, off the back of the tournament</span>
+    </div>
+    <ul class="crazy-story"><li>The 103rd-minute equalizer against Argentina — cut inside past Mac Allister, curled into the top corner past Mart&iacute;nez — took 88.7% of the public vote for Goal of the Tournament.</li><li>Rotterdam-born, developed via Benfica's system after a breakout at Estrela da Amadora; reports list him anywhere from left-back to left wing — which tells you how new all of this is.</li><li>Eighteen months ago he was a Portuguese second-tier name. Now he has the most-watched goal on the planet.</li></ul>
+    <div class="crazy-engine">
+      <span class="ce-label">&#9881;&#65039; Engine check</span>
+      best structural fit <strong>Roma</strong> at <strong>1.15x</strong>
+      (&euro;9.2M on a &euro;8M base) &middot; data confidence <strong>41%</strong>.
+      One golazo moved his price more than two seasons of league data. That is exactly the montage-vs-context trap from the top of this page — the engine grades him on the eighteen months, not the eight seconds.
+    </div>
+    <div class="wc-scout">
+      <span class="scout-avatar">SO</span>
+      <span><strong>Who should scout them:</strong> Sam Okafor — West Africa &amp; Ligue 1.
+      <a href="enterprise.html">File the Tier&nbsp;3 report &rarr;</a></span>
+    </div>
+  </article>
+
+  <article class="crazy-card">
+    <div class="wc-head">
+      <div>
+        <div class="wc-name">&#127464;&#127483; Pico Lopes</div>
+        <div class="wc-meta">CB · 34 · Shamrock Rovers (League of Ireland) · Cape Verde</div>
+      </div>
+      <span class="status-pill">CONTRACTED — Shamrock Rovers (League of Ireland)</span>
+    </div>
+    <ul class="crazy-story"><li>Dublin-born, eligible through his father — he ignored Cape Verde's first call-up messages because he assumed they were spam.</li><li>Ever-present through the entire run: draws with Spain, Uruguay and Saudi Arabia, then the extra-time near-miss against the world champions.</li><li>Went straight from marking League of Ireland strikers to marking Lautaro Mart&iacute;nez — and held the line for 100+ minutes.</li></ul>
+    <div class="crazy-engine">
+      <span class="ce-label">&#9881;&#65039; Engine check</span>
+      best structural fit <strong>Stuttgart</strong> at <strong>1.03x</strong>
+      (&euro;0.4M on a &euro;0.4M base) &middot; data confidence <strong>41%</strong>.
+      League of Ireland tracking data essentially doesn't reach the public tier — the engine sees a €0.4M 34-year-old and five World Cup matches. A club that had filed ONE scout report on him in 2024 would have had this information for the price of a flight to Dublin.
+    </div>
+    <div class="wc-scout">
+      <span class="scout-avatar">JB</span>
+      <span><strong>Who should scout them:</strong> Jimmy Barnes — UK &amp; EFL.
+      <a href="enterprise.html">File the Tier&nbsp;3 report &rarr;</a></span>
+    </div>
+  </article>
+
+  <article class="crazy-card">
+    <div class="wc-head">
+      <div>
+        <div class="wc-name">&#127464;&#127484; Eloy Room</div>
+        <div class="wc-meta">GK · 37 · Journeyman (ex-PSV, Columbus Crew) (career: Eredivisie & MLS) · Cura&ccedil;ao</div>
+      </div>
+      <span class="status-pill">VETERAN — the smallest nation ever at a World Cup (pop. 155,000)</span>
+    </div>
+    <ul class="crazy-story"><li>15 saves against Ecuador — the most ever recorded in a 90-minute World Cup match — earning Cura&ccedil;ao their only point.</li><li>Cura&ccedil;ao are the smallest country by population ever to reach a World Cup. Their keeper made sure they left with a number in the points column.</li><li>At 37, the tournament was a farewell audition broadcast to two billion people.</li></ul>
+    <div class="crazy-engine">
+      <span class="ce-label">&#9881;&#65039; Engine check</span>
+      best structural fit <strong>Juventus</strong> at <strong>0.97x</strong>
+      (&euro;0.5M on a &euro;0.5M base) &middot; data confidence <strong>41%</strong>.
+      One match, fifteen data points of the only kind that matters for a keeper. The engine can't weight a single game — a goalkeeping coach watching the tape can, in ninety minutes.
+    </div>
+    <div class="wc-scout">
+      <span class="scout-avatar">MV</span>
+      <span><strong>Who should scout them:</strong> Marta Vidal — South America &amp; La Liga.
+      <a href="enterprise.html">File the Tier&nbsp;3 report &rarr;</a></span>
+    </div>
+  </article>
+
+  <article class="crazy-card">
+    <div class="wc-head">
+      <div>
+        <div class="wc-name">&#127477;&#127486; Orlando Gill</div>
+        <div class="wc-meta">GK · 26 · San Lorenzo (Liga Profesional (ARG)) · Paraguay</div>
+      </div>
+      <span class="status-pill">RISING — international debut only last September</span>
+    </div>
+    <ul class="crazy-story"><li>23 saves across the tournament — the most of any goalkeeper.</li><li>Two penalty saves in the shootout that eliminated Germany in the round of 32.</li><li>First capped ten months before the tournament. From San Lorenzo's rotation to the World Cup's save leaderboard.</li></ul>
+    <div class="crazy-engine">
+      <span class="ce-label">&#9881;&#65039; Engine check</span>
+      best structural fit <strong>Liverpool</strong> at <strong>1.01x</strong>
+      (&euro;4M on a &euro;4M base) &middot; data confidence <strong>41%</strong>.
+      The rare crazy-file case with real league data behind it — Argentine Primera minutes graph well enough for Tier 1. The engine can actually underwrite this one; European moves for South American keepers in their mid-20s are historically the market's best GK value.
+    </div>
+    <div class="wc-scout">
+      <span class="scout-avatar">MV</span>
+      <span><strong>Who should scout them:</strong> Marta Vidal — South America &amp; La Liga.
+      <a href="enterprise.html">File the Tier&nbsp;3 report &rarr;</a></span>
+    </div>
+  </article>
+
+  <article class="crazy-card">
+    <div class="wc-head">
+      <div>
+        <div class="wc-name">&#127466;&#127468; Haissem Hassan</div>
+        <div class="wc-meta">RW · 24 · Real Oviedo (Segunda Divisi&oacute;n) · Egypt</div>
+      </div>
+      <span class="status-pill hot">SHOP WINDOW — club relegated, price still tiny</span>
+    </div>
+    <ul class="crazy-story"><li>Didn't play a single group-stage minute. Debuted in the round of 32 against Australia and became Egypt's knockout-stage spark.</li><li>His club, Real Oviedo, were relegated from La Liga weeks before the tournament — a knockout-stage winger priced by a relegated balance sheet.</li><li>The classic distressed-asset setup: the club needs the fee more than the player.</li></ul>
+    <div class="crazy-engine">
+      <span class="ce-label">&#9881;&#65039; Engine check</span>
+      best structural fit <strong>Atletico Madrid</strong> at <strong>1.25x</strong>
+      (&euro;5M on a &euro;4M base) &middot; data confidence <strong>41%</strong>.
+      Relegation prices the club, not the player — the engine's redundancy and system-fit factors don't care what division his employer just fell into. Squads thin on the right flank should be running this file this week, before Segunda tape turns into La Liga tape.
+    </div>
+    <div class="wc-scout">
+      <span class="scout-avatar">MV</span>
+      <span><strong>Who should scout them:</strong> Marta Vidal — South America &amp; La Liga.
+      <a href="enterprise.html">File the Tier&nbsp;3 report &rarr;</a></span>
+    </div>
+  </article>
+  </div>
+</section>
+
 <section class="cta-strip">
   <div class="wrap">
     <h2>Run the numbers yourself</h2>
@@ -588,6 +745,13 @@ footer{border-top:1px solid var(--border);padding:2rem 0 3rem;color:var(--text-d
       <a href="https://footballwhispers.com/blog/world-cup-2026-market-movers/" rel="noopener">Football Whispers — World Cup 2026 market movers</a>
       <a href="https://www.givemesport.com/why-post-international-tournament-transfers-risk-soccer/" rel="noopener">GiveMeSport — Why post-tournament transfers are risky business</a>
       <a href="https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026/articles/superstars-shining" rel="noopener">FIFA — Superstars shining at the 2026 World Cup</a>
+      <a href="https://www.beinsports.com/en-us/soccer/fifa-world-cup-2026/articles/the-inspiring-story-of-vozinha-from-working-as-an-electrician-to-becoming-cape-verde-s-hero-at-the-2026-fifa-world-cup-2026-07-05" rel="noopener">beIN SPORTS — Vozinha: from electrician to Cape Verde hero</a>
+      <a href="https://www.beinsports.com/en-us/soccer/fifa-world-cup-2026/articles/vozinha-hopes-to-find-a-new-team-after-the-world-cup-2026-07-18" rel="noopener">beIN SPORTS — Vozinha hopes to find a new team after the World Cup</a>
+      <a href="https://www.espn.com/soccer/story/_/id/49074487/cape-verde-gk-vozinha-stopped-world-cup-favourites-spain-gained-14m-followers" rel="noopener">ESPN — Cape Verde GK Vozinha stopped Spain, gained 14M followers</a>
+      <a href="https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026/articles/sidny-lopes-cabral-cabo-verde-round-of-32-best-goal" rel="noopener">FIFA — Sidny Lopes Cabral voted Round of 32's best goal</a>
+      <a href="https://www.beinsports.com/en-us/soccer/fifa-world-cup-2026/articles/who-is-sidny-lopes-cabral-cape-verde-s-breakout-star-at-the-2026-world-cup-2026-07-03" rel="noopener">beIN SPORTS — Who is Sidny Lopes Cabral?</a>
+      <a href="https://www.planetfootball.com/lists-and-rankings/world-cup-2026-cult-hero-ranking" rel="noopener">Planet Football — Top 10 cult heroes of the 2026 World Cup</a>
+      <a href="https://www.nbcsports.com/soccer/news/the-lesser-known-players-making-waves-at-the-2026-world-cup-so-far" rel="noopener">NBC Sports — Lesser-known players making waves</a>
     </div>
     Contact: <a href="mailto:kunal@generativeducation.com">kunal@generativeducation.com</a>
   </div>
