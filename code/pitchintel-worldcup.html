@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>World Cup 2026 Special — PitchIntel</title>
+<meta name="description" content="The World Cup is football's most expensive shop window. Eight breakout stars: what the market says, what the rumors say, and what the engine says.">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#06080c;--bg2:#0d1117;--card:#111827;--border:#1a2236;--border-light:#243049;
+--text:#c8d4e0;--text-dim:#6b7d94;--text-bright:#e8eef4;--accent:#00b4ff;--accent-dim:rgba(0,180,255,0.15);
+--green:#00e88a;--green-dim:rgba(0,232,138,0.15);--red:#ff3860;--red-dim:rgba(255,56,96,0.12);
+--gold:#ffb800;--gold-dim:rgba(255,184,0,0.12);--font:'Inter',system-ui,-apple-system,sans-serif}
+html{font-size:15px;scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font);line-height:1.6}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+.wrap{max-width:1000px;margin:0 auto;padding:0 1.25rem}
+header{position:sticky;top:0;z-index:100;background:rgba(6,8,12,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.header-inner{max-width:1000px;margin:0 auto;padding:0 1.25rem;display:flex;align-items:center;justify-content:space-between;height:60px}
+.logo{font-size:1.3rem;font-weight:800}.logo .p{color:var(--text-bright)}.logo .i{color:var(--accent)}
+.wc-chip{margin-left:0.6rem;padding:0.15rem 0.6rem;border-radius:999px;background:var(--gold-dim);color:var(--gold);font-size:0.65rem;font-weight:800;letter-spacing:1px;vertical-align:middle}
+nav{display:flex;gap:1.25rem;font-size:0.9rem;font-weight:600}
+nav a{color:var(--text-dim)}nav a:hover{color:var(--text-bright);text-decoration:none}
+.hero{padding:4rem 0 2.5rem;text-align:center;background:radial-gradient(ellipse 70% 60% at 50% -10%,rgba(255,184,0,0.12),transparent)}
+.hero .kicker{color:var(--gold);font-weight:800;letter-spacing:2px;font-size:0.8rem;text-transform:uppercase}
+.hero h1{font-size:clamp(1.9rem,5vw,3rem);font-weight:900;letter-spacing:-1px;color:var(--text-bright);margin:0.6rem auto 1rem;max-width:760px;line-height:1.15}
+.hero p{color:var(--text-dim);max-width:640px;margin:0 auto;font-size:1.05rem}
+.thesis{max-width:820px;margin:2rem auto 0;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.4rem 1.6rem;text-align:left;font-size:0.95rem}
+.thesis strong{color:var(--gold)}
+.thesis .warn{color:var(--text-dim);font-size:0.88rem;margin-top:0.6rem}
+.wc-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:1.5rem 1.6rem;margin-bottom:1.4rem}
+.wc-head{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;align-items:baseline}
+.wc-name{font-size:1.3rem;font-weight:800;color:var(--text-bright)}
+.wc-meta{color:var(--text-dim);font-size:0.85rem}
+.wc-values{display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap}
+.val-chip{background:var(--bg2);border:1px solid var(--border);border-radius:999px;padding:0.25rem 0.8rem;font-size:0.82rem;font-weight:700;color:var(--text)}
+.val-chip.hot{border-color:var(--gold);color:var(--gold)}
+.val-chip b{font-weight:800}
+.val-arrow{color:var(--text-dim)}
+.wc-angle{display:inline-block;margin-top:0.6rem;background:var(--gold-dim);color:var(--gold);font-size:0.72rem;font-weight:800;letter-spacing:0.8px;text-transform:uppercase;padding:0.2rem 0.7rem;border-radius:999px}
+.wc-cols{display:grid;grid-template-columns:1fr 1.1fr;gap:1.6rem;margin-top:1.1rem}
+@media(max-width:820px){.wc-cols{grid-template-columns:1fr}}
+.wc-col h4{font-size:0.78rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-bright);margin:0.9rem 0 0.5rem}
+.wc-col h4:first-child{margin-top:0}
+.wc-col ul{padding-left:1.1rem;font-size:0.88rem;color:var(--text)}
+.wc-col li{margin-bottom:0.35rem}
+.wc-talking{font-size:0.88rem;color:var(--text)}
+.wc-scout{display:flex;gap:0.6rem;align-items:flex-start;margin-top:0.9rem;font-size:0.85rem;background:var(--bg2);border-radius:10px;padding:0.7rem 0.9rem}
+.scout-avatar{width:28px;height:28px;border-radius:50%;background:var(--accent-dim);color:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.72rem;flex-shrink:0}
+.wc-col.engine{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:1rem 1.2rem}
+.engine-note{font-weight:400;text-transform:none;letter-spacing:0;color:var(--text-dim);font-size:0.75rem}
+.fit-label{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-dim);margin-bottom:0.35rem}
+.fit-row{display:flex;align-items:center;gap:0.7rem;padding:0.28rem 0;font-size:0.88rem}
+.fit-club{width:11.5rem;flex-shrink:0;font-weight:600;color:var(--text-bright)}
+.fit-tag{font-size:0.62rem;font-weight:800;color:var(--gold);background:var(--gold-dim);border-radius:999px;padding:0.08rem 0.45rem;letter-spacing:0.4px;text-transform:uppercase}
+.fit-bar{flex:1;height:7px;background:rgba(255,255,255,0.05);border-radius:4px;overflow:hidden}
+.fit-bar i{display:block;height:100%;background:var(--accent);border-radius:4px}
+.fit-mult{width:3.4rem;text-align:right;font-weight:800;font-variant-numeric:tabular-nums}
+.fit-mult.g{color:var(--green)}.fit-mult.r{color:var(--red)}
+.fit-val{width:4.2rem;text-align:right;color:var(--text-dim);font-variant-numeric:tabular-nums;font-size:0.82rem}
+.wc-verdict{margin-top:0.9rem;border-top:1px dashed var(--border);padding-top:0.8rem;font-size:0.88rem}
+.wc-verdict .v-label{display:inline-block;background:var(--gold-dim);color:var(--gold);font-size:0.64rem;font-weight:800;letter-spacing:0.8px;text-transform:uppercase;padding:0.14rem 0.5rem;border-radius:999px;margin-right:0.4rem}
+.cta-strip{background:linear-gradient(180deg,transparent,rgba(0,180,255,0.06));border-top:1px solid var(--border);text-align:center;padding:3rem 0;margin-top:2.5rem}
+.cta-strip h2{color:var(--text-bright);font-size:1.5rem;font-weight:800;margin-bottom:0.5rem}
+.cta-strip p{color:var(--text-dim);max-width:560px;margin:0 auto 1.4rem}
+.btn{display:inline-block;background:var(--accent);color:#fff !important;padding:0.65rem 1.5rem;border-radius:8px;font-weight:700;margin:0 0.4rem}
+.btn:hover{opacity:0.9;text-decoration:none !important}
+.btn.gold{background:var(--gold);color:#06080c !important}
+footer{border-top:1px solid var(--border);padding:2rem 0 3rem;color:var(--text-dim);font-size:0.78rem;line-height:1.8}
+.sources{margin-top:0.8rem}
+.sources a{display:block}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo"><span class="p">Pitch</span><span class="i">Intel</span><span class="wc-chip">&#127942; WC 2026</span></div>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="app.html">App</a>
+      <a href="how-it-works.html">How it works</a>
+      <a href="enterprise.html">For clubs</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="kicker">World Cup 2026 Special &middot; published on final day</div>
+    <h1>The world's most expensive shop window</h1>
+    <p>Argentina vs Spain tonight. Messi leads the Golden Boot on eight. And thirty-plus tournament names are already in this summer's transfer dossiers. Here's what the market says, what the rumors say — and what the engine says.</p>
+    <div class="thesis">
+      <strong>The tournament question every DoF gets wrong:</strong> did the World Cup reveal new information about a player, or did it just make the same information more expensive?
+      A scout gets at most eight matches of evidence. Post-tournament fees routinely price in the hype anyway.
+      <div class="warn">The standing warning: six goals in 2014 bought James Rodr&iacute;guez a ~&pound;63M move to Real Madrid — and a loan exit within three years. PitchIntel scores the <em>context</em>, not the montage: every player below is valued against all 30 clubs on pre-tournament data, so you can see exactly where fit covers the premium — and where it doesn't.</div>
+    </div>
+  </div>
+</section>
+
+<main class="wrap" style="padding-top:2rem">
+
+  <article class="wc-card">
+    <div class="wc-head">
+      <div>
+        <div class="wc-name">&#127464;&#127470; Yan Diomandé</div>
+        <div class="wc-meta">LW · 19 · RB Leipzig (Bundesliga) · Ivory Coast</div>
+      </div>
+      <div class="wc-values">
+        <span class="val-chip">pre-WC &euro;100M</span>
+        <span class="val-arrow">&rarr;</span>
+        <span class="val-chip hot">talk &euro;121M <b>+21%</b></span>
+      </div>
+    </div>
+    
+    <div class="wc-cols">
+      <div class="wc-col">
+        <h4>&#127942; The tournament</h4>
+        <ul><li>First player this century with 10+ completed dribbles AND 10+ chances created across his first three World Cup games (Opta).</li><li>8 chances created from carries — second in the tournament only to Mbappé.</li><li>Five successive high-level performances as Ivory Coast reached the knockouts.</li></ul>
+        <h4>&#128227; Who's talking</h4>
+        <p class="wc-talking">The saga of the summer. He has reportedly agreed a five-year deal with PSG and spoken to Luis Enrique — but Leipzig want €120–130M, Liverpool's €100M offer (incl. bonuses) was rebuffed, and Leipzig now say they'd rather keep him or loan him back. Manchester United and Manchester City are also reported in the race.</p>
+        <div class="wc-scout">
+          <span class="scout-avatar">SO</span>
+          <span><strong>Who should scout them:</strong> Sam Okafor — West Africa &amp; Ligue 1.
+          <a href="enterprise.html">File the Tier&nbsp;3 report &rarr;</a></span>
+        </div>
+      </div>
+      <div class="wc-col engine">
+        <h4>&#9881;&#65039; What the engine says <span class="engine-note">(context value on pre-WC &euro;100M)</span></h4>
+        <div class="fit-label">Best structural fits, all 30 clubs</div>
+        <div class="fit-row">
+      <span class="fit-club">Inter Milan</span>
+      <span class="fit-bar"><i style="width:70%"></i></span>
+      <span class="fit-mult g">1.23x</span>
+      <span class="fit-val">&euro;123M</span>
+    </div><div class="fit-row">
+      <span class="fit-club">Atalanta</span>
+      <span class="fit-bar"><i style="width:70%"></i></span>
+      <span class="fit-mult g">1.23x</span>
+      <span class="fit-val">&euro;123M</span>
+    </div><div class="fit-row">
+      <span class="fit-club">Atletico Madrid</span>
+      <span class="fit-bar"><i style="width:64%"></i></span>
+      <span class="fit-mult g">1.18x</span>
+      <span class="fit-val">&euro;118M</span>
+    </div>
+        
+        <div class="fit-label" style="margin-top:0.6rem">The clubs in the headlines</div>
+        <div class="fit-row">
+      <span class="fit-club">PSG</span>
+      <span class="fit-bar"><i style="width:53%"></i></span>
+      <span class="fit-mult ">1.08x</span>
+      <span class="fit-val">&euro;108M</span>
+    </div><div class="fit-row">
+      <span class="fit-club">Liverpool</span>
+      <span class="fit-bar"><i style="width:62%"></i></span>
+      <span class="fit-mult g">1.16x</span>
+      <span class="fit-val">&euro;116M</span>
+    </div><div class="fit-row">
+      <span class="fit-club">Manchester United</span>
+      <span class="fit-bar"><i style="width:63%"></i></span>
+      <span class="fit-mult g">1.17x</span>
+      <span class="fit-val">&euro;117M</span>
+    </div><div class="fit-row">
+      <span class="fit-club">Manchester City</span>
+      <span class="fit-bar"><i style="width:54%"></i></span>
+      <span class="fit-mult ">1.09x</span>
+      <span class="fit-val">&euro;109M</span>
+    </div>
+        <div class="wc-verdict"><span class="v-label">Fit vs hype</span> The engine's best contexts (Inter Milan, Atalanta, Atletico Madrid) are NOT the clubs in the headlines. PSG rates 1.08x vs 1.23x at Inter Milan — a +21% premium on top of a weaker fit is how tournament transfers go wrong.</div>
+      </div>
+    </div>
+  </article>
+
+  <article class="wc-card">
+    <div class="wc-head">
+      <div>
+        <div class="wc-name">&#127474;&#127462; Ayyoub Bouaddi</div>
+        <div class="wc-meta">CM · 18 · Lille (Ligue 1) · Morocco</div>
+      </div>
+      <div class="wc-values">
+        <span class="val-chip">pre-WC &euro;55M</span>
+        <span class="val-arrow">&rarr;</span>
+        <span class="val-chip hot">talk &euro;86M <b>+56%</b></span>
+      </div>
+    </div>
+    
+    <div class="wc-cols">
+      <div class="wc-col">
+        <h4>&#127942; The tournament</h4>
+        <ul><li>The tournament's biggest value riser: reported estimates up ~€31M in five weeks.</li><li>Most touches of any player on the pitch in the 1–1 draw with Brazil, at 18.</li><li>Anchored Morocco's midfield to the quarterfinals with elite passing accuracy.</li></ul>
+        <h4>&#128227; Who's talking</h4>
+        <p class="wc-talking">Lille are reportedly demanding €80M+. Liverpool and Arsenal have made fresh inquiries since the tournament began — Arsenal reported "best placed" — with PSG approaching and Real Madrid monitoring without making him a priority.</p>
+        <div class="wc-scout">
+          <span class="scout-avatar">SO</span>
+          <span><strong>Who should scout them:</strong> Sam Okafor — West Africa &amp; Ligue 1.
+          <a href="enterprise.html">File the Tier&nbsp;3 report &rarr;</a></span>
+        </div>
+      </div>
+      <div class="wc-col engine">
+        <h4>&#9881;&#65039; What the engine says <span class="engine-note">(context value on pre-WC &euro;55M)</span></h4>
+        <div class="fit-label">Best structural fits, all 30 clubs</div>
+        <div class="fit-row">
+      <span class="fit-club">Real Sociedad</span>
+      <span class="fit-bar"><i style="width:69%"></i></span>
+      <span class="fit-mult g">1.22x</span>
+      <span class="fit-val">&euro;67.1M</span>
+    </div><div class="fit-row">
+      <span class="fit-club">PSG <span class="fit-tag">also rumored</span></span>
+      <span class="fit-bar"><i style="width:67%"></i></span>
+      <span class="fit-mult g">1.20x</span>
+      <span class="fit-val">&euro;66M</span>
+    </div><div class="fit-row">
+      <span class="fit-club">Arsenal <span class="fit-tag">also rumored</span></span>
+      <span class="fit-bar"><i style="width:66%"></i></span>
+      <span class="fit-mult g">1.19x</span>
+      <span class="fit-val">&euro;65.5M</span>
+    </div>
+        
+        <div class="fit-label" style="margin-top:0.6rem">The clubs in the headlines</div>
+        <div class="fit-row">
+      <span class="fit-club">Liverpool</span>
+      <span class="fit-bar"><i style="width:60%"></i></span>
+      <span class="fit-mult ">1.14x</span>
+      <span class="fit-val">&euro;62.7M</span>
+    </div><div class="fit-row">
+      <span class="fit-club">Real Madrid</span>
+      <span class="fit-bar"><i style="width:58%"></i></span>
+      <span class="fit-mult ">1.12x</span>
+      <span class="fit-val">&euro;61.6M</span>
+    </div>
+        <div class="wc-verdict"><span class="v-label">Fit vs hype</span> The rumor mill and the engine agree: Arsenal is a top-3 structural fit (1.19x). The open question is the +56% tournament premium — fit covers hype here only if the fee stays near pre-tournament value.</div>
+      </div>
+    </div>
+  </article>
+
+  <article class="wc-card">
+    <div class="wc-head">
+      <div>
+        <div class="wc-name">&#127464;&#127469; Johan Manzambi</div>
+        <div class="wc-meta">CAM · 20 · Freiburg (Bundesliga) · Switzerland</div>
+      </div>
+      <div class="wc-values">
+        <span class="val-chip">pre-WC &euro;45M</span>
+        <span class="val-arrow">&rarr;</span>
+        <span class="val-chip hot">talk &euro;65M <b>+44%</b></span>
+      </div>
+    </div>
+    
+    <div class="wc-cols">
+      <div class="wc-col">
+        <h4>&#127942; The tournament</h4>
+        <ul><li>3 goals and 2 assists in four matches — youngest Swiss player ever to score a World Cup double (20y 247d).</li><li>Top 50 in the tournament for progressive carries despite carrying an injury.</li><li>Arrived off a 16-goal Bundesliga season and a Europa League Young Player of the Season award.</li></ul>
+        <h4>&#128227; Who's talking</h4>
+        <p class="wc-talking">Reported price talk has jumped from €55M to €70M during the tournament. Manchester United see him as a midfield-rebuild fit, Chelsea are reportedly exploring a route via sister club Strasbourg, and Newcastle — with long-standing interest — have reportedly been told they're at the front of the queue.</p>
+        <div class="wc-scout">
+          <span class="scout-avatar">LL</span>
+          <span><strong>Who should scout them:</strong> Lars Lindqvist — Scandinavia &amp; Bundesliga.
+          <a href="enterprise.html">File the Tier&nbsp;3 report &rarr;</a></span>
+        </div>
+      </div>
+      <div class="wc-col engine">
+        <h4>&#9881;&#65039; What the engine says <span class="engine-note">(context value on pre-WC &euro;45M)</span></h4>
+        <div class="fit-label">Best structural fits, all 30 clubs</div>
+        <div class="fit-row">
+      <span class="fit-club">Juventus</span>
+      <span class="fit-bar"><i style="width:69%"></i></span>
+      <span class="fit-mult g">1.22x</span>
+      <span class="fit-val">&euro;54.9M</span>
+    </div><div class="fit-row">
+      <span class="fit-club">Newcastle <span class="fit-tag">also rumored</span></span>
+      <span class="fit-bar"><i style="width:68%"></i></span>
+      <span class="fit-mult g">1.21x</span>
+      <span class="fit-val">&euro;54.5M</span>
+    </div><div class="fit-row">
+      <span class="fit-club">Atletico Madrid</span>
+      <span class="fit-bar"><i style="width:63%"></i></span>
+      <span class="fit-mult g">1.17x</span>
+      <span class="fit-val">&euro;52.7M</span>
+    </div>
+        
+        <div class="fit-label" style="margin-top:0.6rem">The clubs in the headlines</div>
+        <div class="fit-row">
+      <span class="fit-club">Manchester United</span>
+      <span class="fit-bar"><i style="width:56%"></i></span>
+      <span class="fit-mult ">1.10x</span>
+      <span class="fit-val">&euro;49.5M</span>
+    </div><div class="fit-row">
+      <span class="fit-club">Chelsea</span>
+      <span class="fit-bar"><i style="width:53%"></i></span>
+      <span class="fit-mult ">1.08x</span>
+      <span class="fit-val">&euro;48.6M</span>
+    </div>
+        <div class="wc-verdict"><span class="v-label">Fit vs hype</span> The engine's best contexts (Juventus, Newcastle, Atletico Madrid) are NOT the clubs in the headlines. Manchester United rates 1.10x vs 1.22x at Juventus — a +44% premium on top of a weaker fit is how tournament transfers go wrong.</div>
+      </div>
+    </div>
+  </article>
+
+  <article class="wc-card">
+    <div class="wc-head">
+      <div>
+        <div class="wc-name">&#127465;&#127466; Felix Nmecha</div>
+        <div class="wc-meta">CM · 25 · Borussia Dortmund (Bundesliga) · Germany</div>
+      </div>
+      <div class="wc-values">
+        <span class="val-chip">pre-WC &euro;40M</span>
+        <span class="val-arrow">&rarr;</span>
+        <span class="val-chip hot">talk &euro;55M <b>+38%</b></span>
+      </div>
+    </div>
+    
+    <div class="wc-cols">
+      <div class="wc-col">
+        <h4>&#127942; The tournament</h4>
+        <ul><li>No player at the World Cup made more line-breaking passes leading to goals (3).</li><li>Germany's standout in an otherwise short campaign — knocked out on penalties by Paraguay in the round of 32.</li></ul>
+        <h4>&#128227; Who's talking</h4>
+        <p class="wc-talking">Manchester United and Liverpool are reported to be monitoring him. A short national-team campaign means the price hasn't fully inflated — yet.</p>
+        <div class="wc-scout">
+          <span class="scout-avatar">LL</span>
+          <span><strong>Who should scout them:</strong> Lars Lindqvist — Scandinavia &amp; Bundesliga.
+          <a href="enterprise.html">File the Tier&nbsp;3 report &rarr;</a></span>
+        </div>
+      </div>
+      <div class="wc-col engine">
+        <h4>&#9881;&#65039; What the engine says <span class="engine-note">(context value on pre-WC &euro;40M)</span></h4>
+        <div class="fit-label">Best structural fits, all 30 clubs</div>
+        <div class="fit-row">
+      <span class="fit-club">Real Sociedad</span>
+      <span class="fit-bar"><i style="width:60%"></i></span>
+      <span class="fit-mult ">1.14x</span>
+      <span class="fit-val">&euro;45.6M</span>
+    </div><div class="fit-row">
+      <span class="fit-club">Newcastle</span>
+      <span class="fit-bar"><i style="width:58%"></i></span>
+      <span class="fit-mult ">1.12x</span>
+      <span class="fit-val">&euro;44.8M</span>
+    </div><div class="fit-row">
+      <span class="fit-club">PSG</span>
+      <span class="fit-bar"><i style="width:58%"></i></span>
+      <span class="fit-mult ">1.12x</span>
+      <span class="fit-val">&euro;44.8M</span>
+    </div>
+        
+        <div class="fit-label" style="margin-top:0.6rem">The clubs in the headlines</div>
+        <div class="fit-row">
+      <span class="fit-club">Manchester United</span>
+      <span class="fit-bar"><i style="width:51%"></i></span>
+      <span class="fit-mult ">1.06x</span>
+      <span class="fit-val">&euro;42.4M</span>
+    </div><div class="fit-row">
+      <span class="fit-club">Liverpool</span>
+      <span class="fit-bar"><i style="width:51%"></i></span>
+      <span class="fit-mult ">1.06x</span>
+      <span class="fit-val">&euro;42.4M</span>
+    </div>
+        <div class="wc-verdict"><span class="v-label">Fit vs hype</span> The engine's best contexts (Real Sociedad, Newcastle, PSG) are NOT the clubs in the headlines. Manchester United rates 1.06x vs 1.14x at Real Sociedad — a +38% premium on top of a weaker fit is how tournament transfers go wrong.</div>
+      </div>
+    </div>
+  </article>
+
+  <article class="wc-card">
+    <div class="wc-head">
+      <div>
+        <div class="wc-name">&#127477;&#127486; Julio Enciso</div>
+        <div class="wc-meta">CAM · 22 · Strasbourg (Ligue 1) · Paraguay</div>
+      </div>
+      <div class="wc-values">
+        <span class="val-chip">pre-WC &euro;30M</span>
+        <span class="val-arrow">&rarr;</span>
+        <span class="val-chip hot">talk &euro;42M <b>+40%</b></span>
+      </div>
+    </div>
+    <div class="wc-angle">The window before the hype</div>
+    <div class="wc-cols">
+      <div class="wc-col">
+        <h4>&#127942; The tournament</h4>
+        <ul><li>Paraguay's spark all tournament — opened the scoring in the round of 32 against Germany, the game that sent the four-time champions home on penalties.</li><li>Carried a mid-table Ligue 1 club's creative load into a giant-killing World Cup run.</li></ul>
+        <h4>&#128227; Who's talking</h4>
+        <p class="wc-talking">Quieter than his tournament deserves — no concrete bids reported yet. Which is precisely when a well-run club moves: before the market reprices him.</p>
+        <div class="wc-scout">
+          <span class="scout-avatar">MV</span>
+          <span><strong>Who should scout them:</strong> Marta Vidal — South America &amp; La Liga.
+          <a href="enterprise.html">File the Tier&nbsp;3 report &rarr;</a></span>
+        </div>
+      </div>
+      <div class="wc-col engine">
+        <h4>&#9881;&#65039; What the engine says <span class="engine-note">(context value on pre-WC &euro;30M)</span></h4>
+        <div class="fit-label">Best structural fits, all 30 clubs</div>
+        <div class="fit-row">
+      <span class="fit-club">Juventus</span>
+      <span class="fit-bar"><i style="width:67%"></i></span>
+      <span class="fit-mult g">1.20x</span>
+      <span class="fit-val">&euro;36M</span>
+    </div><div class="fit-row">
+      <span class="fit-club">Newcastle</span>
+      <span class="fit-bar"><i style="width:66%"></i></span>
+      <span class="fit-mult g">1.19x</span>
+      <span class="fit-val">&euro;35.7M</span>
+    </div><div class="fit-row">
+      <span class="fit-club">Atletico Madrid</span>
+      <span class="fit-bar"><i style="width:62%"></i></span>
+      <span class="fit-mult g">1.16x</span>
+      <span class="fit-val">&euro;34.8M</span>
+    </div>
+        
+        <div class="wc-verdict"><span class="v-label">Fit vs hype</span> No reported suitors, a +40% tournament repricing, and the engine still finds 1.20x contexts. This is the file a scouting desk opens <em>before</em> the market does.</div>
+      </div>
+    </div>
+  </article>
+
+  <article class="wc-card">
+    <div class="wc-head">
+      <div>
+        <div class="wc-name">&#127474;&#127462; Ismael Saibari</div>
+        <div class="wc-meta">ST · 24 · PSV Eindhoven (Eredivisie) · Morocco</div>
+      </div>
+      <div class="wc-values">
+        <span class="val-chip">pre-WC &euro;40M</span>
+        <span class="val-arrow">&rarr;</span>
+        <span class="val-chip hot">talk &euro;50M <b>+25%</b></span>
+      </div>
+    </div>
+    <div class="wc-angle">The mid-deal injury</div>
+    <div class="wc-cols">
+      <div class="wc-col">
+        <h4>&#127942; The tournament</h4>
+        <ul><li>Led Morocco with 151 runs in behind and kept elite shot quality (0.17 xG per shot).</li><li>Injured in the round of 16 against Canada — mid-transfer.</li></ul>
+        <h4>&#128227; Who's talking</h4>
+        <p class="wc-talking">Reported to be completing a move to Bayern Munich — agreed before the injury. The deal every rival DoF is now stress-testing: does a tournament knock change a €50M medical?</p>
+        <div class="wc-scout">
+          <span class="scout-avatar">SO</span>
+          <span><strong>Who should scout them:</strong> Sam Okafor — West Africa &amp; Ligue 1.
+          <a href="enterprise.html">File the Tier&nbsp;3 report &rarr;</a></span>
+        </div>
+      </div>
+      <div class="wc-col engine">
+        <h4>&#9881;&#65039; What the engine says <span class="engine-note">(context value on pre-WC &euro;40M)</span></h4>
+        <div class="fit-label">Best structural fits, all 30 clubs</div>
+        <div class="fit-row">
+      <span class="fit-club">Roma</span>
+      <span class="fit-bar"><i style="width:60%"></i></span>
+      <span class="fit-mult ">1.14x</span>
+      <span class="fit-val">&euro;45.6M</span>
+    </div><div class="fit-row">
+      <span class="fit-club">Napoli</span>
+      <span class="fit-bar"><i style="width:59%"></i></span>
+      <span class="fit-mult ">1.13x</span>
+      <span class="fit-val">&euro;45.2M</span>
+    </div><div class="fit-row">
+      <span class="fit-club">Stuttgart</span>
+      <span class="fit-bar"><i style="width:58%"></i></span>
+      <span class="fit-mult ">1.12x</span>
+      <span class="fit-val">&euro;44.8M</span>
+    </div>
+        
+        <div class="fit-label" style="margin-top:0.6rem">The clubs in the headlines</div>
+        <div class="fit-row">
+      <span class="fit-club">Bayern Munich</span>
+      <span class="fit-bar"><i style="width:54%"></i></span>
+      <span class="fit-mult ">1.09x</span>
+      <span class="fit-val">&euro;43.6M</span>
+    </div>
+        <div class="wc-verdict"><span class="v-label">Fit vs hype</span> The engine's best contexts (Roma, Napoli, Stuttgart) are NOT the clubs in the headlines. Bayern Munich rates 1.09x vs 1.14x at Roma — a +25% premium on top of a weaker fit is how tournament transfers go wrong.</div>
+      </div>
+    </div>
+  </article>
+
+  <article class="wc-card">
+    <div class="wc-head">
+      <div>
+        <div class="wc-name">&#127475;&#127487; Elijah Just</div>
+        <div class="wc-meta">ST · 24 · Motherwell (Scottish Premiership) · New Zealand</div>
+      </div>
+      <div class="wc-values">
+        <span class="val-chip">pre-WC &euro;3M</span>
+        <span class="val-arrow">&rarr;</span>
+        <span class="val-chip hot">talk &euro;12M <b>+300%</b></span>
+      </div>
+    </div>
+    <div class="wc-angle">The €3M lottery ticket</div>
+    <div class="wc-cols">
+      <div class="wc-col">
+        <h4>&#127942; The tournament</h4>
+        <ul><li>Three group-stage goals for New Zealand — from the Scottish Premiership.</li><li>Reported pre-tournament value ~€3M; suitors are now told to quadruple it.</li></ul>
+        <h4>&#128227; Who's talking</h4>
+        <p class="wc-talking">The tournament's cult hero. No big-six chatter — this is a mid-table and second-tier opportunity, and exactly the profile the gem scanner exists for.</p>
+        <div class="wc-scout">
+          <span class="scout-avatar">JB</span>
+          <span><strong>Who should scout them:</strong> Jimmy Barnes — UK &amp; EFL.
+          <a href="enterprise.html">File the Tier&nbsp;3 report &rarr;</a></span>
+        </div>
+      </div>
+      <div class="wc-col engine">
+        <h4>&#9881;&#65039; What the engine says <span class="engine-note">(context value on pre-WC &euro;3M)</span></h4>
+        <div class="fit-label">Best structural fits, all 30 clubs</div>
+        <div class="fit-row">
+      <span class="fit-club">Roma</span>
+      <span class="fit-bar"><i style="width:59%"></i></span>
+      <span class="fit-mult ">1.13x</span>
+      <span class="fit-val">&euro;3.4M</span>
+    </div><div class="fit-row">
+      <span class="fit-club">Napoli</span>
+      <span class="fit-bar"><i style="width:58%"></i></span>
+      <span class="fit-mult ">1.12x</span>
+      <span class="fit-val">&euro;3.4M</span>
+    </div><div class="fit-row">
+      <span class="fit-club">Liverpool</span>
+      <span class="fit-bar"><i style="width:57%"></i></span>
+      <span class="fit-mult ">1.11x</span>
+      <span class="fit-val">&euro;3.3M</span>
+    </div>
+        
+        <div class="wc-verdict"><span class="v-label">Fit vs hype</span> No reported suitors, a +300% tournament repricing, and the engine still finds 1.13x contexts. This is the file a scouting desk opens <em>before</em> the market does.</div>
+      </div>
+    </div>
+  </article>
+
+  <article class="wc-card">
+    <div class="wc-head">
+      <div>
+        <div class="wc-name">&#127482;&#127480; Alex Freeman</div>
+        <div class="wc-meta">RB · 21 · Villarreal (La Liga) · USA</div>
+      </div>
+      <div class="wc-values">
+        <span class="val-chip">pre-WC &euro;20M</span>
+        <span class="val-arrow">&rarr;</span>
+        <span class="val-chip hot">talk &euro;30M <b>+50%</b></span>
+      </div>
+    </div>
+    <div class="wc-angle">The host-nation discount</div>
+    <div class="wc-cols">
+      <div class="wc-col">
+        <h4>&#127942; The tournament</h4>
+        <ul><li>Led the tournament in progressive passes (28) — from right back.</li><li>Covered space wide, defended 1-v-1, and carried the host nation through the round of 32.</li></ul>
+        <h4>&#128227; Who's talking</h4>
+        <p class="wc-talking">No reported bids yet — host-nation breakouts historically get repriced last, after the circus leaves town.</p>
+        <div class="wc-scout">
+          <span class="scout-avatar">MV</span>
+          <span><strong>Who should scout them:</strong> Marta Vidal — South America &amp; La Liga.
+          <a href="enterprise.html">File the Tier&nbsp;3 report &rarr;</a></span>
+        </div>
+      </div>
+      <div class="wc-col engine">
+        <h4>&#9881;&#65039; What the engine says <span class="engine-note">(context value on pre-WC &euro;20M)</span></h4>
+        <div class="fit-label">Best structural fits, all 30 clubs</div>
+        <div class="fit-row">
+      <span class="fit-club">Stuttgart</span>
+      <span class="fit-bar"><i style="width:70%"></i></span>
+      <span class="fit-mult g">1.23x</span>
+      <span class="fit-val">&euro;24.6M</span>
+    </div><div class="fit-row">
+      <span class="fit-club">Tottenham</span>
+      <span class="fit-bar"><i style="width:68%"></i></span>
+      <span class="fit-mult g">1.21x</span>
+      <span class="fit-val">&euro;24.2M</span>
+    </div><div class="fit-row">
+      <span class="fit-club">Atletico Madrid</span>
+      <span class="fit-bar"><i style="width:68%"></i></span>
+      <span class="fit-mult g">1.21x</span>
+      <span class="fit-val">&euro;24.2M</span>
+    </div>
+        
+        <div class="wc-verdict"><span class="v-label">Fit vs hype</span> No reported suitors, a +50% tournament repricing, and the engine still finds 1.23x contexts. This is the file a scouting desk opens <em>before</em> the market does.</div>
+      </div>
+    </div>
+  </article>
+</main>
+
+<section class="cta-strip">
+  <div class="wrap">
+    <h2>Run the numbers yourself</h2>
+    <p>Every valuation above came from the live engine. Point it at your club — or open the scouting-department demo and file the Tier 3 report on any of these players.</p>
+    <a class="btn" href="app.html">Open the app</a>
+    <a class="btn gold" href="enterprise.html">Enterprise demo</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <strong>About this page.</strong> Market values and transfer interest are media reports as of July 19, 2026 (converted, approximate), attributed below — PitchIntel makes no claims about any negotiation. Engine valuations are illustrative, computed on authored public-data profiles against our curated 30-club database. Player profiles here use Tier 1 (public) data only — the whole point: this is what the engine sees <em>before</em> a scout ever files a report.
+    <div class="sources"><strong>Sources:</strong>
+      <a href="https://www.espn.com/soccer/story/_/id/49308560/world-cup-breakout-stars-diomande-freeman-manzambi-puerta" rel="noopener">ESPN — Breakout stars of the 2026 World Cup</a>
+      <a href="https://www.beinsports.com/en-us/soccer/fifa-world-cup-2026/articles/the-5-players-who-boosted-their-market-value-the-most-at-the-world-cup-2026-07-16" rel="noopener">beIN SPORTS — The 5 players who boosted their market value most</a>
+      <a href="https://www.espn.com/soccer/story/_/id/49211932/yan-diomande-close-move-paris-saint-germain" rel="noopener">ESPN — Diomandé close to preferred PSG move</a>
+      <a href="https://www.thisisanfield.com/2026/07/yan-diomande-transfer-psg-price-tag-liverpool-leipzig-keita/" rel="noopener">This Is Anfield — PSG baulk at Leipzig fee</a>
+      <a href="https://www.sofascore.com/news/which-young-breakout-stars-have-premier-league-recruiters-attention" rel="noopener">Sofascore — WC breakouts attracting Premier League interest</a>
+      <a href="https://footballwhispers.com/blog/world-cup-2026-market-movers/" rel="noopener">Football Whispers — World Cup 2026 market movers</a>
+      <a href="https://www.givemesport.com/why-post-international-tournament-transfers-risk-soccer/" rel="noopener">GiveMeSport — Why post-tournament transfers are risky business</a>
+      <a href="https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026/articles/superstars-shining" rel="noopener">FIFA — Superstars shining at the 2026 World Cup</a>
+    </div>
+    Contact: <a href="mailto:kunal@generativeducation.com">kunal@generativeducation.com</a>
+  </div>
+</footer>
+
+</body>
+</html>

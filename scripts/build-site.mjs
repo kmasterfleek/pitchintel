@@ -123,6 +123,12 @@ if (hiw.includes('href="#"')) throw new Error('unhandled dead link in how-it-wor
 writeFileSync(join(siteDir, 'how-it-works.html'), hiw);
 console.log('site/how-it-works.html');
 
+// --- worldcup.html --- (static editorial page, engine-computed at build time)
+const wc = readFileSync(join(codeDir, 'pitchintel-worldcup.html'), 'utf-8');
+if (wc.includes('href="#"')) throw new Error('dead link in worldcup page — update worldcup.ts');
+writeFileSync(join(siteDir, 'worldcup.html'), wc);
+console.log(`site/worldcup.html (${(wc.length / 1024).toFixed(0)} KB)`);
+
 // --- enterprise.html --- (self-contained demo; carries its own banner/framing)
 const ent = readFileSync(join(codeDir, 'pitchintel-enterprise.html'), 'utf-8');
 if (ent.includes('href="#"')) throw new Error('dead link in enterprise demo — update enterprise.ts');

@@ -18,7 +18,8 @@
     "build:comparison": "tsx code/comparison.ts",
     "build:broadcast": "tsx code/broadcast.ts",
     "build:enterprise": "tsx code/enterprise.ts",
-    "build:site": "tsx code/app.ts && tsx code/enterprise.ts && node scripts/build-site.mjs"
+    "build:worldcup": "tsx code/worldcup.ts",
+    "build:site": "tsx code/app.ts && tsx code/enterprise.ts && tsx code/worldcup.ts && node scripts/build-site.mjs"
   },
   "devDependencies": {
     "tsx": "^4.19.2",
