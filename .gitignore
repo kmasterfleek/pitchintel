@@ -1,3 +1,8 @@
 node_modules/
 .DS_Store
 *.log
+
+# ruflo runtime state (keep config, ignore data/logs/sessions)
+.claude-flow/data/
+.claude-flow/logs/
+.claude-flow/sessions/
