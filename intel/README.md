@@ -38,3 +38,4 @@ search); in development it's a request to the agent.
 - `2026-08-02-frontier-players.md` — the proven desert-to-star pattern (10
   players) and the current frontier watchlist (12 players/situations) with every
   concrete number found.
+- `2026-08-02-ripple-sweep-01.md` — first Tier-0 ripple sweep (4 agents: bureaucratic/press, social/bystander, WAFCON networks, pathway-edge/LatAm): 18 expedition-grade leads, policy cutoff matrix, verification-node ledger, negative results.
