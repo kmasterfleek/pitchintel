@@ -104,3 +104,8 @@ number labeled as simulation.
    moves confidence — the loop the CLI already proves.
 4. **Editorial surface**: the World Cup special pattern, rebuilt for the road
    to Brazil 2027 — qualification windows as recurring content moments.
+5. **Tier 0 — pre-pathway discovery**: the deepest layer, for talent that
+   precedes organized football entirely (girls playing informally with boys,
+   no club, no data, sometimes hiding it). See `TERRA-INCOGNITA.md` — ripple
+   scouting, the Atlas, expedition briefs, attraction channels, and the
+   LoreVector that extends the confidence ladder below the waterline.
