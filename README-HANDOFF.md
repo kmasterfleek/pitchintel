@@ -112,6 +112,19 @@ with no server — start with **`code/pitchintel-app.html`**.
 
 ---
 
+## PitchIntel Women (strategic direction — see WOMENS-INTEL.md)
+
+The product's real opportunity is women's football: no public stats-driven
+valuation product exists, the free-data floor collapsed in Jan 2026, the
+transfer market is growing +80% YoY, and the 2027 Women's World Cup (Brazil)
+is under a year away. The engine's confidence-weighted graceful degradation —
+a nice-to-have for men's data — is *the product* for scarce women's data.
+
+- `WOMENS-INTEL.md` — the two-mode research architecture (deep corpus + live desk)
+- `intel/` — dated, fully-sourced research dossiers (the held corpus)
+- `code/data/women/` — frontier players as partial PlayerVectors + buyer clubs
+- `npm run women` — honesty table, context valuations, scout-trip ROI ladder
+
 ## Beta site (public deployment)
 
 The `site/` folder is a deployable static site: `index.html` (landing page with

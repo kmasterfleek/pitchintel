@@ -14,6 +14,7 @@
  * Usage: npx tsx src/pitch-intel/player-vector.ts
  */
 
+import { pathToFileURL } from 'node:url';
 import type { ScoutProfile } from './data/players-db.js';
 import type { TeamContext } from './data/teams-db.js';
 
@@ -1400,4 +1401,7 @@ export async function main(): Promise<void> {
   console.log('');
 }
 
-main().catch(e => { console.error(e); process.exit(1); });
+// Run the demo only when this file is the entry point, not when imported.
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main().catch(e => { console.error(e); process.exit(1); });
+}

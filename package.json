@@ -19,7 +19,8 @@
     "build:broadcast": "tsx code/broadcast.ts",
     "build:enterprise": "tsx code/enterprise.ts",
     "build:worldcup": "tsx code/worldcup.ts",
-    "build:site": "tsx code/app.ts && tsx code/enterprise.ts && tsx code/worldcup.ts && node scripts/build-site.mjs"
+    "build:site": "tsx code/app.ts && tsx code/enterprise.ts && tsx code/worldcup.ts && node scripts/build-site.mjs",
+    "women": "tsx code/womens-frontier.ts"
   },
   "devDependencies": {
     "tsx": "^4.19.2",
